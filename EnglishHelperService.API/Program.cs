@@ -1,5 +1,6 @@
 using EnglishHelperService.Persistence;
 using EnglishHelperService.Persistence.Repositories;
+using EnglishHelperService.Persistence.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -16,7 +17,8 @@ builder.Services.AddDbContext<DataContext>(options =>
 });
 
 
-builder.Services.AddTransient<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 
 
