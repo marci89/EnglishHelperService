@@ -5,10 +5,13 @@ namespace EnglishHelperService.Persistence
 {
 	public class DataContext : DbContext
 	{
-		public DataContext(DbContextOptions options) : base(options)
-		{
-		}
-
 		public DbSet<User> Users { get; set; }
+
+		public DataContext(DbContextOptions options) : base(options) { }
+
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserConfiguration).Assembly);
+		}
 	}
 }
