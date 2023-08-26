@@ -1,4 +1,5 @@
 using EnglishHelperService.Persistence;
+using EnglishHelperService.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -13,6 +14,9 @@ builder.Services.AddDbContext<DataContext>(options =>
 {
 	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+
+builder.Services.AddTransient<IUserRepository, UserRepository>();
 
 
 
