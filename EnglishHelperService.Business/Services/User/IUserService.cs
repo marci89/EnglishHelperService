@@ -9,5 +9,6 @@ namespace EnglishHelperService.Business
 		Task CreateAsync(CreateUserRequest user);
 		Task UpdateAsync(UpdateUserRequest user);
 		Task DeleteAsync(long id);
+		Task<LoginUserResponse> Login(LoginUserRequest request);
 	}
 }

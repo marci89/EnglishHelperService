@@ -6,9 +6,12 @@ namespace EnglishHelperService.Business
 	public class UserFactory
 	{
 		private readonly PasswordSecurityHandler _passwordSecurityHandler;
-		public UserFactory(PasswordSecurityHandler passwordSecurityHandler)
+		private readonly ITokenService _tokenService;
+
+		public UserFactory(PasswordSecurityHandler passwordSecurityHandler, ITokenService tokenService)
 		{
 			_passwordSecurityHandler = passwordSecurityHandler;
+			_tokenService = tokenService;
 		}
 
 		public Models.User Create(User user)
@@ -29,6 +32,7 @@ namespace EnglishHelperService.Business
 		{
 			if (request is null)
 				return null;
+
 			var passwordResult = _passwordSecurityHandler.CreatePassword(request.Password);
 
 			return new User
@@ -37,8 +41,20 @@ namespace EnglishHelperService.Business
 				Email = request.Email,
 				PasswordHash = passwordResult.PasswordHash,
 				PasswordSalt = passwordResult.PasswordSalt,
-				Created = DateTime.UtcNow				
+				Created = DateTime.UtcNow
 			};
-		}	
+		}
+
+		public Models.LoginUserResponse Create(Models.LoginUserRequest request, User user)
+		{
+			if (request is null || user is null)
+				return null;
+
+			return new Models.LoginUserResponse
+			{
+				Username = request.Username,
+				Token = _tokenService.CreateToken(user)
+			};
+		}
 	}
 }

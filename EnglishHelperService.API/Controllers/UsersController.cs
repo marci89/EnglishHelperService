@@ -1,5 +1,6 @@
 ﻿using EnglishHelperService.Business;
 using EnglishHelperService.Business.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
 
@@ -8,6 +9,7 @@ namespace EnglishHelperService.API.Controllers
 	[Description("User management")]
 	[Route("[controller]")]
 	[ApiController]
+	[Authorize]
 	public class UsersController : ControllerBase
 	{
 		private readonly IUserService _userService;
@@ -29,13 +31,6 @@ namespace EnglishHelperService.API.Controllers
 		{
 			var user = await _userService.ReadUserByIdAsync(id);
 			return Ok(user);
-		}
-
-		[HttpPost]
-		public async Task<ActionResult> CreateUserAsync([FromBody] CreateUserRequest request)
-		{
-			await _userService.CreateAsync(request);
-			return Ok();
 		}
 
 		[HttpPut]

@@ -43,5 +43,11 @@ namespace EnglishHelperService.Business
 			await _unitOfWork.UserRepository.DeleteAsync(user);
 			await _unitOfWork.SaveAsync();
 		}
+
+		public async Task<LoginUserResponse> Login(LoginUserRequest request)
+		{
+			var user = await _unitOfWork.UserRepository.ReadByNameAsync(request.Username);
+			return _userFactory.Create(request, user);
+		}
 	}
 }

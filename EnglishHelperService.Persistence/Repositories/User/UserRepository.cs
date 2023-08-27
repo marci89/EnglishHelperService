@@ -17,6 +17,12 @@ namespace EnglishHelperService.Persistence.Repositories
 			return await _context.Users.FindAsync(id);
 		}
 
+		public async Task<User> ReadByNameAsync(string name)
+		{
+			return await _context.Users.SingleOrDefaultAsync(x =>
+			x.Username == name);
+		}
+
 		public async Task<IEnumerable<User>> ListAsync()
 		{
 			return await _context.Users.ToListAsync();
