@@ -4,10 +4,10 @@ namespace EnglishHelperService.Persistence.Repositories
 {
 	public interface IUserRepository
 	{
-		Task<User> ReadById(long id);
-		Task<IEnumerable<User>> List();
-		void Create(User user);
-		void Update(User user);
-		void Delete(User user);
+		Task<User> ReadByIdAsync(long id);
+		Task<IEnumerable<User>> ListAsync();
+		Task CreateAsync(User user);
+		Task UpdateAsync(User user);
+		Task DeleteAsync(User user);
 	}
 }

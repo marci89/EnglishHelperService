@@ -1,5 +1,4 @@
-﻿using EnglishHelperService.Persistence.Repositories;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EnglishHelperService.Persistence.UnitOfWork
@@ -26,20 +25,20 @@ namespace EnglishHelperService.Persistence.UnitOfWork
 		/// <summary>
 		/// Menti a módosításokat az adatbázisba, de nem véglegesít (nem commitol).
 		/// </summary>
-		public void Save()
+		public async Task SaveAsync()
 		{
-			dbContext.SaveChanges();
+			await dbContext.SaveChangesAsync();
 		}
 
 		/// <summary>
 		/// Véglegesíti a módosításokat az adatbázison.
 		/// </summary>
-		public void Commit()
+		public async Task CommitAsync()
 		{
-			dbContext.SaveChanges();
+			await dbContext.SaveChangesAsync();
 			if (_transaction != null)
 			{
-				_transaction.Commit();
+				await _transaction.CommitAsync();
 				_transaction.Dispose();
 				_transaction = null;
 			}
@@ -68,7 +67,7 @@ namespace EnglishHelperService.Persistence.UnitOfWork
 		// To detect redundant calls
 		private bool _disposedValue = false;
 
-		protected virtual void Dispose(bool disposing)
+		public async Task DisposeAsync(bool disposing)
 		{
 			if (!_disposedValue)
 			{
@@ -77,7 +76,7 @@ namespace EnglishHelperService.Persistence.UnitOfWork
 					if (_transaction != null)
 						_transaction.Dispose();
 
-					dbContext.Dispose();
+					await dbContext.DisposeAsync();
 				}
 
 				_disposedValue = true;
@@ -88,10 +87,7 @@ namespace EnglishHelperService.Persistence.UnitOfWork
 		// This code added to correctly implement the disposable pattern.
 		public void Dispose()
 		{
-			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-			Dispose(true);
-			// Uncomment the following line if the finalizer is overridden above.
-			//GC.SuppressFinalize(this);
+			DisposeAsync(true).GetAwaiter().GetResult();
 		}
 
 		#endregion

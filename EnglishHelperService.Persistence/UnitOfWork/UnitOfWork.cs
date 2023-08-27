@@ -13,6 +13,7 @@ namespace EnglishHelperService.Persistence.UnitOfWork
 		}
 
 		public virtual IUserRepository UserRepository { get; }
+
 	}
 }
 

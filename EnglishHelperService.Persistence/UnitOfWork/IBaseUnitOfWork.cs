@@ -1,6 +1,4 @@
-﻿using EnglishHelperService.Persistence.Repositories;
-
-namespace EnglishHelperService.Persistence.UnitOfWork
+﻿namespace EnglishHelperService.Persistence.UnitOfWork
 {
 	public interface IBaseUnitOfWork : IDisposable
 	{
@@ -12,12 +10,12 @@ namespace EnglishHelperService.Persistence.UnitOfWork
 		/// <summary>
 		/// Menti az adott pontig elvégzett módosításokat az adatbázisba, de tranzakciót nem kommittál.
 		/// </summary>
-		void Save();
+		Task SaveAsync();
 
 		/// <summary>
 		/// Véglegesíti a módosításokat az adatbázison (ment és kommittál).
 		/// </summary>
-		void Commit();
+		Task CommitAsync();
 
 		/// <summary>
 		/// Visszagörgeti a módosításokat az adatbázison.

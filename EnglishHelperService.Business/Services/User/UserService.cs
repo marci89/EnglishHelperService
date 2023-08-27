@@ -1,6 +1,5 @@
 ﻿using EnglishHelperService.Business.Models;
 using EnglishHelperService.Persistence.UnitOfWork;
-using System.Linq;
 
 namespace EnglishHelperService.Business
 {
@@ -15,34 +14,34 @@ namespace EnglishHelperService.Business
 			_userFactory = userFactory;
 		}
 
-		public async Task<User> ReadUserById(long id)
+		public async Task<User> ReadUserByIdAsync(long id)
 		{
-			var user =await _unitOfWork.UserRepository.ReadById(id);
-			return  _userFactory.Create(user);		
+			var user = await _unitOfWork.UserRepository.ReadByIdAsync(id);
+			return _userFactory.Create(user);
 		}
 
-		public async Task<IEnumerable<User>> ListUser()
+		public async Task<IEnumerable<User>> ListUserAsync()
 		{
-			var users = await _unitOfWork.UserRepository.List();
+			var users = await _unitOfWork.UserRepository.ListAsync();
 			return users.Select(x => _userFactory.Create(x)).ToList();
 		}
 
-		public void Create(CreateUserRequest request)
-		{	
+		public async Task CreateAsync(CreateUserRequest request)
+		{
 			var entityUser = _userFactory.Create(request);
-		    _unitOfWork.UserRepository.Create(entityUser);
-			_unitOfWork.Save();
+			await _unitOfWork.UserRepository.CreateAsync(entityUser);
+			await _unitOfWork.SaveAsync();
 		}
 
-		public void Update(UpdateUserRequest request)
+		public async Task UpdateAsync(UpdateUserRequest request)
 		{
 		}
 
-		public async void Delete(long id)
+		public async Task DeleteAsync(long id)
 		{
-			var user =  await _unitOfWork.UserRepository.ReadById(id);
-			_unitOfWork.UserRepository.Delete(user);
-			_unitOfWork.Save();
+			var user = await _unitOfWork.UserRepository.ReadByIdAsync(id);
+			await _unitOfWork.UserRepository.DeleteAsync(user);
+			await _unitOfWork.SaveAsync();
 		}
 	}
 }

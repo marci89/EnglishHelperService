@@ -12,29 +12,31 @@ namespace EnglishHelperService.Persistence.Repositories
 			_context = context;
 		}
 
-		public async Task<User> ReadById(long id)
+		public async Task<User> ReadByIdAsync(long id)
 		{
 			return await _context.Users.FindAsync(id);
 		}
 
-		public async Task<IEnumerable<User>> List()
+		public async Task<IEnumerable<User>> ListAsync()
 		{
 			return await _context.Users.ToListAsync();
 		}
 
-		public void Create(User user)
+		public async Task CreateAsync(User user)
 		{
-			_context.Users.Add(user);
+			await _context.Users.AddAsync(user);
 		}
 
-		public void Update(User user)
+		public Task UpdateAsync(User user)
 		{
 			_context.Entry(user).State = EntityState.Modified;
+			return Task.CompletedTask;
 		}
 
-		public void Delete(User user)
+		public async Task DeleteAsync(User user)
 		{
 			_context.Users.Remove(user);
+			await Task.CompletedTask;
 		}
 	}
 }
