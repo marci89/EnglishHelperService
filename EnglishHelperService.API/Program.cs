@@ -21,6 +21,7 @@ builder.Services.AddDbContext<DataContext>(options =>
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<UserFactory>();
+builder.Services.AddScoped<PasswordSecurityHandler>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 

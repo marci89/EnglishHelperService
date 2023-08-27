@@ -5,6 +5,12 @@ namespace EnglishHelperService.Business
 {
 	public class UserFactory
 	{
+		private readonly PasswordSecurityHandler _passwordSecurityHandler;
+		public UserFactory(PasswordSecurityHandler passwordSecurityHandler)
+		{
+			_passwordSecurityHandler = passwordSecurityHandler;
+		}
+
 		public Models.User Create(User user)
 		{
 			if (user is null)
@@ -23,12 +29,15 @@ namespace EnglishHelperService.Business
 		{
 			if (request is null)
 				return null;
+			var passwordResult = _passwordSecurityHandler.CreatePassword(request.Password);
 
 			return new User
 			{
 				Username = request.Username,
 				Email = request.Email,
-				Created = DateTime.UtcNow
+				PasswordHash = passwordResult.PasswordHash,
+				PasswordSalt = passwordResult.PasswordSalt,
+				Created = DateTime.UtcNow				
 			};
 		}	
 	}
