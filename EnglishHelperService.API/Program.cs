@@ -1,3 +1,4 @@
+using EnglishHelperService.Business;
 using EnglishHelperService.Persistence;
 using EnglishHelperService.Persistence.Repositories;
 using EnglishHelperService.Persistence.UnitOfWork;
@@ -19,6 +20,8 @@ builder.Services.AddDbContext<DataContext>(options =>
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<UserFactory>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 
 

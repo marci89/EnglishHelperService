@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EnglishHelperService.Persistence.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EnglishHelperService.Persistence.UnitOfWork
 {
-	public class BaseUnitOfWork<TDbContext> : IUnitOfWork where TDbContext : DbContext
+	public class BaseUnitOfWork<TDbContext> : IBaseUnitOfWork where TDbContext : DbContext
 	{
 		private IDbContextTransaction _transaction = null;
 		protected TDbContext dbContext { get; }

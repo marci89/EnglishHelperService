@@ -4,7 +4,7 @@ namespace EnglishHelperService.Persistence.Repositories
 {
 	public interface IUserRepository
 	{
-		Task<User> Read(long id);
+		Task<User> ReadById(long id);
 		Task<IEnumerable<User>> List();
 		void Create(User user);
 		void Update(User user);

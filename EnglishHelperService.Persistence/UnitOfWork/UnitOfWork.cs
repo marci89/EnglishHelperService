@@ -2,7 +2,7 @@
 
 namespace EnglishHelperService.Persistence.UnitOfWork
 {
-	public class UnitOfWork : BaseUnitOfWork<DataContext>
+	public class UnitOfWork : BaseUnitOfWork<DataContext>, IUnitOfWork
 	{
 		public UnitOfWork(
 			DataContext context,
