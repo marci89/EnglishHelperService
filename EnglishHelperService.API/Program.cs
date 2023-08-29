@@ -82,7 +82,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 
-
+builder.Services.AddCors();
 
 
 var app = builder.Build();
@@ -104,6 +104,7 @@ if (db.Database.GetPendingMigrations().Any())
 
 #endregion
 
+app.UseCors(builder => builder.AllowAnyHeader().AllowAnyMethod().WithOrigins("*"));
 
 app.UseAuthentication();
 app.UseAuthorization();
