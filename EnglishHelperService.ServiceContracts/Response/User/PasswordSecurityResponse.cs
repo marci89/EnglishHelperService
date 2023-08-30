@@ -1,4 +1,4 @@
-﻿namespace EnglishHelperService.Business.Models
+﻿namespace EnglishHelperService.ServiceContracts
 {
 	public class PasswordSecurityResponse
 	{

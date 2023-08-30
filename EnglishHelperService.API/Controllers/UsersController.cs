@@ -1,5 +1,5 @@
 ﻿using EnglishHelperService.Business;
-using EnglishHelperService.Business.Models;
+using EnglishHelperService.ServiceContracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;

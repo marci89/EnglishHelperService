@@ -1,5 +1,5 @@
 ﻿using EnglishHelperService.Business;
-using EnglishHelperService.Business.Models;
+using EnglishHelperService.ServiceContracts;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
 
@@ -26,7 +26,7 @@ namespace EnglishHelperService.API.Controllers
 		}
 
 		[HttpPost("login")]
-		public async Task<ActionResult<LoginUserResponse>> Login([FromBody] LoginUserRequest request)
+		public async Task<ActionResult<LoginUser>> Login([FromBody] LoginUserRequest request)
 		{
 			var result = await _userService.Login(request);
 			return Ok(result);

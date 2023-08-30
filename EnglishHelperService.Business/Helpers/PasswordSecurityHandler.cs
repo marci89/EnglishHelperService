@@ -1,4 +1,4 @@
-﻿using EnglishHelperService.Business.Models;
+﻿using EnglishHelperService.ServiceContracts;
 using System.Security.Cryptography;
 using System.Text;
 

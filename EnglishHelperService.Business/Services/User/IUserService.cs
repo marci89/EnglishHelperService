@@ -1,4 +1,4 @@
-﻿using EnglishHelperService.Business.Models;
+﻿using EnglishHelperService.ServiceContracts;
 
 namespace EnglishHelperService.Business
 {
@@ -9,6 +9,6 @@ namespace EnglishHelperService.Business
 		Task CreateAsync(CreateUserRequest user);
 		Task UpdateAsync(UpdateUserRequest user);
 		Task DeleteAsync(long id);
-		Task<LoginUserResponse> Login(LoginUserRequest request);
+		Task<LoginUser> Login(LoginUserRequest request);
 	}
 }

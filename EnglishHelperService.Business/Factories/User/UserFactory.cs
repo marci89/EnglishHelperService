@@ -14,12 +14,12 @@ namespace EnglishHelperService.Business
 			_tokenService = tokenService;
 		}
 
-		public Models.User Create(User user)
+		public ServiceContracts.User Create(User user)
 		{
 			if (user is null)
 				return null;
 
-			return new Models.User
+			return new ServiceContracts.User
 			{
 				Id = user.Id,
 				Username = user.Username,
@@ -28,7 +28,7 @@ namespace EnglishHelperService.Business
 			};
 		}
 
-		public User Create(Models.CreateUserRequest request)
+		public User Create(ServiceContracts.CreateUserRequest request)
 		{
 			if (request is null)
 				return null;
@@ -45,12 +45,12 @@ namespace EnglishHelperService.Business
 			};
 		}
 
-		public Models.LoginUserResponse Create(Models.LoginUserRequest request, User user)
+		public ServiceContracts.LoginUser Create(ServiceContracts.LoginUserRequest request, User user)
 		{
 			if (request is null || user is null)
 				return null;
 
-			return new Models.LoginUserResponse
+			return new ServiceContracts.LoginUser
 			{
 				Username = request.Username,
 				Token = _tokenService.CreateToken(user)

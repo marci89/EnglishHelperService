@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EnglishHelperService.Persistence\EnglishHelperService.Persistence.csproj" />
+    <ProjectReference Include="..\EnglishHelperService.ServiceContracts\EnglishHelperService.ServiceContracts.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,5 @@
-﻿using EnglishHelperService.Business.Models;
-using EnglishHelperService.Persistence.UnitOfWork;
+﻿using EnglishHelperService.Persistence.UnitOfWork;
+using EnglishHelperService.ServiceContracts;
 
 namespace EnglishHelperService.Business
 {
@@ -44,7 +44,7 @@ namespace EnglishHelperService.Business
 			await _unitOfWork.SaveAsync();
 		}
 
-		public async Task<LoginUserResponse> Login(LoginUserRequest request)
+		public async Task<LoginUser> Login(LoginUserRequest request)
 		{
 			var user = await _unitOfWork.UserRepository.ReadByNameAsync(request.Username);
 			return _userFactory.Create(request, user);
