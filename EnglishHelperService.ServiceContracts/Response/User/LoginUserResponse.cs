@@ -1,8 +1,7 @@
 ﻿namespace EnglishHelperService.ServiceContracts
 {
-	public class LoginUserResponse
+	public class LoginUserResponse : ResponseBase
 	{
-		public string Username { get; set; }
-		public string Token { get; set; }
+		public LoginUser Result { get; set; }
 	}
 }

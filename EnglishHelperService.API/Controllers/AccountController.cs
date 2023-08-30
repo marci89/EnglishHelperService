@@ -1,4 +1,5 @@
-﻿using EnglishHelperService.Business;
+﻿using EnglishHelperService.API.Extensions;
+using EnglishHelperService.Business;
 using EnglishHelperService.ServiceContracts;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
@@ -19,10 +20,14 @@ namespace EnglishHelperService.API.Controllers
 		}
 
 		[HttpPost("register")]
-		public async Task<ActionResult> Register([FromBody] CreateUserRequest request)
+		public async Task<IActionResult> Register([FromBody] CreateUserRequest request)
 		{
-			await _userService.CreateAsync(request);
-			return Ok();
+			var response = await _userService.CreateAsync(request);
+			if (response.HasError)
+			{
+				return this.CreateErrorResponse(response);
+			}
+			return StatusCode(201);
 		}
 
 		[HttpPost("login")]

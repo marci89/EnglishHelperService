@@ -6,9 +6,9 @@ namespace EnglishHelperService.Business
 	{
 		Task<User> ReadUserByIdAsync(long id);
 		Task<IEnumerable<User>> ListUserAsync();
-		Task CreateAsync(CreateUserRequest user);
+		Task<CreateUserResponse> CreateAsync(CreateUserRequest user);
 		Task UpdateAsync(UpdateUserRequest user);
 		Task DeleteAsync(long id);
-		Task<LoginUser> Login(LoginUserRequest request);
+		Task<LoginUserResponse> Login(LoginUserRequest request);
 	}
 }

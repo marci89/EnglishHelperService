@@ -1,4 +1,5 @@
-﻿using EnglishHelperService.Persistence.UnitOfWork;
+﻿
+using EnglishHelperService.Persistence.UnitOfWork;
 using EnglishHelperService.ServiceContracts;
 
 namespace EnglishHelperService.Business
@@ -7,11 +8,16 @@ namespace EnglishHelperService.Business
 	{
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly UserFactory _userFactory;
+		private readonly CreateUserValidator _createUserValidator;
 
-		public UserService(IUnitOfWork unitOfWork, UserFactory userFactory)
+		public UserService(
+			IUnitOfWork unitOfWork,
+			UserFactory userFactory,
+			CreateUserValidator createUserValidator)
 		{
 			_unitOfWork = unitOfWork;
 			_userFactory = userFactory;
+			_createUserValidator = createUserValidator;
 		}
 
 		public async Task<User> ReadUserByIdAsync(long id)
@@ -26,15 +32,34 @@ namespace EnglishHelperService.Business
 			return users.Select(x => _userFactory.Create(x)).ToList();
 		}
 
-		public async Task CreateAsync(CreateUserRequest request)
+		public async Task<CreateUserResponse> CreateAsync(CreateUserRequest request)
 		{
-			var entityUser = _userFactory.Create(request);
-			await _unitOfWork.UserRepository.CreateAsync(entityUser);
-			await _unitOfWork.SaveAsync();
+			try
+			{
+				var validationResult = _createUserValidator.IsValid(request);
+				if (!validationResult.HasError)
+				{
+					var entityUser = _userFactory.Create(request);
+					await _unitOfWork.UserRepository.CreateAsync(entityUser);
+					await _unitOfWork.SaveAsync();
+				}
+
+				return validationResult;
+			}
+			catch (Exception ex)
+			{
+				return new CreateUserResponse
+				{
+					StatusCode = StatusCode.INTERNAL_SERVER_ERROR,
+					ErrorMessage = ErrorMessage.SERVER_ERROR
+				};
+			}
+
 		}
 
 		public async Task UpdateAsync(UpdateUserRequest request)
 		{
+
 		}
 
 		public async Task DeleteAsync(long id)
@@ -44,10 +69,14 @@ namespace EnglishHelperService.Business
 			await _unitOfWork.SaveAsync();
 		}
 
-		public async Task<LoginUser> Login(LoginUserRequest request)
+		public async Task<LoginUserResponse> Login(LoginUserRequest request)
 		{
-			var user = await _unitOfWork.UserRepository.ReadByNameAsync(request.Username);
-			return _userFactory.Create(request, user);
+			var dbUser = await _unitOfWork.UserRepository.ReadByNameAsync(request.Username);
+			var user = _userFactory.Create(request, dbUser);
+			return await Task.FromResult(new LoginUserResponse
+			{
+				Result = user,
+			});
 		}
 	}
 }
