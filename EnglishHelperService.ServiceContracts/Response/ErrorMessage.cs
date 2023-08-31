@@ -2,16 +2,17 @@
 {
 	public enum ErrorMessage
 	{
-		INVALID_REQUEST,
-		SERVER_ERROR,
+		InvalidRequest,
+		ServerError,
 
-		INVALID_PASSWORD_OR_USERNAME,
-		USERNAME_REQUIRED,
-		USERNAME_EXISTS,
-		PASSWORD_REQUIRED,
-		INVALID_PASSWORD_LENGTH,
-		EMAIL_REQUIRED,
-		EMAIL_EXISTS,
-		INVALID_EMAILFORMAT,
+		InvalidPasswordOrUsername,
+		UsernameRequired,
+		UsernameMaxLength,
+		UsernameExists,
+		PasswordRequired,
+		InvalidPasswordFormat,
+		EmailRequired,
+		EmailExists,
+		InvalidEmailFormat
 	}
 }

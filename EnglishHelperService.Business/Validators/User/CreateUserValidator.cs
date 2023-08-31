@@ -5,7 +5,7 @@ namespace EnglishHelperService.Business
 	/// <summary>
 	/// Validating user create request
 	/// </summary>
-	public class CreateUserValidator
+	public class CreateUserValidator : BaseValidator<CreateUserResponse>
 	{
 
 		/// <summary>
@@ -15,36 +15,24 @@ namespace EnglishHelperService.Business
 		{
 
 			if (request is null)
-				return new CreateUserResponse
-				{
-					StatusCode = StatusCode.BAD_REQUEST,
-					ErrorMessage = ErrorMessage.INVALID_REQUEST
-				};
+				return CreateErrorResponse(ErrorMessage.InvalidRequest);
 
 			if (String.IsNullOrEmpty(request.Username))
-				return new CreateUserResponse
-				{
-					StatusCode = StatusCode.BAD_REQUEST,
-					ErrorMessage = ErrorMessage.USERNAME_REQUIRED
-				};
+				return CreateErrorResponse(ErrorMessage.UsernameRequired);
+
+			if (request.Username.Length > 50)
+				return CreateErrorResponse(ErrorMessage.UsernameMaxLength);
 
 			if (String.IsNullOrEmpty(request.Password))
-				return new CreateUserResponse
-				{
-					StatusCode = StatusCode.BAD_REQUEST,
-					ErrorMessage = ErrorMessage.PASSWORD_REQUIRED
-				};
+				return CreateErrorResponse(ErrorMessage.PasswordRequired);
+
 
 			if (String.IsNullOrEmpty(request.Email))
-				return new CreateUserResponse
-				{
-					StatusCode = StatusCode.BAD_REQUEST,
-					ErrorMessage = ErrorMessage.EMAIL_REQUIRED
-				};
+				return CreateErrorResponse(ErrorMessage.EmailRequired);
 
 			return new CreateUserResponse
 			{
-				StatusCode = StatusCode.CREATED,
+				StatusCode = StatusCode.Created,
 			};
 		}
 	}

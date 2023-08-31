@@ -2,12 +2,12 @@
 {
 	public enum StatusCode
 	{
-		OK = 200,
-		CREATED = 201,
+		Ok = 200,
+		Created = 201,
 
-		BAD_REQUEST = 400,
-		UNAUTHORIZED = 401,
-		NOT_FOUND = 403,
-		INTERNAL_SERVER_ERROR = 500,
+		BadRequest = 400,
+		Unauthorized = 401,
+		NotFound = 403,
+		InternalServerError = 500
 	}
 }

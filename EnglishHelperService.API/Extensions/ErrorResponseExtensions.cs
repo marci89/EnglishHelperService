@@ -9,14 +9,13 @@ namespace EnglishHelperService.API.Extensions
 		{
 			switch (response.StatusCode)
 			{
-				case StatusCode.BAD_REQUEST:
+				case StatusCode.BadRequest:
 					return controller.BadRequest(response.ErrorMessage.ToString());
-				case StatusCode.UNAUTHORIZED:
+				case StatusCode.Unauthorized:
 					return controller.Unauthorized(response.ErrorMessage.ToString());
-				case StatusCode.NOT_FOUND:
+				case StatusCode.NotFound:
 					return controller.NotFound(response.ErrorMessage.ToString());
-				case StatusCode.INTERNAL_SERVER_ERROR:
-
+				case StatusCode.InternalServerError:
 					return controller.StatusCode(500, response.ErrorMessage.ToString());
 				default:
 					return controller.BadRequest(response.ErrorMessage.ToString());

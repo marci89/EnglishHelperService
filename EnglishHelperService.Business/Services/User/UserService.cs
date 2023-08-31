@@ -50,8 +50,8 @@ namespace EnglishHelperService.Business
 			{
 				return new CreateUserResponse
 				{
-					StatusCode = StatusCode.INTERNAL_SERVER_ERROR,
-					ErrorMessage = ErrorMessage.SERVER_ERROR
+					StatusCode = StatusCode.InternalServerError,
+					ErrorMessage = ErrorMessage.ServerError
 				};
 			}
 
