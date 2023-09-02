@@ -1,4 +1,5 @@
 ﻿using EnglishHelperService.Persistence.Entities;
+using EnglishHelperService.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -33,7 +34,7 @@ namespace EnglishHelperService.Persistence
 				   .HasMaxLength(50);
 
 			builder.HasIndex(u => u.Username)
-			       .IsUnique(true);
+				   .IsUnique(true);
 
 
 			builder.Property(u => u.PasswordHash)
@@ -55,6 +56,8 @@ namespace EnglishHelperService.Persistence
 
 			builder.Property(u => u.LastActive)
 				   .HasDefaultValue(DateTime.UtcNow);
+
+			builder.Seed();
 		}
 	}
 }
