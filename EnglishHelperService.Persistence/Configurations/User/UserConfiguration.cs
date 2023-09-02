@@ -57,7 +57,7 @@ namespace EnglishHelperService.Persistence
 			builder.Property(u => u.LastActive)
 				   .HasDefaultValue(DateTime.UtcNow);
 
-			builder.Seed();
+			builder.HasData(EntitySeedDataExtensions.GetPasswordHashSaltUsersSeedData());
 		}
 	}
 }

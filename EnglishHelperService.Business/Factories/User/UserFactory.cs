@@ -26,7 +26,7 @@ namespace EnglishHelperService.Business
 				Username = user.Username,
 				Email = user.Email,
 				Created = user.Created,
-				LastActive = user.LastActive,			
+				LastActive = user.LastActive,
 			};
 		}
 
@@ -52,6 +52,14 @@ namespace EnglishHelperService.Business
 		public ServiceContracts.LoginUser Create(ServiceContracts.LoginUserRequest request, User user)
 		{
 			if (request is null || user is null)
+				return null;
+
+			if (!_passwordSecurityHandler.IsValidPassword(new ServiceContracts.PasswordSecurityRequest
+			{
+				Password = request.Password,
+				PasswordHash = user.PasswordHash,
+				PasswordSalt = user.PasswordSalt
+			}))
 				return null;
 
 			return new ServiceContracts.LoginUser
