@@ -1,5 +1,4 @@
 ﻿using EnglishHelperService.Persistence.Entities;
-using EnglishHelperService.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -57,7 +56,6 @@ namespace EnglishHelperService.Persistence
 			builder.Property(u => u.LastActive)
 				   .HasDefaultValue(DateTime.UtcNow);
 
-			builder.HasData(EntitySeedDataExtensions.GetPasswordHashSaltUsersSeedData());
 		}
 	}
 }

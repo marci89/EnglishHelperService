@@ -10,6 +10,7 @@
 		public byte[] PasswordSalt { get; set; }
 		public DateTime Created { get; set; }
 		public DateTime LastActive { get; set; }
+		public ICollection<Word> Words { get; set; }
 
 	}
 }

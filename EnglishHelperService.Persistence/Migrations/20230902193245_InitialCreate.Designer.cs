@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EnglishHelperService.Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230902163748_InitialCreate")]
+    [Migration("20230902193245_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -35,7 +35,7 @@ namespace EnglishHelperService.Persistence.Migrations
                     b.Property<DateTime>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2023, 9, 2, 16, 37, 48, 31, DateTimeKind.Utc).AddTicks(5131));
+                        .HasDefaultValue(new DateTime(2023, 9, 2, 19, 32, 45, 848, DateTimeKind.Utc).AddTicks(730));
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -45,7 +45,7 @@ namespace EnglishHelperService.Persistence.Migrations
                     b.Property<DateTime>("LastActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2023, 9, 2, 16, 37, 48, 31, DateTimeKind.Utc).AddTicks(5321));
+                        .HasDefaultValue(new DateTime(2023, 9, 2, 19, 32, 45, 848, DateTimeKind.Utc).AddTicks(925));
 
                     b.Property<byte[]>("PasswordHash")
                         .IsRequired()
@@ -75,19 +75,65 @@ namespace EnglishHelperService.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("User", (string)null);
+                });
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1L,
-                            Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "admin@example.com",
-                            LastActive = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PasswordHash = new byte[] { 122, 228, 210, 115, 80, 255, 174, 216, 176, 54, 164, 214, 196, 236, 75, 140, 248, 191, 59, 104, 244, 143, 232, 30, 82, 69, 82, 12, 103, 54, 196, 175, 105, 96, 214, 28, 243, 58, 146, 75, 211, 37, 165, 134, 88, 56, 79, 51, 183, 214, 43, 237, 52, 128, 175, 222, 13, 0, 167, 157, 216, 20, 24, 89 },
-                            PasswordSalt = new byte[] { 21, 102, 213, 180, 254, 141, 20, 184, 82, 176, 184, 80, 199, 255, 129, 34, 76, 247, 214, 82, 105, 99, 174, 87, 226, 221, 214, 24, 143, 220, 188, 74, 44, 9, 76, 146, 129, 218, 161, 39, 134, 35, 149, 216, 35, 120, 130, 69, 189, 188, 193, 5, 73, 164, 241, 89, 135, 230, 136, 56, 4, 235, 183, 208, 200, 191, 91, 73, 152, 197, 62, 126, 18, 188, 68, 230, 80, 193, 250, 142, 59, 61, 123, 25, 93, 54, 46, 26, 245, 134, 55, 75, 30, 218, 226, 158, 126, 7, 216, 10, 0, 130, 237, 51, 187, 141, 240, 223, 186, 238, 15, 98, 230, 129, 4, 154, 19, 102, 140, 134, 18, 223, 58, 59, 151, 23, 122, 188 },
-                            Role = "Admin",
-                            Username = "admin"
-                        });
+            modelBuilder.Entity("EnglishHelperService.Persistence.Entities.Word", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
+
+                    b.Property<int>("CorrectCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Created")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValue(new DateTime(2023, 9, 2, 19, 32, 45, 848, DateTimeKind.Utc).AddTicks(1545));
+
+                    b.Property<string>("EnglishText")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("HungarianText")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<int>("IncorrectCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("LastUse")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Word", (string)null);
+                });
+
+            modelBuilder.Entity("EnglishHelperService.Persistence.Entities.Word", b =>
+                {
+                    b.HasOne("EnglishHelperService.Persistence.Entities.User", "User")
+                        .WithMany("Words")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_Word_UserID");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("EnglishHelperService.Persistence.Entities.User", b =>
+                {
+                    b.Navigation("Words");
                 });
 #pragma warning restore 612, 618
         }
