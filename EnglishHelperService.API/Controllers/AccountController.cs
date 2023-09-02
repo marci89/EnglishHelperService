@@ -31,12 +31,14 @@ namespace EnglishHelperService.API.Controllers
 		}
 
 		[HttpPost("login")]
-		public async Task<ActionResult<LoginUser>> Login([FromBody] LoginUserRequest request)
+		public async Task<IActionResult> Login([FromBody] LoginUserRequest request)
 		{
-			var result = await _userService.Login(request);
-			return Ok(result);
+			var response = await _userService.Login(request);
+			if (response.HasError)
+			{
+				return this.CreateErrorResponse(response);
+			}
+			return Ok(response.Result);	
 		}
-
 	}
-
 }

@@ -30,10 +30,10 @@ namespace EnglishHelperService.Persistence
 
 			builder.Property(u => u.Username)
 				   .IsRequired()
-				   .HasMaxLength(100);
+				   .HasMaxLength(50);
 
 			builder.HasIndex(u => u.Username)
-			   .IsUnique(true);
+			       .IsUnique(true);
 
 
 			builder.Property(u => u.PasswordHash)
@@ -50,10 +50,11 @@ namespace EnglishHelperService.Persistence
 				   .IsUnique(true);
 
 			builder.Property(u => u.Created)
+				   .HasDefaultValue(DateTime.UtcNow)
 				   .IsRequired();
 
-			builder.Property(u => u.LastActive);
-
+			builder.Property(u => u.LastActive)
+				   .HasDefaultValue(DateTime.UtcNow);
 		}
 	}
 }

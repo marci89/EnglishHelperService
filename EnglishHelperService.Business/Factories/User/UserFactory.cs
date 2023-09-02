@@ -26,6 +26,7 @@ namespace EnglishHelperService.Business
 				Username = user.Username,
 				Email = user.Email,
 				Created = user.Created,
+				LastActive = user.LastActive,			
 			};
 		}
 
@@ -43,7 +44,8 @@ namespace EnglishHelperService.Business
 				Email = request.Email,
 				PasswordHash = passwordResult.PasswordHash,
 				PasswordSalt = passwordResult.PasswordSalt,
-				Created = DateTime.UtcNow
+				Created = DateTime.UtcNow,
+				LastActive = DateTime.UtcNow
 			};
 		}
 

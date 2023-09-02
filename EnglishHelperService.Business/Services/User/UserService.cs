@@ -9,15 +9,56 @@ namespace EnglishHelperService.Business
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly UserFactory _userFactory;
 		private readonly CreateUserValidator _createUserValidator;
+		private readonly LoginUserValidator _loginUserValidator;
 
 		public UserService(
 			IUnitOfWork unitOfWork,
 			UserFactory userFactory,
-			CreateUserValidator createUserValidator)
+			CreateUserValidator createUserValidator,
+			LoginUserValidator loginUserValidator
+			)
 		{
 			_unitOfWork = unitOfWork;
 			_userFactory = userFactory;
 			_createUserValidator = createUserValidator;
+			_loginUserValidator = loginUserValidator;
+		}
+
+		public async Task<LoginUserResponse> Login(LoginUserRequest request)
+		{
+			try
+			{
+				var validationResult = _loginUserValidator.IsValid(request);
+				if (!validationResult.HasError)
+				{
+					var entityUser = await _unitOfWork.UserRepository.ReadByNameAsync(request.Username);
+					var user = _userFactory.Create(request, entityUser);
+					if (user != null)
+					{
+						return new LoginUserResponse
+						{
+							StatusCode = StatusCode.Ok,
+							Result = user
+						};
+					}
+
+					return new LoginUserResponse
+					{
+						StatusCode = StatusCode.Unauthorized,
+						ErrorMessage = ErrorMessage.InvalidPasswordOrUsername
+					};
+				}
+
+				return validationResult;
+			}
+			catch (Exception ex)
+			{
+				return new LoginUserResponse
+				{
+					StatusCode = StatusCode.InternalServerError,
+					ErrorMessage = ErrorMessage.ServerError
+				};
+			}
 		}
 
 		public async Task<User> ReadUserByIdAsync(long id)
@@ -67,16 +108,6 @@ namespace EnglishHelperService.Business
 			var user = await _unitOfWork.UserRepository.ReadByIdAsync(id);
 			await _unitOfWork.UserRepository.DeleteAsync(user);
 			await _unitOfWork.SaveAsync();
-		}
-
-		public async Task<LoginUserResponse> Login(LoginUserRequest request)
-		{
-			var dbUser = await _unitOfWork.UserRepository.ReadByNameAsync(request.Username);
-			var user = _userFactory.Create(request, dbUser);
-			return await Task.FromResult(new LoginUserResponse
-			{
-				Result = user,
-			});
 		}
 	}
 }
