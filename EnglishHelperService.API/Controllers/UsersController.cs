@@ -19,6 +19,7 @@ namespace EnglishHelperService.API.Controllers
 			_userService = userService;
 		}
 
+		[Authorize(Roles = "Admin")]
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<User>>> GetUsersAsync()
 		{

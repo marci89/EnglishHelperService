@@ -22,6 +22,7 @@ namespace EnglishHelperService.Business
 			return new ServiceContracts.User
 			{
 				Id = user.Id,
+				Role = Create(user.Role),
 				Username = user.Username,
 				Email = user.Email,
 				Created = user.Created,
@@ -37,6 +38,7 @@ namespace EnglishHelperService.Business
 
 			return new User
 			{
+				Role = RoleType.Member,
 				Username = request.Username,
 				Email = request.Email,
 				PasswordHash = passwordResult.PasswordHash,
@@ -53,8 +55,23 @@ namespace EnglishHelperService.Business
 			return new ServiceContracts.LoginUser
 			{
 				Username = request.Username,
+				Role = Create(user.Role),
 				Token = _tokenService.CreateToken(user)
 			};
 		}
+
+		public ServiceContracts.RoleType Create(RoleType roleType)
+		{
+			switch (roleType)
+			{
+				case RoleType.Admin:
+					return ServiceContracts.RoleType.Admin;
+				case RoleType.Member:
+					return ServiceContracts.RoleType.Member;
+				default:
+					throw new ArgumentException("Invalid role type.");
+			}
+		}
+
 	}
 }

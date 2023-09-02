@@ -1,6 +1,7 @@
 ﻿using EnglishHelperService.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EnglishHelperService.Persistence
 {
@@ -21,6 +22,11 @@ namespace EnglishHelperService.Persistence
 			builder.Property(u => u.Id)
 				  .ValueGeneratedOnAdd()
 				  .IsRequired();
+
+			builder.Property(u => u.Role)
+		   .IsRequired()
+		   .HasDefaultValue(RoleType.Member)
+		   .HasConversion(new EnumToStringConverter<RoleType>());
 
 			builder.Property(u => u.Username)
 				   .IsRequired()
@@ -45,6 +51,8 @@ namespace EnglishHelperService.Persistence
 
 			builder.Property(u => u.Created)
 				   .IsRequired();
+
+			builder.Property(u => u.LastActive);
 
 		}
 	}

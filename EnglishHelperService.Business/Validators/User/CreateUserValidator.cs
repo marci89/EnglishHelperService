@@ -17,17 +17,19 @@ namespace EnglishHelperService.Business
 			if (request is null)
 				return CreateErrorResponse(ErrorMessage.InvalidRequest);
 
-			if (String.IsNullOrEmpty(request.Username))
+			if (String.IsNullOrWhiteSpace(request.Username))
 				return CreateErrorResponse(ErrorMessage.UsernameRequired);
 
 			if (request.Username.Length > 50)
 				return CreateErrorResponse(ErrorMessage.UsernameMaxLength);
 
-			if (String.IsNullOrEmpty(request.Password))
+			if (String.IsNullOrWhiteSpace(request.Password))
 				return CreateErrorResponse(ErrorMessage.PasswordRequired);
 
+			if (request.Password.Length < 4)
+				return CreateErrorResponse(ErrorMessage.InvalidPasswordFormat);
 
-			if (String.IsNullOrEmpty(request.Email))
+			if (String.IsNullOrWhiteSpace(request.Email))
 				return CreateErrorResponse(ErrorMessage.EmailRequired);
 
 			return new CreateUserResponse
