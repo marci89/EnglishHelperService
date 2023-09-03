@@ -28,8 +28,4 @@
     <EmbeddedResource Include="InitialData\User.json" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Common\Repository\Interfaces\" />
-  </ItemGroup>
-
 </Project>
