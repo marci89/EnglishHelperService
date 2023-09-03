@@ -1,7 +1,7 @@
 using EnglishHelperService.Business;
 using EnglishHelperService.Persistence;
+using EnglishHelperService.Persistence.Common;
 using EnglishHelperService.Persistence.Repositories;
-using EnglishHelperService.Persistence.UnitOfWork;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;

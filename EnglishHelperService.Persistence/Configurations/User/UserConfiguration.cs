@@ -1,5 +1,5 @@
-﻿using EnglishHelperService.Persistence.Entities;
-using EnglishHelperService.Persistence.Extensions;
+﻿using EnglishHelperService.Persistence.Common;
+using EnglishHelperService.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;

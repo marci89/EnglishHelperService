@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace EnglishHelperService.Persistence.UnitOfWork
+namespace EnglishHelperService.Persistence.Common
 {
 	public class BaseUnitOfWork<TDbContext> : IBaseUnitOfWork where TDbContext : DbContext
 	{

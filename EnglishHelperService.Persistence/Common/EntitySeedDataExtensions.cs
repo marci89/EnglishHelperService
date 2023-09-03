@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using System.Reflection;
 
-namespace EnglishHelperService.Persistence.Extensions
+namespace EnglishHelperService.Persistence.Common
 {
 	public static class EntitySeedDataExtensions
 	{

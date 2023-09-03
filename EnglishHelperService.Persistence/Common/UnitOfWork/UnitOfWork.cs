@@ -1,6 +1,6 @@
 ﻿using EnglishHelperService.Persistence.Repositories;
 
-namespace EnglishHelperService.Persistence.UnitOfWork
+namespace EnglishHelperService.Persistence.Common
 {
 	public class UnitOfWork : BaseUnitOfWork<DataContext>, IUnitOfWork
 	{
