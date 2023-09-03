@@ -1,4 +1,5 @@
 ﻿using EnglishHelperService.Persistence.Entities;
+using EnglishHelperService.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -51,7 +52,10 @@ namespace EnglishHelperService.Persistence
 				   .IsRequired();
 
 			builder.Property(u => u.LastActive)
-				   .HasDefaultValue(DateTime.UtcNow);
+				   .HasDefaultValue(DateTime.UtcNow)
+				   .IsRequired();
+
+			builder.Seed();
 
 		}
 	}

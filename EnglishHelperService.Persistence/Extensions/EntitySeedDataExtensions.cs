@@ -14,7 +14,7 @@ namespace EnglishHelperService.Persistence.Extensions
 		/// <param name="builder"></param>
 		/// <param name="seedDataContainer">Az az assembly, amely az seed adatokat tartalmazza (alapértelmezetten a hívó metódus assembly-je)</param>
 		public static void Seed<TEntity>(this EntityTypeBuilder<TEntity> builder, Assembly seedDataContainer = null)
-			where TEntity : class, new()
+				where TEntity : class, new()
 		{
 			var entityName = typeof(TEntity).Name;
 

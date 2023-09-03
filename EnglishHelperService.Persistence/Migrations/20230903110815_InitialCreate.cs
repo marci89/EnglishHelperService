@@ -19,8 +19,8 @@ namespace EnglishHelperService.Persistence.Migrations
                     Email = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
                     Role = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: "Member"),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 9, 3, 7, 55, 20, 668, DateTimeKind.Utc).AddTicks(6207)),
-                    LastActive = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 9, 3, 7, 55, 20, 668, DateTimeKind.Utc).AddTicks(6379))
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 9, 3, 11, 8, 15, 418, DateTimeKind.Utc).AddTicks(3478)),
+                    LastActive = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 9, 3, 11, 8, 15, 418, DateTimeKind.Utc).AddTicks(3592))
                 },
                 constraints: table =>
                 {
@@ -38,7 +38,7 @@ namespace EnglishHelperService.Persistence.Migrations
                     HungarianText = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
                     CorrectCount = table.Column<int>(type: "int", nullable: false),
                     IncorrectCount = table.Column<int>(type: "int", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 9, 3, 7, 55, 20, 668, DateTimeKind.Utc).AddTicks(7072)),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 9, 3, 11, 8, 15, 418, DateTimeKind.Utc).AddTicks(6745)),
                     LastUse = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
@@ -50,6 +50,11 @@ namespace EnglishHelperService.Persistence.Migrations
                         principalTable: "User",
                         principalColumn: "Id");
                 });
+
+            migrationBuilder.InsertData(
+                table: "User",
+                columns: new[] { "Id", "Email", "Password", "Role", "Username" },
+                values: new object[] { 1L, "admin@example.com", "$2a$11$RWyTguQbVXULKL/cNTEPXuzWEHiyt/37iti6hPOUFbgUQ/qir7YHS", "Admin", "kismarczi-admin" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_User_Email",

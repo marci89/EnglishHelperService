@@ -33,7 +33,7 @@ namespace EnglishHelperService.Persistence.Migrations
                     b.Property<DateTime>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2023, 9, 3, 7, 55, 20, 668, DateTimeKind.Utc).AddTicks(6207));
+                        .HasDefaultValue(new DateTime(2023, 9, 3, 11, 8, 15, 418, DateTimeKind.Utc).AddTicks(3478));
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -43,7 +43,7 @@ namespace EnglishHelperService.Persistence.Migrations
                     b.Property<DateTime>("LastActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2023, 9, 3, 7, 55, 20, 668, DateTimeKind.Utc).AddTicks(6379));
+                        .HasDefaultValue(new DateTime(2023, 9, 3, 11, 8, 15, 418, DateTimeKind.Utc).AddTicks(3592));
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -69,6 +69,18 @@ namespace EnglishHelperService.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("User", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            Created = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "admin@example.com",
+                            LastActive = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Password = "$2a$11$RWyTguQbVXULKL/cNTEPXuzWEHiyt/37iti6hPOUFbgUQ/qir7YHS",
+                            Role = "Admin",
+                            Username = "kismarczi-admin"
+                        });
                 });
 
             modelBuilder.Entity("EnglishHelperService.Persistence.Entities.Word", b =>
@@ -85,7 +97,7 @@ namespace EnglishHelperService.Persistence.Migrations
                     b.Property<DateTime>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2023, 9, 3, 7, 55, 20, 668, DateTimeKind.Utc).AddTicks(7072));
+                        .HasDefaultValue(new DateTime(2023, 9, 3, 11, 8, 15, 418, DateTimeKind.Utc).AddTicks(6745));
 
                     b.Property<string>("EnglishText")
                         .IsRequired()
