@@ -18,10 +18,9 @@ namespace EnglishHelperService.Persistence.Migrations
                     Username = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
                     Role = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: "Member"),
-                    PasswordHash = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
-                    PasswordSalt = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 9, 2, 19, 32, 45, 848, DateTimeKind.Utc).AddTicks(730)),
-                    LastActive = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 9, 2, 19, 32, 45, 848, DateTimeKind.Utc).AddTicks(925))
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 9, 3, 7, 55, 20, 668, DateTimeKind.Utc).AddTicks(6207)),
+                    LastActive = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 9, 3, 7, 55, 20, 668, DateTimeKind.Utc).AddTicks(6379))
                 },
                 constraints: table =>
                 {
@@ -39,7 +38,7 @@ namespace EnglishHelperService.Persistence.Migrations
                     HungarianText = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
                     CorrectCount = table.Column<int>(type: "int", nullable: false),
                     IncorrectCount = table.Column<int>(type: "int", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 9, 2, 19, 32, 45, 848, DateTimeKind.Utc).AddTicks(1545)),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2023, 9, 3, 7, 55, 20, 668, DateTimeKind.Utc).AddTicks(7072)),
                     LastUse = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>

@@ -33,7 +33,7 @@ namespace EnglishHelperService.Persistence.Migrations
                     b.Property<DateTime>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2023, 9, 2, 19, 32, 45, 848, DateTimeKind.Utc).AddTicks(730));
+                        .HasDefaultValue(new DateTime(2023, 9, 3, 7, 55, 20, 668, DateTimeKind.Utc).AddTicks(6207));
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -43,15 +43,11 @@ namespace EnglishHelperService.Persistence.Migrations
                     b.Property<DateTime>("LastActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2023, 9, 2, 19, 32, 45, 848, DateTimeKind.Utc).AddTicks(925));
+                        .HasDefaultValue(new DateTime(2023, 9, 3, 7, 55, 20, 668, DateTimeKind.Utc).AddTicks(6379));
 
-                    b.Property<byte[]>("PasswordHash")
+                    b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<byte[]>("PasswordSalt")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Role")
                         .IsRequired()
@@ -89,7 +85,7 @@ namespace EnglishHelperService.Persistence.Migrations
                     b.Property<DateTime>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2023, 9, 2, 19, 32, 45, 848, DateTimeKind.Utc).AddTicks(1545));
+                        .HasDefaultValue(new DateTime(2023, 9, 3, 7, 55, 20, 668, DateTimeKind.Utc).AddTicks(7072));
 
                     b.Property<string>("EnglishText")
                         .IsRequired()

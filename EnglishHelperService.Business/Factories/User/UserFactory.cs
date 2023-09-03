@@ -35,15 +35,12 @@ namespace EnglishHelperService.Business
 			if (request is null)
 				return null;
 
-			var passwordResult = _passwordSecurityHandler.CreatePassword(request.Password);
-
 			return new User
 			{
 				Role = RoleType.Member,
 				Username = request.Username,
 				Email = request.Email,
-				PasswordHash = passwordResult.PasswordHash,
-				PasswordSalt = passwordResult.PasswordSalt,
+				Password = _passwordSecurityHandler.HashPassword(request.Password),
 				Created = DateTime.UtcNow,
 				LastActive = DateTime.UtcNow
 			};
@@ -54,11 +51,10 @@ namespace EnglishHelperService.Business
 			if (request is null || user is null)
 				return null;
 
-			if (!_passwordSecurityHandler.IsValidPassword(new ServiceContracts.PasswordSecurityRequest
+			if (!_passwordSecurityHandler.VerifyPassword(new ServiceContracts.PasswordSecurityRequest
 			{
 				Password = request.Password,
-				PasswordHash = user.PasswordHash,
-				PasswordSalt = user.PasswordSalt
+				HashedPassword = user.Password
 			}))
 				return null;
 

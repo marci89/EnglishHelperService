@@ -36,10 +36,7 @@ namespace EnglishHelperService.Persistence
 				   .IsUnique(true);
 
 
-			builder.Property(u => u.PasswordHash)
-				   .IsRequired();
-
-			builder.Property(u => u.PasswordSalt)
+			builder.Property(u => u.Password)
 				   .IsRequired();
 
 			builder.Property(u => u.Email)

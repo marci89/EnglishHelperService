@@ -1,32 +1,19 @@
 ﻿using EnglishHelperService.ServiceContracts;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace EnglishHelperService.Business
 {
 	public class PasswordSecurityHandler
 	{
-		public PasswordSecurityResponse CreatePassword(string password)
+		public string HashPassword(string password)
 		{
-			using var hmac = new HMACSHA512();
-			return new PasswordSecurityResponse
-			{
-				PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password)),
-				PasswordSalt = hmac.Key
-			};
+			// Hash the password using BCrypt and generate a new salt.
+			return BCrypt.Net.BCrypt.HashPassword(password);
 		}
 
-		public bool IsValidPassword(PasswordSecurityRequest request)
+		public bool VerifyPassword(PasswordSecurityRequest request)
 		{
-			using var hmac = new HMACSHA512(request.PasswordSalt);
-
-			var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(request.Password));
-
-			for (int i = 0; i < computedHash.Length; i++)
-			{
-				if (computedHash[i] != request.PasswordHash[i]) return false;
-			}
-			return true;
+			// Verify the entered password against the stored hashed password.
+			return BCrypt.Net.BCrypt.Verify(request.Password, request.HashedPassword);
 		}
 	}
 }
