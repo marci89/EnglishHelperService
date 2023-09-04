@@ -5,7 +5,7 @@ namespace EnglishHelperService.Business
 	public interface IUserService
 	{
 		Task<User> ReadUserById(long id);
-		Task<IEnumerable<User>> ListUser();
+		Task<ListUserResponse> ListUser(PaginationRequest request);
 		Task<CreateUserResponse> Create(CreateUserRequest user);
 		Task Update(UpdateUserRequest user);
 		Task Delete(long id);

@@ -1,4 +1,5 @@
-﻿using EnglishHelperService.Business;
+﻿using EnglishHelperService.API.Extensions;
+using EnglishHelperService.Business;
 using EnglishHelperService.ServiceContracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,10 +22,14 @@ namespace EnglishHelperService.API.Controllers
 
 		[Authorize(Roles = "Admin")]
 		[HttpGet]
-		public async Task<ActionResult<IEnumerable<User>>> ListUser()
+		public async Task<IActionResult> ListUser([FromQuery] PaginationRequest request)
 		{
-			var users = await _userService.ListUser();
-			return Ok(users);
+			var response = await _userService.ListUser(request);
+			if (response.HasError)
+			{
+				return this.CreateErrorResponse(response);
+			}
+			return Ok(response.Result);
 		}
 
 		[HttpGet("{id}")]

@@ -69,10 +69,35 @@ namespace EnglishHelperService.Business
 			return _userFactory.Create(user);
 		}
 
-		public async Task<IEnumerable<User>> ListUser()
+		public async Task<ListUserResponse> ListUser(PaginationRequest request)
 		{
-			var users = _unitOfWork.UserRepository.Query();
-			return users.Select(x => _userFactory.Create(x)).ToList();
+			try
+			{
+				long totalCount;
+
+				var query = _unitOfWork.UserRepository.PagedQuery(
+					request.PageNumber,
+					request.PageSize,
+					out totalCount
+				);
+
+				var users = query.Select(u => _userFactory.Create(u)).ToList();
+				var result = new PagedList<User>(users, totalCount, request.PageNumber, request.PageSize);
+
+				return new ListUserResponse
+				{
+					StatusCode = StatusCode.Ok,
+					Result = result
+				};
+			}
+			catch (Exception ex)
+			{
+				return new ListUserResponse
+				{
+					StatusCode = StatusCode.InternalServerError,
+					ErrorMessage = ErrorMessage.ServerError
+				};
+			}
 		}
 
 		public async Task<CreateUserResponse> Create(CreateUserRequest request)
