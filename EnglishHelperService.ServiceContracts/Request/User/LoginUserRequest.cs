@@ -2,7 +2,10 @@
 {
 	public class LoginUserRequest
 	{
-		public string Username { get; set; }
+		/// <summary>
+		/// It could be email or username
+		/// </summary>
+		public string Identifier { get; set; }
 		public string Password { get; set; }
 	}
 }

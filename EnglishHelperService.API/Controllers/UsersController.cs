@@ -21,30 +21,30 @@ namespace EnglishHelperService.API.Controllers
 
 		[Authorize(Roles = "Admin")]
 		[HttpGet]
-		public async Task<ActionResult<IEnumerable<User>>> GetUsersAsync()
+		public async Task<ActionResult<IEnumerable<User>>> ListUser()
 		{
-			var users = await _userService.ListUserAsync();
+			var users = await _userService.ListUser();
 			return Ok(users);
 		}
 
 		[HttpGet("{id}")]
-		public async Task<ActionResult<User>> GetUserByIdAsync(long id)
+		public async Task<ActionResult<User>> GetUserById(long id)
 		{
-			var user = await _userService.ReadUserByIdAsync(id);
+			var user = await _userService.ReadUserById(id);
 			return Ok(user);
 		}
 
 		[HttpPut]
-		public async Task<ActionResult> UpdateUserAsync([FromBody] UpdateUserRequest request)
+		public async Task<ActionResult> UpdateUser([FromBody] UpdateUserRequest request)
 		{
-			await _userService.UpdateAsync(request);
+			await _userService.Update(request);
 			return Ok();
 		}
 
 		[HttpDelete("{id}")]
-		public async Task<ActionResult> DeleteUserAsync(long id)
+		public async Task<ActionResult> DeleteUser(long id)
 		{
-			await _userService.DeleteAsync(id);
+			await _userService.Delete(id);
 			return Ok();
 		}
 	}

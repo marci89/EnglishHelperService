@@ -31,7 +31,9 @@ namespace EnglishHelperService.Business
 				var validationResult = _loginUserValidator.IsValid(request);
 				if (!validationResult.HasError)
 				{
-					var entityUser = await _unitOfWork.UserRepository.ReadByNameAsync(request.Username);
+					var entityUser = await _unitOfWork.UserRepository.ReadAsync(u => u.Username == request.Identifier
+					|| u.Email == request.Identifier);
+
 					var user = _userFactory.Create(request, entityUser);
 					if (user != null)
 					{
@@ -45,7 +47,7 @@ namespace EnglishHelperService.Business
 					return new LoginUserResponse
 					{
 						StatusCode = StatusCode.Unauthorized,
-						ErrorMessage = ErrorMessage.InvalidPasswordOrUsername
+						ErrorMessage = ErrorMessage.InvalidPasswordOrUsernameOrEmail
 					};
 				}
 
@@ -61,19 +63,19 @@ namespace EnglishHelperService.Business
 			}
 		}
 
-		public async Task<User> ReadUserByIdAsync(long id)
+		public async Task<User> ReadUserById(long id)
 		{
-			var user = await _unitOfWork.UserRepository.ReadByIdAsync(id);
+			var user = await _unitOfWork.UserRepository.ReadAsync(u => u.Id == id);
 			return _userFactory.Create(user);
 		}
 
-		public async Task<IEnumerable<User>> ListUserAsync()
+		public async Task<IEnumerable<User>> ListUser()
 		{
-			var users = await _unitOfWork.UserRepository.ListAsync();
+			var users = _unitOfWork.UserRepository.Query();
 			return users.Select(x => _userFactory.Create(x)).ToList();
 		}
 
-		public async Task<CreateUserResponse> CreateAsync(CreateUserRequest request)
+		public async Task<CreateUserResponse> Create(CreateUserRequest request)
 		{
 			try
 			{
@@ -83,6 +85,12 @@ namespace EnglishHelperService.Business
 					var entityUser = _userFactory.Create(request);
 					await _unitOfWork.UserRepository.CreateAsync(entityUser);
 					await _unitOfWork.SaveAsync();
+
+					return new CreateUserResponse
+					{
+						StatusCode = StatusCode.Created,
+						Result = _userFactory.Create(entityUser)
+					};
 				}
 
 				return validationResult;
@@ -98,14 +106,14 @@ namespace EnglishHelperService.Business
 
 		}
 
-		public async Task UpdateAsync(UpdateUserRequest request)
+		public async Task Update(UpdateUserRequest request)
 		{
 
 		}
 
-		public async Task DeleteAsync(long id)
+		public async Task Delete(long id)
 		{
-			var user = await _unitOfWork.UserRepository.ReadByIdAsync(id);
+			var user = await _unitOfWork.UserRepository.ReadAsync(u => u.Id == id);
 			await _unitOfWork.UserRepository.DeleteAsync(user);
 			await _unitOfWork.SaveAsync();
 		}

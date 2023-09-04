@@ -5,7 +5,8 @@
 		InvalidRequest,
 		ServerError,
 
-		InvalidPasswordOrUsername,
+		InvalidPasswordOrUsernameOrEmail,
+		UsernameOrEmailRequired,
 		UsernameRequired,
 		UsernameMaxLength,
 		UsernameExists,

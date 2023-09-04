@@ -60,7 +60,7 @@ namespace EnglishHelperService.Business
 
 			return new ServiceContracts.LoginUser
 			{
-				Username = request.Username,
+				Username = user.Username,
 				Role = Create(user.Role),
 				Token = _tokenService.CreateToken(user)
 			};

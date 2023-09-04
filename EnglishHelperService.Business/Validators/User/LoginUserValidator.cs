@@ -17,8 +17,8 @@ namespace EnglishHelperService.Business
 			if (request is null)
 				return CreateErrorResponse(ErrorMessage.InvalidRequest);
 
-			if (String.IsNullOrWhiteSpace(request.Username))
-				return CreateErrorResponse(ErrorMessage.UsernameRequired);
+			if (String.IsNullOrWhiteSpace(request.Identifier))
+				return CreateErrorResponse(ErrorMessage.UsernameOrEmailRequired);
 
 			if (String.IsNullOrWhiteSpace(request.Password))
 				return CreateErrorResponse(ErrorMessage.PasswordRequired);

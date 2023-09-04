@@ -11,6 +11,7 @@ namespace EnglishHelperService.Persistence
 		public DataContext(DbContextOptions options) : base(options) { }
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
+
 			modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserConfiguration).Assembly);
 		}
 	}

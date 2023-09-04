@@ -287,7 +287,7 @@ namespace EnglishHelperService.Persistence.Common
 		/// <summary>
 		/// Aktuális adatbázis kontextus.
 		/// </summary>
-		protected TDbContext _dbContext;
+		protected TDbContext dbContext;
 
 		/// <summary>
 		/// Konstruktor, amely adatbázis kontextust vár.
@@ -295,14 +295,14 @@ namespace EnglishHelperService.Persistence.Common
 		/// <param name="dbContext">adatbázis kontextus</param>
 		public GenericRepository(TDbContext dbContext)
 		{
-			_dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+			dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 			_genericRepository = new GenericRepository<TDbContext>(dbContext);
 		}
 
 		/// <summary>
 		/// A lekérdezhető teljes entitás halmaz.
 		/// </summary>
-		public virtual IQueryable<TEntity> EntitySet => _dbContext.Set<TEntity>().AsNoTracking();
+		public virtual IQueryable<TEntity> EntitySet => dbContext.Set<TEntity>().AsNoTracking();
 
 		/// <summary>
 		///  Aszinkron módon új rekordként menti az átadott entitást.
@@ -473,7 +473,7 @@ namespace EnglishHelperService.Persistence.Common
 		/// </summary>
 		public virtual async Task SaveAsync()
 		{
-			await _dbContext.SaveChangesAsync();
+			await dbContext.SaveChangesAsync();
 		}
 	}
 }

@@ -4,11 +4,11 @@ namespace EnglishHelperService.Business
 {
 	public interface IUserService
 	{
-		Task<User> ReadUserByIdAsync(long id);
-		Task<IEnumerable<User>> ListUserAsync();
-		Task<CreateUserResponse> CreateAsync(CreateUserRequest user);
-		Task UpdateAsync(UpdateUserRequest user);
-		Task DeleteAsync(long id);
+		Task<User> ReadUserById(long id);
+		Task<IEnumerable<User>> ListUser();
+		Task<CreateUserResponse> Create(CreateUserRequest user);
+		Task Update(UpdateUserRequest user);
+		Task Delete(long id);
 		Task<LoginUserResponse> Login(LoginUserRequest request);
 	}
 }

@@ -22,13 +22,14 @@ namespace EnglishHelperService.API.Controllers
 		[HttpPost("register")]
 		public async Task<IActionResult> Register([FromBody] CreateUserRequest request)
 		{
-			var response = await _userService.CreateAsync(request);
+			var response = await _userService.Create(request);
 			if (response.HasError)
 			{
 				return this.CreateErrorResponse(response);
 			}
-			return StatusCode(201);
+			return CreatedAtAction("Register", new { id = response.Result.Id }, response.Result);
 		}
+
 
 		[HttpPost("login")]
 		public async Task<IActionResult> Login([FromBody] LoginUserRequest request)
@@ -38,7 +39,7 @@ namespace EnglishHelperService.API.Controllers
 			{
 				return this.CreateErrorResponse(response);
 			}
-			return Ok(response.Result);	
+			return Ok(response.Result);
 		}
 	}
 }
