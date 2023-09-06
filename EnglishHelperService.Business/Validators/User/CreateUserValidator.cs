@@ -1,4 +1,4 @@
-﻿using EnglishHelperService.Persistence.Common;
+﻿using EnglishHelperService.Persistence.Repositories;
 using EnglishHelperService.ServiceContracts;
 using System.Text.RegularExpressions;
 

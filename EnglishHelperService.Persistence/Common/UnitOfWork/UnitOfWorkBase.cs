@@ -3,18 +3,21 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EnglishHelperService.Persistence.Common
 {
-	public class BaseUnitOfWork<TDbContext> : IBaseUnitOfWork where TDbContext : DbContext
+	/// <summary>
+	/// class describing the integration of database connection services.
+	/// </summary>
+	public class UnitOfWorkBase<TDbContext> : IUnitOfWorkBase where TDbContext : DbContext
 	{
 		private IDbContextTransaction _transaction = null;
 		protected TDbContext dbContext { get; }
 
-		public BaseUnitOfWork(TDbContext dbContext)
+		public UnitOfWorkBase(TDbContext dbContext)
 		{
 			this.dbContext = dbContext;
 		}
 
 		/// <summary>
-		/// Adatbázis tranzakciót indít.
+		/// Starts a database transaction.
 		/// </summary>
 		public void BeginTransaction()
 		{
@@ -23,7 +26,7 @@ namespace EnglishHelperService.Persistence.Common
 		}
 
 		/// <summary>
-		/// Menti a módosításokat az adatbázisba, de nem véglegesít (nem commitol).
+		/// It saves the changes made up to that point in the database, but you have not committed a transaction.
 		/// </summary>
 		public async Task SaveAsync()
 		{
@@ -31,7 +34,7 @@ namespace EnglishHelperService.Persistence.Common
 		}
 
 		/// <summary>
-		/// Véglegesíti a módosításokat az adatbázison.
+		/// Finalizes changes to the database (saved and committed).
 		/// </summary>
 		public async Task CommitAsync()
 		{
@@ -45,7 +48,7 @@ namespace EnglishHelperService.Persistence.Common
 		}
 
 		/// <summary>
-		/// Visszagörgeti a módosításokat az adatbázison.
+		/// Rolls back changes on the database.
 		/// </summary>
 		public void Rollback()
 		{

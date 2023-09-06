@@ -3,25 +3,161 @@ using System.Linq.Expressions;
 
 namespace EnglishHelperService.Persistence.Common
 {
+
+	#region GenericRepository with only dbContext
+
 	/// <summary>
-	/// EntityFramework alapú, általános lekérdező osztály adatbázis entitások számára.
+	/// EntityFramework based generic query class for database entities with dbContext.
 	/// </summary>
-	/// <typeparam name="TDbContext">adatbázis kontextus típusa</typeparam>
-	/// <typeparam name="TKey">entitás elsődleges kulcsának típusa</typeparam>
-	/// <typeparam name="TEntity">entitás típusa</typeparam>
 	public class GenericRepository<TDbContext> : ReadOnlyRepository<TDbContext>, IGenericRepository
 	where TDbContext : DbContext
 	{
 		/// <summary>
-		/// Konstruktor, amely adatbázis kontextust vár.
+		/// A constructor that expects a database context.
 		/// </summary>
-		/// <param name="dbContext">adatbázis kontextus</param>
+		/// <param name="dbContext">database context</param>
 		public GenericRepository(TDbContext dbContext) : base(dbContext) { }
 
+
+		#region Read section
+
 		/// <summary>
-		/// Aszinkron módon új rekordként menti az átadott entitást.
+		/// Asynchronously reads the first entity matching the given criteria.
 		/// </summary>
-		/// <param name="entity">a mentendő entitás</param>
+		/// <param name="where">Search terms</param>
+		/// <returns>Entity instance of the given type, or null if none exists</returns>
+		public override async Task<TEntity> ReadAsync<TEntity>(Expression<Func<TEntity, bool>> where)
+		{
+			return await dbContext.Set<TEntity>().AsNoTracking().FirstOrDefaultAsync(where);
+		}
+
+		/// <summary>
+		///  Creates a query object for entities.
+		/// </summary>
+		public override IQueryable<TEntity> Query<TEntity>()
+		{
+			var baseQuery = dbContext.Set<TEntity>();
+
+			return baseQuery.AsNoTracking();
+		}
+
+		/// <summary>
+		/// Creates a query object for the entities that match the given filter expression
+		/// </summary>
+		/// <param name="filter">Filter expression</param>
+		public override IQueryable<TEntity> Query<TEntity>(Expression<Func<TEntity, bool>> filter)
+		{
+			var baseQuery = filter == null
+				? dbContext.Set<TEntity>()
+				: dbContext.Set<TEntity>().Where(filter);
+
+			return baseQuery.AsNoTracking();
+		}
+
+		/// <summary>
+		///  Creates a query object for the entities that match the given filter expression in the specified order.
+		/// </summary>
+		/// <param name="filter">Filter expression</param>
+		/// <param name="orderBy">Ordering expression</param>
+		public override IQueryable<TEntity> Query<TEntity>(Expression<Func<TEntity, bool>> filter, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy)
+		{
+			var baseQuery = filter == null
+				? dbContext.Set<TEntity>()
+				: dbContext.Set<TEntity>().Where(filter);
+
+			baseQuery = orderBy == null ? baseQuery : orderBy(baseQuery);
+
+			return baseQuery.AsNoTracking();
+		}
+
+		/// <summary>
+		/// A query function designed to serve paged lists
+		/// </summary>
+		/// <typeparam name="TEntity">Entity type</typeparam>
+		/// <param name="pageNumber">Page number to retrieve(starting from 1)</param>
+		/// <param name="itemsOnPage">Number of elements per page</param>
+		/// <param name="totalCount">Total number of elements</param>
+		public override IQueryable<TEntity> PagedQuery<TEntity>(int pageNumber, int itemsOnPage, out long totalCount)
+		{
+			pageNumber = pageNumber < 1 ? 0 : (pageNumber - 1);
+
+			var baseQuery = dbContext.Set<TEntity>();
+
+			totalCount = baseQuery.LongCount();
+
+			return baseQuery.Skip(pageNumber * itemsOnPage).Take(itemsOnPage).AsNoTracking();
+		}
+
+		/// <summary>
+		/// A query function designed to serve paged lists with filtering.
+		/// </summary>
+		/// <typeparam name="TEntity">Entity type</typeparam>
+		/// <param name="pageNumber">Page number to retrieve(starting from 1)</param>
+		/// <param name="itemsOnPage">Number of elements per page</param>
+		/// <param name="filter">Filter expression</param>
+		/// <param name="totalCount">Total number of elements</param>
+		public override IQueryable<TEntity> PagedQuery<TEntity>(int pageNumber, int itemsOnPage, Expression<Func<TEntity, bool>> filter, out long totalCount)
+		{
+			pageNumber = pageNumber < 1 ? 0 : (pageNumber - 1);
+
+			var baseQuery = filter == null
+				? dbContext.Set<TEntity>()
+				: dbContext.Set<TEntity>().Where(filter);
+
+			totalCount = baseQuery.LongCount();
+
+			return baseQuery.Skip(pageNumber * itemsOnPage).Take(itemsOnPage).AsNoTracking();
+		}
+
+		/// <summary>
+		/// A query function designed to serve paged lists with filtering and ordering.
+		/// </summary>
+		/// <typeparam name="TEntity">Entity type</typeparam>
+		/// <param name="pageNumber">Page number to retrieve(starting from 1)</param>
+		/// <param name="itemsOnPage">Number of elements per page</param>
+		/// <param name="filter">Filter expression</param>
+		/// <param name="orderBy">Ordering expression</param>
+		/// <param name="totalCount">Total number of elements</param>
+		public override IQueryable<TEntity> PagedQuery<TEntity>(int pageNumber, int itemsOnPage, Expression<Func<TEntity, bool>> filter, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy, out long totalCount)
+		{
+			pageNumber = pageNumber < 1 ? 0 : (pageNumber - 1);
+
+			var baseQuery = filter == null
+				? dbContext.Set<TEntity>()
+				: dbContext.Set<TEntity>().Where(filter);
+
+			totalCount = baseQuery.LongCount();
+
+			baseQuery = orderBy == null ? baseQuery : orderBy(baseQuery);
+
+			return baseQuery.Skip(pageNumber * itemsOnPage).Take(itemsOnPage).AsNoTracking();
+		}
+
+		/// <summary>
+		///  Counts the entities matching the given filter expression.
+		/// </summary>
+		/// <param name="filter">Filter expression</param>
+		/// <returns>The number of entities matching the filter expression</returns>
+		public override long Count<TEntity>(Expression<Func<TEntity, bool>> filter = null)
+		{
+			var baseQuery = filter == null
+				? dbContext.Set<TEntity>()
+				: dbContext.Set<TEntity>().Where(filter);
+
+			return baseQuery.LongCount();
+		}
+
+		#endregion
+
+
+
+		#region Modification section
+
+
+		/// <summary>
+		/// Asynchronously saves the passed entity as a new record.
+		/// </summary>
+		/// <param name="entity">The entity to save</param>
 		public virtual async Task CreateAsync<TEntity>(TEntity entity) where TEntity : class, new()
 		{
 			dbContext.Add(entity);
@@ -29,9 +165,9 @@ namespace EnglishHelperService.Persistence.Common
 		}
 
 		/// <summary>
-		/// Aszinkron módon új rekordokként menti az átadott entitásokat.
+		/// Asynchronously saves passed entities as new records.
 		/// </summary>
-		/// <param name="entities">a mentendő entitások</param>
+		/// <param name="entities">The entities to save</param>
 		public virtual async Task CreateManyAsync<TEntity>(IEnumerable<TEntity> entities) where TEntity : class, new()
 		{
 			dbContext.AddRange(entities);
@@ -39,19 +175,9 @@ namespace EnglishHelperService.Persistence.Common
 		}
 
 		/// <summary>
-		/// Aszinkron módon kiolvassa az adott feltételeknek megfelelő első entitást.
+		/// Asynchronously saves changes made to the passed entity.
 		/// </summary>
-		/// <param name="where">keresési feltételek</param>
-		/// <returns>adott típusú entitás példány, vagy null, ha nem létezik ilyen</returns>
-		public override async Task<TEntity> ReadAsync<TEntity>(Expression<Func<TEntity, bool>> where)
-		{
-			return await dbContext.Set<TEntity>().AsNoTracking().FirstOrDefaultAsync(where);
-		}
-
-		/// <summary>
-		/// Aszinkron módon menti az átadott entitáson történt módosításokat.
-		/// </summary>
-		/// <param name="entity">a mentendő entitás</param>
+		/// <param name="entity">The entity to update</param>
 		public virtual async Task UpdateAsync<TEntity>(TEntity entity) where TEntity : class, new()
 		{
 			dbContext.Update(entity);
@@ -59,10 +185,10 @@ namespace EnglishHelperService.Persistence.Common
 		}
 
 		/// <summary>
-		///  Aszinkron módon új értékeket állít be a feltételeknek megfelelő entitásoknak.
+		///  Asynchronously sets new values ​​to entities matching the criteria.
 		/// </summary>
-		/// <param name="newValues">új értékek</param>
-		/// <param name="where">szűrőfeltétel a frissítendő elemekre</param>
+		/// <param name="newValues">New values</param>
+		/// <param name="where">Filter condition for the items to be updated</param>
 		public async Task UpdateAsync<TEntity>(Expression<Func<TEntity, TEntity>> newValues, Expression<Func<TEntity, bool>> where = null) where TEntity : class, new()
 		{
 			if (where != null)
@@ -90,9 +216,9 @@ namespace EnglishHelperService.Persistence.Common
 		}
 
 		/// <summary>
-		///  Aszinkron módon menti az átadott entitásokon történt módosításokat.
+		///   Asynchronously saves changes made to the passed entities.
 		/// </summary>
-		/// <param name="entities">a mentendő entitások</param>
+		/// <param name="entities">The entities to update</param>
 		public virtual async Task UpdateManyAsync<TEntity>(IEnumerable<TEntity> entities) where TEntity : class, new()
 		{
 			foreach (var entity in entities)
@@ -104,9 +230,9 @@ namespace EnglishHelperService.Persistence.Common
 		}
 
 		/// <summary>
-		///  Aszinkron módon törli az adott entitást.
+		///  Deletes the given entity asynchronously.
 		/// </summary>
-		/// <param name="entity">a törlendő entitás</param>
+		/// <param name="entity">The entity to delete</param>
 		public virtual async Task DeleteAsync<TEntity>(TEntity entity) where TEntity : class, new()
 		{
 			if (entity == null)
@@ -118,9 +244,9 @@ namespace EnglishHelperService.Persistence.Common
 		}
 
 		/// <summary>
-		///  Aszinkron módon törli az adott feltételeknek megfelelő entitásokat.
+		///  Asynchronously deletes entities matching the given conditions.
 		/// </summary>
-		/// <param name="where">szűrőfeltétel a törlendő elemekre</param>
+		/// <param name="where">Filter condition for the elements to be deleted</param>
 		public virtual async Task DeleteAsync<TEntity>(Expression<Func<TEntity, bool>> where) where TEntity : class, new()
 		{
 			var entitiesToDelete = where != null
@@ -130,11 +256,10 @@ namespace EnglishHelperService.Persistence.Common
 			dbContext.RemoveRange(entitiesToDelete);
 			await dbContext.SaveChangesAsync();
 		}
-
 		/// <summary>
-		///  Aszinkron módon törli az adott entitásokat.
+		///  Deletes the given entities asynchronously.
 		/// </summary>
-		/// <param name="entities">a törlendő entitások</param>
+		/// <param name="entities">The entities to delete</param>
 		public virtual async Task DeleteManyAsync<TEntity>(IEnumerable<TEntity> entities) where TEntity : class, new()
 		{
 			dbContext.RemoveRange(entities);
@@ -142,338 +267,238 @@ namespace EnglishHelperService.Persistence.Common
 		}
 
 		/// <summary>
-		/// Készít egy lekérdező objektumot az entitásokhoz.
-		/// </summary>
-		/// <returns>lekérdező objektum</returns>
-		public override IQueryable<TEntity> Query<TEntity>()
-		{
-			var baseQuery = dbContext.Set<TEntity>();
-
-			return baseQuery.AsNoTracking();
-		}
-
-		/// <summary>
-		/// Készít egy lekérdező objektumot az adott szűrő kifejezésnek megfelelő entitásokhoz.
-		/// </summary>
-		/// <param name="filter">szűrő kifejezés</param>
-		/// <returns>lekérdező objektum</returns>
-		public override IQueryable<TEntity> Query<TEntity>(Expression<Func<TEntity, bool>> filter)
-		{
-			var baseQuery = filter == null
-				? dbContext.Set<TEntity>()
-				: dbContext.Set<TEntity>().Where(filter);
-
-			return baseQuery.AsNoTracking();
-		}
-
-		/// <summary>
-		/// Készít egy lekérdező objektumot az adott szűrő kifejezésnek megfelelő entitásokhoz a megadott sorrendben.
-		/// </summary>
-		/// <param name="filter">szűrő kifejezés</param>
-		/// <param name="orderBy">rendezési kifejezés</param>
-		/// <returns>lekérdező objektum</returns>
-		public override IQueryable<TEntity> Query<TEntity>(Expression<Func<TEntity, bool>> filter, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy)
-		{
-			var baseQuery = filter == null
-				? dbContext.Set<TEntity>()
-				: dbContext.Set<TEntity>().Where(filter);
-
-			baseQuery = orderBy == null ? baseQuery : orderBy(baseQuery);
-
-			return baseQuery.AsNoTracking();
-		}
-
-		/// <summary>
-		/// Lapozható listák kiszolgálására készült lekérdező függvény
-		/// </summary>
-		/// <typeparam name="TEntity">entitás típusa</typeparam>
-		/// <param name="pageNumber">lekérendő oldal száma (1-től kezdődően)</param>
-		/// <param name="itemsOnPage">elemek száma egy oldalon</param>
-		/// <param name="totalCount">összes elemszám</param>
-		/// <returns></returns>
-		public override IQueryable<TEntity> PagedQuery<TEntity>(int pageNumber, int itemsOnPage, out long totalCount)
-		{
-			pageNumber = pageNumber < 1 ? 0 : (pageNumber - 1);
-
-			var baseQuery = dbContext.Set<TEntity>();
-
-			totalCount = baseQuery.LongCount();
-
-			return baseQuery.Skip(pageNumber * itemsOnPage).Take(itemsOnPage).AsNoTracking();
-		}
-
-		/// <summary>
-		/// Lapozható listák kiszolgálására készült lekérdező függvény
-		/// </summary>
-		/// <typeparam name="TEntity">entitás típusa</typeparam>
-		/// <param name="pageNumber">lekérendő oldal száma (1-től kezdődően)</param>
-		/// <param name="itemsOnPage">elemek száma egy oldalon</param>
-		/// <param name="filter">szűrő kifejezés</param>
-		/// <param name="totalCount">összes elemszám</param>
-		/// <returns></returns>
-		public override IQueryable<TEntity> PagedQuery<TEntity>(int pageNumber, int itemsOnPage, Expression<Func<TEntity, bool>> filter, out long totalCount)
-		{
-			pageNumber = pageNumber < 1 ? 0 : (pageNumber - 1);
-
-			var baseQuery = filter == null
-				? dbContext.Set<TEntity>()
-				: dbContext.Set<TEntity>().Where(filter);
-
-			totalCount = baseQuery.LongCount();
-
-			return baseQuery.Skip(pageNumber * itemsOnPage).Take(itemsOnPage).AsNoTracking();
-		}
-
-		/// <summary>
-		/// Lapozható listák kiszolgálására készült lekérdező függvény
-		/// </summary>
-		/// <typeparam name="TEntity">entitás típusa</typeparam>
-		/// <param name="pageNumber">lekérendő oldal száma (1-től kezdődően)</param>
-		/// <param name="itemsOnPage">elemek száma egy oldalon</param>
-		/// <param name="filter">szűrő kifejezés</param>
-		/// <param name="orderBy">rendezési kifejezés</param>
-		/// <param name="totalCount">összes elemszám</param>
-		/// <returns></returns>
-		public override IQueryable<TEntity> PagedQuery<TEntity>(int pageNumber, int itemsOnPage, Expression<Func<TEntity, bool>> filter, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy, out long totalCount)
-		{
-			pageNumber = pageNumber < 1 ? 0 : (pageNumber - 1);
-
-			var baseQuery = filter == null
-				? dbContext.Set<TEntity>()
-				: dbContext.Set<TEntity>().Where(filter);
-
-			totalCount = baseQuery.LongCount();
-
-			baseQuery = orderBy == null ? baseQuery : orderBy(baseQuery);
-
-			return baseQuery.Skip(pageNumber * itemsOnPage).Take(itemsOnPage).AsNoTracking();
-		}
-
-		/// <summary>
-		/// Összeszámolja az adott szűrő kifejezésnek megfelelő entitásokat.
-		/// </summary>
-		/// <param name="filter">szűrő kifejezés</param>
-		/// <returns>a szűrő kifejezésnek megfelelő entitások száma</returns>
-		public override long Count<TEntity>(Expression<Func<TEntity, bool>> filter = null)
-		{
-			var baseQuery = filter == null
-				? dbContext.Set<TEntity>()
-				: dbContext.Set<TEntity>().Where(filter);
-
-			return baseQuery.LongCount();
-		}
-
-		/// <summary>
-		///  Aszinkron módon menti az entitás(ok)on történt módosítás(oka)t.
+		///  Saves the modification(s) made to the entity(s) asynchronously.
 		/// </summary>
 		public virtual async Task SaveAsync()
 		{
 			await dbContext.SaveChangesAsync();
 		}
+
+		#endregion
 	}
 
+
+	#endregion
+
+
+	#region GenericRepository with dbContext and entity type
+
 	/// <summary>
-	/// EntityFramework alapú, általános entitás lekérdező osztály, megadott típusú elsődleges kulccsal rendelkező entitások számára.
+	/// EntityFramework based generic query class for database entities with dbContext and entity type.
 	/// </summary>
-	/// <typeparam name="TDbContext">adatbázis kontextus típusa</typeparam>
-	/// <typeparam name="TKey">entitás elsődleges kulcsának típusa</typeparam>
-	/// <typeparam name="TEntity">entitás típusa</typeparam>
+	/// <typeparam name="TDbContext">Database type</typeparam>
+	/// <typeparam name="TEntity">Entity type</typeparam>
 	public class GenericRepository<TDbContext, TEntity> : IRepository<TEntity>
 		where TDbContext : DbContext
 		where TEntity : class, new()
 	{
+		/// <summary>
+		/// IGenericRepository type
+		/// </summary>
 		private readonly IGenericRepository _genericRepository;
 
 		/// <summary>
-		/// Aktuális adatbázis kontextus.
+		/// Current database context.
 		/// </summary>
 		protected TDbContext dbContext;
 
 		/// <summary>
-		/// Konstruktor, amely adatbázis kontextust vár.
+		/// A constructor that expects a database context.
 		/// </summary>
-		/// <param name="dbContext">adatbázis kontextus</param>
+		/// <param name="dbContext">database context</param>
 		public GenericRepository(TDbContext dbContext)
 		{
 			dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 			_genericRepository = new GenericRepository<TDbContext>(dbContext);
 		}
 
+
+		#region Read section
+
 		/// <summary>
-		/// A lekérdezhető teljes entitás halmaz.
+		/// The entire queryable entity set.
 		/// </summary>
 		public virtual IQueryable<TEntity> EntitySet => dbContext.Set<TEntity>().AsNoTracking();
 
 		/// <summary>
-		///  Aszinkron módon új rekordként menti az átadott entitást.
+		/// Asynchronously reads the first entity matching the given criteria.
 		/// </summary>
-		/// <param name="entity">a mentendő entitás</param>
-		public virtual async Task CreateAsync(TEntity entity)
-		{
-			await _genericRepository.CreateAsync(entity);
-		}
-
-		/// <summary>
-		///  Aszinkron módon új rekordokként menti az átadott entitásokat.
-		/// </summary>
-		/// <param name="entities">a mentendő entitások</param>
-		public virtual async Task CreateManyAsync(IEnumerable<TEntity> entities)
-		{
-			await _genericRepository.CreateManyAsync(entities);
-		}
-
-		/// <summary>
-		///  Aszinkron módon kiolvassa az adott elsődleges kulccsal rendelkező entitást.
-		/// </summary>
-		/// <param name="id">elsődleges kulcs</param>
-		/// <returns>adott típusú entitás példány, vagy null, ha nem létezik ilyen</returns>
+		/// <param name="where">Search terms</param>
+		/// <returns>Entity instance of the given type, or null if none exists</returns>
 		public virtual async Task<TEntity> ReadAsync(Expression<Func<TEntity, bool>> where)
 		{
 			return await _genericRepository.ReadAsync(where);
 		}
 
-		/// <summary>
-		///  Aszinkron módon menti az átadott entitáson történt módosításokat.
-		/// </summary>
-		/// <param name="entity">a mentendő entitás</param>
-		public virtual async Task UpdateAsync(TEntity entity)
-		{
-			await _genericRepository.UpdateAsync(entity);
-		}
 
 		/// <summary>
-		///  Aszinkron módon új értékeket állít be a feltételeknek megfelelő entitásoknak.
+		///  Creates a query object for entities.
 		/// </summary>
-		/// <param name="newValues">új értékek</param>
-		/// <param name="where">szűrőfeltétel a frissítendő elemekre</param>
-		public virtual async Task UpdateAsync(Expression<Func<TEntity, TEntity>> newValues, Expression<Func<TEntity, bool>> where = null)
-		{
-			await _genericRepository.UpdateAsync(newValues, where);
-		}
-
-		/// <summary>
-		///  Aszinkron módon menti az átadott entitásokon történt módosításokat.
-		/// </summary>
-		/// <param name="entities">a mentendő entitások</param>
-		public virtual async Task UpdateManyAsync(IEnumerable<TEntity> entities)
-		{
-			await _genericRepository.UpdateManyAsync(entities);
-		}
-
-		/// <summary>
-		///  Aszinkron módon törli az adott entitást.
-		/// </summary>
-		/// <param name="entity">a törlendő entitás</param>
-		public virtual async Task DeleteAsync(TEntity entity)
-		{
-			await _genericRepository.DeleteAsync(entity);
-		}
-
-		/// <summary>
-		///  Aszinkron módon törli az adott feltételeknek megfelelő entitásokat.
-		/// </summary>
-		/// <param name="where">szűrőfeltétel a törlendő elemekre</param>
-		public virtual async Task DeleteAsync(Expression<Func<TEntity, bool>> where = null)
-		{
-			await _genericRepository.DeleteAsync(where);
-		}
-
-		/// <summary>
-		///  Aszinkron módon törli az adott entitásokat.
-		/// </summary>
-		/// <param name="entities">a törlendő entitások</param>
-		public virtual async Task DeleteManyAsync(IEnumerable<TEntity> entities)
-		{
-			await _genericRepository.DeleteManyAsync(entities);
-		}
-
-		/// <summary>
-		///  Készít egy lekérdező objektumot az entitásokhoz.
-		/// </summary>
-		/// <returns>lekérdező objektum</returns>
 		public virtual IQueryable<TEntity> Query()
 		{
 			return _genericRepository.Query<TEntity>();
 		}
 
 		/// <summary>
-		/// Készít egy lekérdező objektumot az adott szűrő kifejezésnek megfelelő entitásokhoz.
+		/// Creates a query object for the entities that match the given filter expression
 		/// </summary>
-		/// <param name="filter">szűrő kifejezés</param>
-		/// <returns>lekérdező objektum</returns>
+		/// <param name="filter">Filter expression</param>
 		public virtual IQueryable<TEntity> Query(Expression<Func<TEntity, bool>> filter)
 		{
 			return _genericRepository.Query(filter);
 		}
 
 		/// <summary>
-		/// Készít egy lekérdező objektumot az adott szűrő kifejezésnek megfelelő entitásokhoz a megadott sorrendben.
+		///  Creates a query object for the entities that match the given filter expression in the specified order.
 		/// </summary>
-		/// <param name="filter">szűrő kifejezés</param>
-		/// <param name="orderBy">rendezési kifejezés</param>
-		/// <returns>lekérdező objektum</returns>
+		/// <param name="filter">Filter expression</param>
+		/// <param name="orderBy">Ordering expression</param>
 		public virtual IQueryable<TEntity> Query(Expression<Func<TEntity, bool>> filter, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy)
 		{
 			return _genericRepository.Query(filter, orderBy);
 		}
 
 		/// <summary>
-		/// Lapozható listák kiszolgálására készült lekérdező függvény
+		/// A query function designed to serve paged lists
 		/// </summary>
-		/// <typeparam name="TEntity">entitás típusa</typeparam>
-		/// <param name="pageNumber">lekérendő oldal száma (1-től kezdődően)</param>
-		/// <param name="itemsOnPage">elemek száma egy oldalon</param>
-		/// <param name="totalCount">összes elemszám</param>
-		/// <returns></returns>
+		/// <typeparam name="TEntity">Entity type</typeparam>
+		/// <param name="pageNumber">Page number to retrieve(starting from 1)</param>
+		/// <param name="itemsOnPage">Number of elements per page</param>
+		/// <param name="totalCount">Total number of elements</param>
 		public virtual IQueryable<TEntity> PagedQuery(int pageNumber, int itemsOnPage, out long totalCount)
 		{
 			return _genericRepository.PagedQuery<TEntity>(pageNumber, itemsOnPage, out totalCount);
 		}
 
 		/// <summary>
-		/// Lapozható listák kiszolgálására készült lekérdező függvény
+		/// A query function designed to serve paged lists with filtering.
 		/// </summary>
-		/// <typeparam name="TEntity">entitás típusa</typeparam>
-		/// <param name="pageNumber">lekérendő oldal száma (1-től kezdődően)</param>
-		/// <param name="itemsOnPage">elemek száma egy oldalon</param>
-		/// <param name="filter">szűrő kifejezés</param>
-		/// <param name="totalCount">összes elemszám</param>
-		/// <returns></returns>
+		/// <typeparam name="TEntity">Entity type</typeparam>
+		/// <param name="pageNumber">Page number to retrieve(starting from 1)</param>
+		/// <param name="itemsOnPage">Number of elements per page</param>
+		/// <param name="filter">Filter expression</param>
+		/// <param name="totalCount">Total number of elements</param>
 		public virtual IQueryable<TEntity> PagedQuery(int pageNumber, int itemsOnPage, Expression<Func<TEntity, bool>> filter, out long totalCount)
 		{
 			return _genericRepository.PagedQuery(pageNumber, itemsOnPage, filter, out totalCount);
 		}
 
 		/// <summary>
-		/// Lapozható listák kiszolgálására készült lekérdező függvény
+		/// A query function designed to serve paged lists with filtering and ordering.
 		/// </summary>
-		/// <param name="pageNumber">lekérendő oldal száma (1-től kezdődően)</param>
-		/// <param name="itemsOnPage">elemek száma egy oldalon</param>
-		/// <param name="filter">szűrő kifejezés</param>
-		/// <param name="orderBy">rendezési kifejezés</param>
-		/// <param name="totalCount">összes elemszám</param>
-		/// <returns></returns>
+		/// <typeparam name="TEntity">Entity type</typeparam>
+		/// <param name="pageNumber">Page number to retrieve(starting from 1)</param>
+		/// <param name="itemsOnPage">Number of elements per page</param>
+		/// <param name="filter">Filter expression</param>
+		/// <param name="orderBy">Ordering expression</param>
+		/// <param name="totalCount">Total number of elements</param>
 		public virtual IQueryable<TEntity> PagedQuery(int pageNumber, int itemsOnPage, Expression<Func<TEntity, bool>> filter, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy, out long totalCount)
 		{
 			return _genericRepository.PagedQuery(pageNumber, itemsOnPage, filter, orderBy, out totalCount);
 		}
 
 		/// <summary>
-		/// Összeszámolja az adott szűrő kifejezésnek megfelelő entitásokat.
+		///  Counts the entities matching the given filter expression.
 		/// </summary>
-		/// <param name="filter">szűrő kifejezés</param>
-		/// <returns>a szűrő kifejezésnek megfelelő entitások száma</returns>
+		/// <param name="filter">Filter expression</param>
+		/// <returns>The number of entities matching the filter expression</returns>
 		public virtual long Count(Expression<Func<TEntity, bool>> filter = null)
 		{
 			return _genericRepository.Count(filter);
 		}
 
+
+		#endregion
+
+
+		#region Modification section
+
 		/// <summary>
-		///  Aszinkron módon Menti az entitás(ok)on történt módosítás(oka)t.
+		/// Asynchronously saves the passed entity as a new record.
+		/// </summary>
+		/// <param name="entity">The entity to save</param>
+		public virtual async Task CreateAsync(TEntity entity)
+		{
+			await _genericRepository.CreateAsync(entity);
+		}
+
+		/// <summary>
+		/// Asynchronously saves passed entities as new records.
+		/// </summary>
+		/// <param name="entities">The entities to save</param>
+		public virtual async Task CreateManyAsync(IEnumerable<TEntity> entities)
+		{
+			await _genericRepository.CreateManyAsync(entities);
+		}
+
+
+
+		/// <summary>
+		/// Asynchronously saves changes made to the passed entity.
+		/// </summary>
+		/// <param name="entity">The entity to update</param>
+		public virtual async Task UpdateAsync(TEntity entity)
+		{
+			await _genericRepository.UpdateAsync(entity);
+		}
+
+		/// <summary>
+		///  Asynchronously sets new values ​​to entities matching the criteria.
+		/// </summary>
+		/// <param name="newValues">New values</param>
+		/// <param name="where">Filter condition for the items to be updated</param>
+		public virtual async Task UpdateAsync(Expression<Func<TEntity, TEntity>> newValues, Expression<Func<TEntity, bool>> where = null)
+		{
+			await _genericRepository.UpdateAsync(newValues, where);
+		}
+
+		/// <summary>
+		///   Asynchronously saves changes made to the passed entities.
+		/// </summary>
+		/// <param name="entities">The entities to update</param>
+		public virtual async Task UpdateManyAsync(IEnumerable<TEntity> entities)
+		{
+			await _genericRepository.UpdateManyAsync(entities);
+		}
+
+		/// <summary>
+		///  Deletes the given entity asynchronously.
+		/// </summary>
+		/// <param name="entity">The entity to delete</param>
+		public virtual async Task DeleteAsync(TEntity entity)
+		{
+			await _genericRepository.DeleteAsync(entity);
+		}
+
+		/// <summary>
+		///  Asynchronously deletes entities matching the given conditions.
+		/// </summary>
+		/// <param name="where">Filter condition for the elements to be deleted</param>
+		public virtual async Task DeleteAsync(Expression<Func<TEntity, bool>> where = null)
+		{
+			await _genericRepository.DeleteAsync(where);
+		}
+
+		/// <summary>
+		///  Deletes the given entities asynchronously.
+		/// </summary>
+		/// <param name="entities">The entities to delete</param>
+		public virtual async Task DeleteManyAsync(IEnumerable<TEntity> entities)
+		{
+			await _genericRepository.DeleteManyAsync(entities);
+		}
+
+
+		/// <summary>
+		///  Saves the modification(s) made to the entity(s) asynchronously.
 		/// </summary>
 		public virtual async Task SaveAsync()
 		{
 			await dbContext.SaveChangesAsync();
 		}
+
+		#endregion
 	}
+
+	#endregion
 }

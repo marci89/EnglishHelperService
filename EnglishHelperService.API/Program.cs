@@ -1,6 +1,5 @@
 using EnglishHelperService.Business;
 using EnglishHelperService.Persistence;
-using EnglishHelperService.Persistence.Common;
 using EnglishHelperService.Persistence.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
