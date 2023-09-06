@@ -14,7 +14,10 @@ namespace EnglishHelperService.Persistence.Common
 		IQueryable<TEntity> PagedQuery<TEntity>(int pageNumber, int itemsOnPage, out long totalCount) where TEntity : class, new();
 		IQueryable<TEntity> PagedQuery<TEntity>(int pageNumber, int itemsOnPage, Expression<Func<TEntity, bool>> filter, out long totalCount) where TEntity : class, new();
 		IQueryable<TEntity> PagedQuery<TEntity>(int pageNumber, int itemsOnPage, Expression<Func<TEntity, bool>> filter, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy, out long totalCount) where TEntity : class, new();
-		long Count<TEntity>(Expression<Func<TEntity, bool>> filter = null) where TEntity : class, new();
+		int Count<TEntity>(Expression<Func<TEntity, bool>> filter = null) where TEntity : class, new();
+		Task<int> CountAsync<TEntity>(Expression<Func<TEntity, bool>> filter = null) where TEntity : class, new();
+		long LongCount<TEntity>(Expression<Func<TEntity, bool>> filter = null) where TEntity : class, new();
+		Task<long> LongCountAsync<TEntity>(Expression<Func<TEntity, bool>> filter = null) where TEntity : class, new();
 	}
 
 
@@ -34,6 +37,9 @@ namespace EnglishHelperService.Persistence.Common
 		IQueryable<TEntity> PagedQuery(int pageNumber, int itemsOnPage, out long totalCount);
 		IQueryable<TEntity> PagedQuery(int pageNumber, int itemsOnPage, Expression<Func<TEntity, bool>> filter, out long totalCount);
 		IQueryable<TEntity> PagedQuery(int pageNumber, int itemsOnPage, Expression<Func<TEntity, bool>> filter, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy, out long totalCount);
-		long Count(Expression<Func<TEntity, bool>> filter = null);
+		int Count(Expression<Func<TEntity, bool>> filter = null);
+		Task<int> CountAsync(Expression<Func<TEntity, bool>> filter = null);
+		long LongCount(Expression<Func<TEntity, bool>> filter = null);
+		Task<long> LongCountAsync(Expression<Func<TEntity, bool>> filter = null);
 	}
 }

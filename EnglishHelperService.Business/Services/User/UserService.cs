@@ -1,5 +1,7 @@
 ﻿using EnglishHelperService.Persistence.Repositories;
 using EnglishHelperService.ServiceContracts;
+using LinqKit;
+using System.Linq.Expressions;
 
 namespace EnglishHelperService.Business
 {
@@ -68,34 +70,46 @@ namespace EnglishHelperService.Business
 			return _userFactory.Create(user);
 		}
 
-		public async Task<ListUserResponse> ListUser(PaginationRequest request)
+		public async Task<ListUserResponse> ListUser(ListUserWithFilterRequest request)
 		{
 			try
 			{
 				long totalCount;
 
-				var query = _unitOfWork.UserRepository.PagedQuery(
-					request.PageNumber,
-					request.PageSize,
-					out totalCount
-				);
+				Expression<Func<Persistence.Entities.User, bool>> filterExpression = u => true;
+
+				if (!string.IsNullOrEmpty(request.Username))
+				{
+					filterExpression = filterExpression.And(u => u.Username.Contains(request.Username));
+				}
+
+				if (!string.IsNullOrEmpty(request.Email))
+				{
+					filterExpression = filterExpression.And(u => u.Email.Contains(request.Email));
+				}
+
+				var query = _unitOfWork.UserRepository.PagedQuery(request.PageNumber, request.PageSize, filterExpression, out totalCount);
 
 				var users = query.Select(u => _userFactory.Create(u)).ToList();
 				var result = new PagedList<User>(users, totalCount, request.PageNumber, request.PageSize);
 
-				return new ListUserResponse
+				return await Task.FromResult(new ListUserResponse
 				{
 					StatusCode = StatusCode.Ok,
 					Result = result
-				};
+
+				});
+
+
 			}
 			catch (Exception ex)
 			{
-				return new ListUserResponse
+				return await Task.FromResult(new ListUserResponse
 				{
 					StatusCode = StatusCode.InternalServerError,
 					ErrorMessage = ErrorMessage.ServerError
-				};
+
+				});
 			}
 		}
 

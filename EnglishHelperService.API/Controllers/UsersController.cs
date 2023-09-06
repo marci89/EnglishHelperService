@@ -22,7 +22,7 @@ namespace EnglishHelperService.API.Controllers
 
 		[Authorize(Roles = "Admin")]
 		[HttpGet]
-		public async Task<IActionResult> ListUser([FromQuery] PaginationRequest request)
+		public async Task<IActionResult> ListUser([FromQuery] ListUserWithFilterRequest request)
 		{
 			var response = await _userService.ListUser(request);
 			if (response.HasError)

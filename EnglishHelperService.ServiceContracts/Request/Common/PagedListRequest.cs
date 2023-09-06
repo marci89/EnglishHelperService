@@ -1,6 +1,6 @@
 ﻿namespace EnglishHelperService.ServiceContracts
 {
-	public class PaginationRequest
+	public class PagedListRequest
 	{
 		private const int MaxPageSize = 10;
 		public int PageNumber { get; set; } = 1;

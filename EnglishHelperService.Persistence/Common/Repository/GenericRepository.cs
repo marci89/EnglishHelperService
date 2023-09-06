@@ -134,17 +134,59 @@ namespace EnglishHelperService.Persistence.Common
 		}
 
 		/// <summary>
-		///  Counts the entities matching the given filter expression.
+		///  Counts in int the entities matching the given filter expression.
 		/// </summary>
 		/// <param name="filter">Filter expression</param>
-		/// <returns>The number of entities matching the filter expression</returns>
-		public override long Count<TEntity>(Expression<Func<TEntity, bool>> filter = null)
+		/// <returns>The number of entities matching the filter expression (int)</returns>
+		public override int Count<TEntity>(Expression<Func<TEntity, bool>> filter = null)
 		{
 			var baseQuery = filter == null
 				? dbContext.Set<TEntity>()
 				: dbContext.Set<TEntity>().Where(filter);
 
+			return baseQuery.Count();
+		}
+
+		/// <summary>
+		///  Asynchronously counts in int the entities matching the given filter expression.
+		/// </summary>
+		/// <param name="filter">Filter expression</param>
+		/// <returns>The number of entities matching the filter expression (int)</returns>
+		public override async Task<int> CountAsync<TEntity>(Expression<Func<TEntity, bool>> filter = null)
+		{
+			var baseQuery = filter == null
+				? dbContext.Set<TEntity>()
+				: dbContext.Set<TEntity>().Where(filter);
+
+			return await baseQuery.CountAsync();
+		}
+
+		/// <summary>
+		///  Counts in long the entities matching the given filter expression.
+		/// </summary>
+		/// <param name="filter">Filter expression</param>
+		/// <returns>The number of entities matching the filter expression (long)</returns>
+		public override long LongCount<TEntity>(Expression<Func<TEntity, bool>> filter = null)
+		{
+			var baseQuery = filter == null
+			? dbContext.Set<TEntity>()
+			: dbContext.Set<TEntity>().Where(filter);
+
 			return baseQuery.LongCount();
+		}
+
+		/// <summary>
+		///  Asynchronously counts in long the entities matching the given filter expression.
+		/// </summary>
+		/// <param name="filter">Filter expression</param>
+		/// <returns>The number of entities matching the filter expression (long)</returns>
+		public override async Task<long> LongCountAsync<TEntity>(Expression<Func<TEntity, bool>> filter = null)
+		{
+			var baseQuery = filter == null
+					? dbContext.Set<TEntity>()
+					: dbContext.Set<TEntity>().Where(filter);
+
+			return await baseQuery.LongCountAsync();
 		}
 
 		#endregion
@@ -398,15 +440,44 @@ namespace EnglishHelperService.Persistence.Common
 		}
 
 		/// <summary>
-		///  Counts the entities matching the given filter expression.
+		///  Counts in int the entities matching the given filter expression.
 		/// </summary>
 		/// <param name="filter">Filter expression</param>
-		/// <returns>The number of entities matching the filter expression</returns>
-		public virtual long Count(Expression<Func<TEntity, bool>> filter = null)
+		/// <returns>The number of entities matching the filter expression (int)</returns>
+		public virtual int Count(Expression<Func<TEntity, bool>> filter = null)
 		{
 			return _genericRepository.Count(filter);
 		}
 
+		/// <summary>
+		///  Asynchronously counts in int the entities matching the given filter expression.
+		/// </summary>
+		/// <param name="filter">Filter expression</param>
+		/// <returns>The number of entities matching the filter expression (int)</returns>
+		public virtual async Task<int> CountAsync(Expression<Func<TEntity, bool>> filter = null)
+		{
+			return await _genericRepository.CountAsync(filter);
+		}
+
+		/// <summary>
+		///  Counts in long the entities matching the given filter expression.
+		/// </summary>
+		/// <param name="filter">Filter expression</param>
+		/// <returns>The number of entities matching the filter expression (long)</returns>
+		public virtual long LongCount(Expression<Func<TEntity, bool>> filter = null)
+		{
+			return _genericRepository.LongCount(filter);
+		}
+
+		/// <summary>
+		///  Asynchronously counts in long the entities matching the given filter expression.
+		/// </summary>
+		/// <param name="filter">Filter expression</param>
+		/// <returns>The number of entities matching the filter expression (long)</returns>
+		public virtual async Task<long> LongCountAsync(Expression<Func<TEntity, bool>> filter = null)
+		{
+			return await _genericRepository.LongCountAsync(filter);
+		}
 
 		#endregion
 
