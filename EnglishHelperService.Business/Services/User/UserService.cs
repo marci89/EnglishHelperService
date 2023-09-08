@@ -5,6 +5,9 @@ using System.Linq.Expressions;
 
 namespace EnglishHelperService.Business
 {
+	/// <summary>
+	/// Managing Users
+	/// </summary>
 	public class UserService : IUserService
 	{
 		private readonly IUnitOfWork _unitOfWork;
@@ -25,6 +28,9 @@ namespace EnglishHelperService.Business
 			_loginUserValidator = loginUserValidator;
 		}
 
+		/// <summary>
+		/// Create an auth token and login the user
+		/// </summary>
 		public async Task<LoginUserResponse> Login(LoginUserRequest request)
 		{
 			try
@@ -64,31 +70,27 @@ namespace EnglishHelperService.Business
 			}
 		}
 
+		/// <summary>
+		/// Read user by id
+		/// </summary>
 		public async Task<User> ReadUserById(long id)
 		{
 			var user = await _unitOfWork.UserRepository.ReadAsync(u => u.Id == id);
 			return _userFactory.Create(user);
 		}
 
+		/// <summary>
+		/// List users by filtering and return a pagedlist for paginator
+		/// </summary>
 		public async Task<ListUserResponse> ListUser(ListUserWithFilterRequest request)
 		{
 			try
 			{
 				long totalCount;
+				var filterExpression = ListUserFiltering(request);
+				var orderExpression = ListUserOrdering(request);
 
-				Expression<Func<Persistence.Entities.User, bool>> filterExpression = u => true;
-
-				if (!string.IsNullOrEmpty(request.Username))
-				{
-					filterExpression = filterExpression.And(u => u.Username.Contains(request.Username));
-				}
-
-				if (!string.IsNullOrEmpty(request.Email))
-				{
-					filterExpression = filterExpression.And(u => u.Email.Contains(request.Email));
-				}
-
-				var query = _unitOfWork.UserRepository.PagedQuery(request.PageNumber, request.PageSize, filterExpression, out totalCount);
+				var query = _unitOfWork.UserRepository.PagedQuery(request.PageNumber, request.PageSize, filterExpression, orderExpression, out totalCount);
 
 				var users = query.Select(u => _userFactory.Create(u)).ToList();
 				var result = new PagedList<User>(users, totalCount, request.PageNumber, request.PageSize);
@@ -97,10 +99,7 @@ namespace EnglishHelperService.Business
 				{
 					StatusCode = StatusCode.Ok,
 					Result = result
-
 				});
-
-
 			}
 			catch (Exception ex)
 			{
@@ -113,6 +112,9 @@ namespace EnglishHelperService.Business
 			}
 		}
 
+		/// <summary>
+		/// Create user
+		/// </summary>
 		public async Task<CreateUserResponse> Create(CreateUserRequest request)
 		{
 			try
@@ -144,16 +146,95 @@ namespace EnglishHelperService.Business
 
 		}
 
+		/// <summary>
+		/// Update User
+		/// </summary>
 		public async Task Update(UpdateUserRequest request)
 		{
 
 		}
 
+		/// <summary>
+		/// Delete user by id
+		/// </summary>
 		public async Task Delete(long id)
 		{
 			var user = await _unitOfWork.UserRepository.ReadAsync(u => u.Id == id);
 			await _unitOfWork.UserRepository.DeleteAsync(user);
 			await _unitOfWork.SaveAsync();
 		}
+
+
+		#region private methods
+
+
+		/// <summary>
+		/// Filtering the user table elements by filter
+		/// </summary>
+		private Expression<Func<Persistence.Entities.User, bool>> ListUserFiltering(ListUserWithFilterRequest request)
+		{
+			Expression<Func<Persistence.Entities.User, bool>> filterExpression = u => true;
+
+			if (!string.IsNullOrEmpty(request.Username))
+			{
+				filterExpression = filterExpression.And(u => u.Username.Contains(request.Username));
+			}
+
+			if (!string.IsNullOrEmpty(request.Email))
+			{
+				filterExpression = filterExpression.And(u => u.Email.Contains(request.Email));
+			}
+
+			return filterExpression;
+		}
+
+		/// <summary>
+		/// Ordering the user table elements by request
+		/// </summary>
+		private Func<IQueryable<Persistence.Entities.User>, IOrderedQueryable<Persistence.Entities.User>> ListUserOrdering(ListUserWithFilterRequest request)
+		{
+			Func<IQueryable<Persistence.Entities.User>, IOrderedQueryable<Persistence.Entities.User>> orderBy = null;
+
+			if (!string.IsNullOrEmpty(request.FieldName))
+			{
+				switch (request.FieldName.ToLower())
+				{
+					case "username":
+						orderBy = query => request.IsDescending ?
+							query.OrderByDescending(u => u.Username) :
+							query.OrderBy(u => u.Username);
+						break;
+					case "email":
+						orderBy = query => request.IsDescending ?
+							query.OrderByDescending(u => u.Email) :
+							query.OrderBy(u => u.Email);
+						break;
+					case "role":
+						orderBy = query => request.IsDescending ?
+							query.OrderByDescending(u => u.Role) :
+							query.OrderBy(u => u.Role);
+						break;
+					case "created":
+						orderBy = query => request.IsDescending ?
+							query.OrderByDescending(u => u.Created) :
+							query.OrderBy(u => u.Created);
+						break;
+					case "lastactive":
+						orderBy = query => request.IsDescending ?
+							query.OrderByDescending(u => u.LastActive) :
+							query.OrderBy(u => u.LastActive);
+						break;
+					default:
+						orderBy = query => request.IsDescending ?
+								query.OrderByDescending(u => u.Username) :
+								query.OrderBy(u => u.Username);
+						break;
+				}
+			}
+
+			return orderBy;
+		}
+
+		#endregion
 	}
 }

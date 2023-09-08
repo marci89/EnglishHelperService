@@ -66,14 +66,14 @@ namespace EnglishHelperService.Business
 			};
 		}
 
-		public ServiceContracts.RoleType Create(RoleType roleType)
+		public string Create(RoleType roleType)
 		{
 			switch (roleType)
 			{
 				case RoleType.Admin:
-					return ServiceContracts.RoleType.Admin;
+					return ServiceContracts.RoleType.Admin.ToString();
 				case RoleType.Member:
-					return ServiceContracts.RoleType.Member;
+					return ServiceContracts.RoleType.Member.ToString();
 				default:
 					throw new ArgumentException("Invalid role type.");
 			}
