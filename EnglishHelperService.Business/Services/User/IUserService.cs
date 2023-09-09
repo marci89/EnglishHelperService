@@ -8,7 +8,7 @@ namespace EnglishHelperService.Business
 		Task<ListUserResponse> ListUser(ListUserWithFilterRequest request);
 		Task<CreateUserResponse> Create(CreateUserRequest user);
 		Task Update(UpdateUserRequest user);
-		Task Delete(long id);
+		Task<ResponseBase> Delete(long id);
 		Task<LoginUserResponse> Login(LoginUserRequest request);
 	}
 }

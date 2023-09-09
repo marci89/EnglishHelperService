@@ -4,6 +4,9 @@
 	{
 		InvalidRequest,
 		ServerError,
+		NotFound,
+		DeleteFailed,
+		EditFailed,
 
 		InvalidPasswordOrUsernameOrEmail,
 		UsernameOrEmailRequired,

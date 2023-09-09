@@ -1,4 +1,6 @@
-﻿namespace EnglishHelperService.ServiceContracts
+﻿
+
+namespace EnglishHelperService.ServiceContracts
 {
 	public class ListUserWithFilterRequest : PagedListRequest
 	{

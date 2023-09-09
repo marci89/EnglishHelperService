@@ -1,5 +1,8 @@
 ﻿namespace EnglishHelperService.ServiceContracts
 {
+	/// <summary>
+	/// Paged list request for paginator
+	/// </summary>
 	public class PagedListRequest
 	{
 		private const int MaxPageSize = 10;
@@ -12,7 +15,7 @@
 		public int PageSize
 		{
 			get => _pageSize;
-			set => _pageSize = (value > MaxPageSize) ? MaxPageSize : value;
+			set => _pageSize = value > MaxPageSize ? MaxPageSize : value;
 		}
 	}
 

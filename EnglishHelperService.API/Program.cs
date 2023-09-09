@@ -15,6 +15,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 #region Swagger
 
+
 // Add Swagger generation
 builder.Services.AddSwaggerGen(c =>
 {

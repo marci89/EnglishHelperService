@@ -1,5 +1,8 @@
 ﻿namespace EnglishHelperService.ServiceContracts
 {
+	/// <summary>
+	/// Paged list response for paginator
+	/// </summary>
 	public class PagedList<T>
 	{
 		public PagedList(IEnumerable<T> items, long count, int pageNumber, int pageSize)

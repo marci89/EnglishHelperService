@@ -157,11 +157,35 @@ namespace EnglishHelperService.Business
 		/// <summary>
 		/// Delete user by id
 		/// </summary>
-		public async Task Delete(long id)
+		public async Task<ResponseBase> Delete(long id)
 		{
-			var user = await _unitOfWork.UserRepository.ReadAsync(u => u.Id == id);
-			await _unitOfWork.UserRepository.DeleteAsync(user);
-			await _unitOfWork.SaveAsync();
+			try
+			{
+				var user = await _unitOfWork.UserRepository.ReadAsync(u => u.Id == id);
+				if (user == null)
+				{
+					return await Task.FromResult(new ResponseBase
+					{
+						StatusCode = StatusCode.NotFound,
+						ErrorMessage = ErrorMessage.NotFound
+
+					});
+				}
+
+				await _unitOfWork.UserRepository.DeleteAsync(user);
+				await _unitOfWork.SaveAsync();
+
+				return new ResponseBase();
+			}
+			catch (Exception ex)
+			{
+				return await Task.FromResult(new ResponseBase
+				{
+					StatusCode = StatusCode.InternalServerError,
+					ErrorMessage = ErrorMessage.DeleteFailed
+
+				});
+			}
 		}
 
 
