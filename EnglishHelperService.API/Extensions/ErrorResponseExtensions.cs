@@ -5,6 +5,9 @@ namespace EnglishHelperService.API.Extensions
 {
 	public static class ErrorResponseExtensions
 	{
+		/// <summary>
+		/// Create error response for controller actions
+		/// </summary>
 		public static IActionResult CreateErrorResponse(this ControllerBase controller, ResponseBase response)
 		{
 			switch (response.StatusCode)
