@@ -12,20 +12,20 @@ namespace EnglishHelperService.Business
 	{
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly UserFactory _userFactory;
-		private readonly CreateUserValidator _createUserValidator;
-		private readonly LoginUserValidator _loginUserValidator;
+		private readonly UserValidator _validator;
+		private readonly PasswordSecurityHandler _passwordSecurityHandler;
 
 		public UserService(
 			IUnitOfWork unitOfWork,
 			UserFactory userFactory,
-			CreateUserValidator createUserValidator,
-			LoginUserValidator loginUserValidator
+			UserValidator validator,
+			PasswordSecurityHandler passwordSecurityHandler
 			)
 		{
 			_unitOfWork = unitOfWork;
 			_userFactory = userFactory;
-			_createUserValidator = createUserValidator;
-			_loginUserValidator = loginUserValidator;
+			_validator = validator;
+			_passwordSecurityHandler = passwordSecurityHandler;
 		}
 
 		/// <summary>
@@ -35,26 +35,25 @@ namespace EnglishHelperService.Business
 		{
 			try
 			{
-				var validationResult = _loginUserValidator.IsValid(request);
+				var validationResult = _validator.IsValidLoginRequest(request);
 				if (!validationResult.HasError)
 				{
 					var entityUser = await _unitOfWork.UserRepository.ReadAsync(u => u.Username == request.Identifier
 					|| u.Email == request.Identifier);
 
 					var user = _userFactory.Create(request, entityUser);
-					if (user != null)
+					if (user is null)
 					{
-						return new LoginUserResponse
-						{
-							StatusCode = StatusCode.Ok,
-							Result = user
-						};
+						return _validator.CreateErrorResponse<LoginUserResponse>(
+						ErrorMessage.InvalidPasswordOrUsernameOrEmail,
+						StatusCode.Unauthorized
+						);
 					}
 
 					return new LoginUserResponse
 					{
-						StatusCode = StatusCode.Unauthorized,
-						ErrorMessage = ErrorMessage.InvalidPasswordOrUsernameOrEmail
+						StatusCode = StatusCode.Ok,
+						Result = user
 					};
 				}
 
@@ -62,21 +61,34 @@ namespace EnglishHelperService.Business
 			}
 			catch (Exception ex)
 			{
-				return new LoginUserResponse
-				{
-					StatusCode = StatusCode.InternalServerError,
-					ErrorMessage = ErrorMessage.ServerError
-				};
+				return await _validator.CreateServerErrorResponse<LoginUserResponse>();
 			}
 		}
 
 		/// <summary>
 		/// Read user by id
 		/// </summary>
-		public async Task<User> ReadUserById(long id)
+		public async Task<ReadUserByIdResponse> ReadUserById(long id)
 		{
-			var user = await _unitOfWork.UserRepository.ReadAsync(u => u.Id == id);
-			return _userFactory.Create(user);
+			try
+			{
+				var entityUser = await _unitOfWork.UserRepository.ReadAsync(u => u.Id == id);
+				var user = _userFactory.Create(entityUser);
+				if (user is null)
+				{
+					return await _validator.CreateNotFoundResponse<ReadUserByIdResponse>();
+				}
+
+				return new ReadUserByIdResponse
+				{
+					StatusCode = StatusCode.Ok,
+					Result = user
+				};
+			}
+			catch (Exception ex)
+			{
+				return await _validator.CreateServerErrorResponse<ReadUserByIdResponse>();
+			}
 		}
 
 		/// <summary>
@@ -103,12 +115,7 @@ namespace EnglishHelperService.Business
 			}
 			catch (Exception ex)
 			{
-				return await Task.FromResult(new ListUserResponse
-				{
-					StatusCode = StatusCode.InternalServerError,
-					ErrorMessage = ErrorMessage.ServerError
-
-				});
+				return await _validator.CreateServerErrorResponse<ListUserResponse>();
 			}
 		}
 
@@ -119,7 +126,7 @@ namespace EnglishHelperService.Business
 		{
 			try
 			{
-				var validationResult = _createUserValidator.IsValid(request);
+				var validationResult = _validator.IsValidCreateUserRequest(request);
 				if (!validationResult.HasError)
 				{
 					var entityUser = _userFactory.Create(request);
@@ -137,11 +144,7 @@ namespace EnglishHelperService.Business
 			}
 			catch (Exception ex)
 			{
-				return new CreateUserResponse
-				{
-					StatusCode = StatusCode.InternalServerError,
-					ErrorMessage = ErrorMessage.ServerError
-				};
+				return await _validator.CreateCreationErrorResponse<CreateUserResponse>();
 			}
 
 		}
@@ -149,8 +152,99 @@ namespace EnglishHelperService.Business
 		/// <summary>
 		/// Update User
 		/// </summary>
-		public async Task Update(UpdateUserRequest request)
+		public async Task<ResponseBase> Update(UpdateUserRequest request)
 		{
+			try
+			{
+				var validationResult = _validator.IsValidUpdateUserRequest(request);
+				if (!validationResult.HasError)
+				{
+					var entityUser = await _unitOfWork.UserRepository.ReadAsync(u => u.Id == request.Id);
+					if (entityUser is null)
+					{
+						return await _validator.CreateNotFoundResponse<ResponseBase>();
+					}
+
+					entityUser.Username = request.Username;
+
+					await _unitOfWork.UserRepository.UpdateAsync(entityUser);
+					await _unitOfWork.SaveAsync();
+
+					return new UpdateUserResponse();
+				}
+
+				return validationResult;
+			}
+			catch (Exception ex)
+			{
+				return await _validator.CreateUpdateErrorResponse<ResponseBase>();
+			}
+
+		}
+
+		/// <summary>
+		/// Change email
+		/// </summary>
+		public async Task<ResponseBase> ChangeEmail(ChangeEmailRequest request)
+		{
+			try
+			{
+				var validationResult = _validator.IsValidChangeEmailRequest(request);
+				if (!validationResult.HasError)
+				{
+					var entityUser = await _unitOfWork.UserRepository.ReadAsync(u => u.Id == request.Id);
+					if (entityUser is null)
+					{
+						return await _validator.CreateNotFoundResponse<ResponseBase>();
+					}
+
+					entityUser.Email = request.Email;
+
+					await _unitOfWork.UserRepository.UpdateAsync(entityUser);
+					await _unitOfWork.SaveAsync();
+
+					return new ResponseBase();
+				}
+
+				return validationResult;
+			}
+			catch (Exception ex)
+			{
+				return await _validator.CreateUpdateErrorResponse<ResponseBase>();
+			}
+
+		}
+
+		/// <summary>
+		/// Change email
+		/// </summary>
+		public async Task<ResponseBase> ChangePassword(ChangePasswordRequest request)
+		{
+			try
+			{
+				var validationResult = _validator.IsValidChangePasswordRequest(request);
+				if (!validationResult.HasError)
+				{
+					var entityUser = await _unitOfWork.UserRepository.ReadAsync(u => u.Id == request.Id);
+					if (entityUser is null)
+					{
+						return await _validator.CreateNotFoundResponse<ResponseBase>();
+					}
+
+					entityUser.Password = _passwordSecurityHandler.HashPassword(request.NewPassword);
+
+					await _unitOfWork.UserRepository.UpdateAsync(entityUser);
+					await _unitOfWork.SaveAsync();
+
+					return new ResponseBase();
+				}
+
+				return validationResult;
+			}
+			catch (Exception ex)
+			{
+				return await _validator.CreateUpdateErrorResponse<ResponseBase>();
+			}
 
 		}
 
@@ -161,30 +255,20 @@ namespace EnglishHelperService.Business
 		{
 			try
 			{
-				var user = await _unitOfWork.UserRepository.ReadAsync(u => u.Id == id);
-				if (user == null)
+				var entityUser = await _unitOfWork.UserRepository.ReadAsync(u => u.Id == id);
+				if (entityUser is null)
 				{
-					return await Task.FromResult(new ResponseBase
-					{
-						StatusCode = StatusCode.NotFound,
-						ErrorMessage = ErrorMessage.NotFound
-
-					});
+					return await _validator.CreateNotFoundResponse<ResponseBase>();
 				}
 
-				await _unitOfWork.UserRepository.DeleteAsync(user);
+				await _unitOfWork.UserRepository.DeleteAsync(entityUser);
 				await _unitOfWork.SaveAsync();
 
 				return new ResponseBase();
 			}
 			catch (Exception ex)
 			{
-				return await Task.FromResult(new ResponseBase
-				{
-					StatusCode = StatusCode.InternalServerError,
-					ErrorMessage = ErrorMessage.DeleteFailed
-
-				});
+				return await _validator.CreateDeleteErrorResponse<ResponseBase>();
 			}
 		}
 

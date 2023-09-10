@@ -14,7 +14,7 @@ namespace EnglishHelperService.API.Extensions.Application
 			RegisterServices(services);
 			RegisterFactories(services);
 			RegisterValidators(services);
-			RegisterHandlers(services);	
+			RegisterHandlers(services);
 
 			return services;
 		}
@@ -51,8 +51,7 @@ namespace EnglishHelperService.API.Extensions.Application
 		/// </summary>
 		private static void RegisterValidators(this IServiceCollection services)
 		{
-			services.AddScoped<LoginUserValidator>();
-			services.AddScoped<CreateUserValidator>();
+			services.AddScoped<UserValidator>();
 		}
 
 		/// <summary>

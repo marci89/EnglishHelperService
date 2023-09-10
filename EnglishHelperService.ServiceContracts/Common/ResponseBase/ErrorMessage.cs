@@ -7,6 +7,7 @@
 		NotFound,
 		DeleteFailed,
 		EditFailed,
+		CreateFailed,
 
 		InvalidPasswordOrUsernameOrEmail,
 		UsernameOrEmailRequired,
@@ -15,6 +16,7 @@
 		UsernameExists,
 		PasswordRequired,
 		InvalidPasswordFormat,
+		InvalidOldPassword,
 		EmailRequired,
 		EmailExists,
 		InvalidEmailFormat

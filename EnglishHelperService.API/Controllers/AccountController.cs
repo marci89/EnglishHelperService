@@ -41,5 +41,33 @@ namespace EnglishHelperService.API.Controllers
 			}
 			return Ok(response.Result);
 		}
+
+		[HttpPut("changeEmail")]
+		public async Task<IActionResult> ChangeEmail([FromBody] ChangeEmailRequest request)
+		{
+			request.Id = User.GetUserId();
+
+			var response = await _userService.ChangeEmail(request);
+			if (response.HasError)
+			{
+				return this.CreateErrorResponse(response);
+			}
+			return NoContent();
+		}
+
+		[HttpPut("changePassword")]
+		public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+		{
+			request.Id = User.GetUserId();
+
+			var response = await _userService.ChangePassword(request);
+			if (response.HasError)
+			{
+				return this.CreateErrorResponse(response);
+			}
+			return NoContent();
+		}
+
+
 	}
 }

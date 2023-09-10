@@ -20,6 +20,17 @@ namespace EnglishHelperService.API.Controllers
 			_userService = userService;
 		}
 
+		[HttpGet("{id}")]
+		public async Task<IActionResult> GetUserById(long id)
+		{
+			var response = await _userService.ReadUserById(id);
+			if (response.HasError)
+			{
+				return this.CreateErrorResponse(response);
+			}
+			return Ok(response.Result);
+		}
+
 		[Authorize(Roles = "Admin")]
 		[HttpGet]
 		public async Task<IActionResult> ListUser([FromQuery] ListUserWithFilterRequest request)
@@ -32,18 +43,15 @@ namespace EnglishHelperService.API.Controllers
 			return Ok(response.Result);
 		}
 
-		[HttpGet("{id}")]
-		public async Task<ActionResult<User>> GetUserById(long id)
-		{
-			var user = await _userService.ReadUserById(id);
-			return Ok(user);
-		}
-
 		[HttpPut]
-		public async Task<ActionResult> UpdateUser([FromBody] UpdateUserRequest request)
+		public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest request)
 		{
-			await _userService.Update(request);
-			return Ok();
+			var response = await _userService.Update(request);
+			if (response.HasError)
+			{
+				return this.CreateErrorResponse(response);
+			}
+			return NoContent();
 		}
 
 		[HttpDelete("{id}")]
