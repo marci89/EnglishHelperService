@@ -1,5 +1,9 @@
 ﻿namespace EnglishHelperService.ServiceContracts
 {
+	/// <summary>
+	/// Response base class that helps send the correct objectto the client
+	/// and send correct error messages if that has any
+	/// </summary>
 	public class ResponseBase
 	{
 		/// <summary>

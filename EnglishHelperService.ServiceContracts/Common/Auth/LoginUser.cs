@@ -1,5 +1,8 @@
 ﻿namespace EnglishHelperService.ServiceContracts
 {
+	/// <summary>
+	/// Login user object for client
+	/// </summary>
 	public class LoginUser
 	{
 		public long Id { get; set; }

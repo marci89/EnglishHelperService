@@ -40,38 +40,52 @@ namespace EnglishHelperService.Business
 		}
 
 		/// <summary>
+		/// Execute two password match validating
+		/// </summary>
+		public ResponseBase IsValidPasswordMatch(long userId, string password)
+		{
+			var user = _unitOfWork.UserRepository.Query(u => u.Id == userId).FirstOrDefault();
+			if (user is null) return CreateErrorResponse<ResponseBase>(ErrorMessage.NotFound, StatusCode.NotFound);
+
+			if (!_passwordSecurityHandler.VerifyPassword(new PasswordSecurityRequest
+			{
+				Password = password,
+				HashedPassword = user.Password
+			}))
+				return CreateErrorResponse<ResponseBase>(ErrorMessage.InvalidOldPassword);
+
+			return new ResponseBase
+			{
+				StatusCode = StatusCode.Created,
+			};
+		}
+
+
+		/// <summary>
 		/// Execute user create request validating
 		/// </summary>
 		public CreateUserResponse IsValidCreateUserRequest(CreateUserRequest request)
 		{
-
 			if (request is null)
 				return CreateErrorResponse<CreateUserResponse>(ErrorMessage.InvalidRequest);
 
-			if (String.IsNullOrWhiteSpace(request.Username))
-				return CreateErrorResponse<CreateUserResponse>(ErrorMessage.UsernameRequired);
+			var usernameValidation = IsValidUsername(request.Username);
+			if (usernameValidation.HasError && usernameValidation.ErrorMessage.HasValue)
+			{
+				return CreateErrorResponse<CreateUserResponse>(usernameValidation.ErrorMessage.Value);
+			}
 
-			if (_unitOfWork.UserRepository.Count(u => u.Username == request.Username) > 0)
-				return CreateErrorResponse<CreateUserResponse>(ErrorMessage.UsernameExists);
+			var passwordValidation = IsValidPassword(request.Password);
+			if (passwordValidation.HasError && passwordValidation.ErrorMessage.HasValue)
+			{
+				return CreateErrorResponse<CreateUserResponse>(passwordValidation.ErrorMessage.Value);
+			}
 
-			if (request.Username.Length > 50)
-				return CreateErrorResponse<CreateUserResponse>(ErrorMessage.UsernameMaxLength);
-
-			if (String.IsNullOrWhiteSpace(request.Password))
-				return CreateErrorResponse<CreateUserResponse>(ErrorMessage.PasswordRequired);
-
-			if (request.Password.Length < 4)
-				return CreateErrorResponse<CreateUserResponse>(ErrorMessage.InvalidPasswordFormat);
-
-			if (String.IsNullOrWhiteSpace(request.Email))
-				return CreateErrorResponse<CreateUserResponse>(ErrorMessage.EmailRequired);
-
-			if (!IsValidEmail(request.Email))
-				return CreateErrorResponse<CreateUserResponse>(ErrorMessage.InvalidEmailFormat);
-
-
-			if (_unitOfWork.UserRepository.Count(u => u.Email == request.Email) > 0)
-				return CreateErrorResponse<CreateUserResponse>(ErrorMessage.EmailExists);
+			var emailValidation = IsValidEmail(request.Email);
+			if (emailValidation.HasError && emailValidation.ErrorMessage.HasValue)
+			{
+				return CreateErrorResponse<CreateUserResponse>(emailValidation.ErrorMessage.Value);
+			}
 
 			return new CreateUserResponse
 			{
@@ -82,19 +96,18 @@ namespace EnglishHelperService.Business
 		/// <summary>
 		/// Execute user update request validating
 		/// </summary>
-		public UpdateUserResponse IsValidUpdateUserRequest(UpdateUserRequest request)
+		public ResponseBase IsValidUpdateUserRequest(UpdateUserRequest request)
 		{
+			if (request is null)
+				return CreateErrorResponse<ResponseBase>(ErrorMessage.InvalidRequest);
 
-			if (String.IsNullOrWhiteSpace(request.Username))
-				return CreateErrorResponse<UpdateUserResponse>(ErrorMessage.UsernameRequired);
+			var usernameValidation = IsValidUsername(request.Username);
+			if (usernameValidation.HasError && usernameValidation.ErrorMessage.HasValue)
+			{
+				return CreateErrorResponse<ResponseBase>(usernameValidation.ErrorMessage.Value);
+			}
 
-			if (_unitOfWork.UserRepository.Count(u => u.Username == request.Username) > 0)
-				return CreateErrorResponse<UpdateUserResponse>(ErrorMessage.UsernameExists);
-
-			if (request.Username.Length > 50)
-				return CreateErrorResponse<UpdateUserResponse>(ErrorMessage.UsernameMaxLength);
-
-			return new UpdateUserResponse
+			return new ResponseBase
 			{
 				StatusCode = StatusCode.Ok,
 			};
@@ -105,22 +118,26 @@ namespace EnglishHelperService.Business
 		/// </summary>
 		public ResponseBase IsValidChangeEmailRequest(ChangeEmailRequest request)
 		{
+			if (request is null)
+				return CreateErrorResponse<ResponseBase>(ErrorMessage.InvalidRequest);
 
-			if (String.IsNullOrWhiteSpace(request.Password))
-				return CreateErrorResponse<ResponseBase>(ErrorMessage.PasswordRequired);
+			var passwordValidation = IsValidPassword(request.Password);
+			if (passwordValidation.HasError && passwordValidation.ErrorMessage.HasValue)
+			{
+				return CreateErrorResponse<ResponseBase>(passwordValidation.ErrorMessage.Value);
+			}
 
-			if (request.Password.Length < 4)
-				return CreateErrorResponse<ResponseBase>(ErrorMessage.InvalidPasswordFormat);
+			var passwordMatchValidation = IsValidPasswordMatch(request.Id, request.Password);
+			if (passwordMatchValidation.HasError && passwordMatchValidation.ErrorMessage.HasValue)
+			{
+				return CreateErrorResponse<ResponseBase>(passwordMatchValidation.ErrorMessage.Value);
+			}
 
-			if (String.IsNullOrWhiteSpace(request.Email))
-				return CreateErrorResponse<ResponseBase>(ErrorMessage.EmailRequired);
-
-			if (!IsValidEmail(request.Email))
-				return CreateErrorResponse<ResponseBase>(ErrorMessage.InvalidEmailFormat);
-
-
-			if (_unitOfWork.UserRepository.Count(u => u.Email == request.Email) > 0)
-				return CreateErrorResponse<ResponseBase>(ErrorMessage.EmailExists);
+			var emailValidation = IsValidEmail(request.Email);
+			if (emailValidation.HasError && emailValidation.ErrorMessage.HasValue)
+			{
+				return CreateErrorResponse<ResponseBase>(emailValidation.ErrorMessage.Value);
+			}
 
 			return new ResponseBase
 			{
@@ -133,19 +150,20 @@ namespace EnglishHelperService.Business
 		/// </summary>
 		public ResponseBase IsValidChangePasswordRequest(ChangePasswordRequest request)
 		{
-			if (String.IsNullOrWhiteSpace(request.NewPassword))
-				return CreateErrorResponse<ResponseBase>(ErrorMessage.PasswordRequired);
+			if (request is null)
+				return CreateErrorResponse<ResponseBase>(ErrorMessage.InvalidRequest);
 
-			if (request.NewPassword.Length < 4)
-				return CreateErrorResponse<ResponseBase>(ErrorMessage.InvalidPasswordFormat);
-
-			var passwordHash = _passwordSecurityHandler.HashPassword(request.NewPassword);
-			if (_passwordSecurityHandler.VerifyPassword(new PasswordSecurityRequest
+			var passwordValidation = IsValidPassword(request.NewPassword);
+			if (passwordValidation.HasError && passwordValidation.ErrorMessage.HasValue)
 			{
-				Password = request.Password,
-				HashedPassword = passwordHash
-			}))
-				return CreateErrorResponse<ResponseBase>(ErrorMessage.InvalidOldPassword);
+				return CreateErrorResponse<ResponseBase>(passwordValidation.ErrorMessage.Value);
+			}
+
+			var passwordMatchValidation = IsValidPasswordMatch(request.Id, request.Password);
+			if (passwordMatchValidation.HasError && passwordMatchValidation.ErrorMessage.HasValue)
+			{
+				return CreateErrorResponse<ResponseBase>(passwordMatchValidation.ErrorMessage.Value);
+			}
 
 			return new ResponseBase
 			{
@@ -154,13 +172,76 @@ namespace EnglishHelperService.Business
 		}
 
 
+		#region Private methods
+
+		/// <summary>
+		/// Execute username validating
+		/// </summary>
+		private ResponseBase IsValidUsername(string username)
+		{
+			if (String.IsNullOrWhiteSpace(username))
+				return CreateErrorResponse<ResponseBase>(ErrorMessage.UsernameRequired);
+
+			if (username.Length > 50)
+				return CreateErrorResponse<ResponseBase>(ErrorMessage.UsernameMaxLength);
+
+			if (_unitOfWork.UserRepository.Count(u => u.Username == username) > 0)
+				return CreateErrorResponse<ResponseBase>(ErrorMessage.UsernameExists);
+
+			return new ResponseBase
+			{
+				StatusCode = StatusCode.Created,
+			};
+		}
+
+		/// <summary>
+		/// Execute password validating
+		/// </summary>
+		private ResponseBase IsValidPassword(string password)
+		{
+			if (String.IsNullOrWhiteSpace(password))
+				return CreateErrorResponse<ResponseBase>(ErrorMessage.PasswordRequired);
+
+			if (password.Length < 4)
+				return CreateErrorResponse<ResponseBase>(ErrorMessage.InvalidPasswordFormat);
+
+
+			return new ResponseBase
+			{
+				StatusCode = StatusCode.Created,
+			};
+		}
+
+		/// <summary>
+		/// Execute email validating
+		/// </summary>
+		private ResponseBase IsValidEmail(string email)
+		{
+			if (String.IsNullOrWhiteSpace(email))
+				return CreateErrorResponse<ResponseBase>(ErrorMessage.EmailRequired);
+
+			if (!IsValidEmailFormat(email))
+				return CreateErrorResponse<ResponseBase>(ErrorMessage.InvalidEmailFormat);
+
+
+			if (_unitOfWork.UserRepository.Count(u => u.Email == email) > 0)
+				return CreateErrorResponse<ResponseBase>(ErrorMessage.EmailExists);
+
+			return new ResponseBase
+			{
+				StatusCode = StatusCode.Created,
+			};
+		}
+
 		/// <summary>
 		/// Validating email by regex
 		/// </summary>
-		private bool IsValidEmail(string email)
+		private bool IsValidEmailFormat(string email)
 		{
 			string emailPattern = @"^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$";
 			return Regex.IsMatch(email, emailPattern);
 		}
+
+		#endregion
 	}
 }

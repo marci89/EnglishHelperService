@@ -8,10 +8,7 @@ using System.ComponentModel;
 namespace EnglishHelperService.API.Controllers
 {
 	[Description("User management")]
-	[Route("[controller]")]
-	[ApiController]
-	[Authorize]
-	public class UsersController : ControllerBase
+	public class UsersController : BaseApiController
 	{
 		private readonly IUserService _userService;
 
@@ -20,6 +17,9 @@ namespace EnglishHelperService.API.Controllers
 			_userService = userService;
 		}
 
+		/// <summary>
+		/// Get user by id
+		/// </summary>
 		[HttpGet("{id}")]
 		public async Task<IActionResult> GetUserById(long id)
 		{
@@ -31,6 +31,10 @@ namespace EnglishHelperService.API.Controllers
 			return Ok(response.Result);
 		}
 
+		/// <summary>
+		/// Get paginated users list with filter request.
+		/// Only admin role can use it.
+		/// </summary>
 		[Authorize(Roles = "Admin")]
 		[HttpGet]
 		public async Task<IActionResult> ListUser([FromQuery] ListUserWithFilterRequest request)
@@ -43,7 +47,10 @@ namespace EnglishHelperService.API.Controllers
 			return Ok(response.Result);
 		}
 
-		[HttpPut]
+		/// <summary>
+		/// Update user
+		/// </summary>
+		[HttpPut()]
 		public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest request)
 		{
 			var response = await _userService.Update(request);
@@ -54,6 +61,9 @@ namespace EnglishHelperService.API.Controllers
 			return NoContent();
 		}
 
+		/// <summary>
+		/// Delete user
+		/// </summary>
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> DeleteUser(long id)
 		{

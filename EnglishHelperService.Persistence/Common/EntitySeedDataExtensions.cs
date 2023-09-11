@@ -7,12 +7,13 @@ namespace EnglishHelperService.Persistence.Common
 	public static class EntitySeedDataExtensions
 	{
 		/// <summary>
-		/// Az entity típusával azonos nevű .json fájlból készít seed adatokat. Build action: Embedded resource.
-		/// Minden olyan táblánál jól használható, ahol nem kezelünk byte[] típust.
+		/// Creates seed data from a .json file with the same name as the entity type.
+		/// Build action: Embedded resource.
+		/// It can be used well for all tables where the byte[] type is not handled.
 		/// </summary>
 		/// <typeparam name="TEntity"></typeparam>
 		/// <param name="builder"></param>
-		/// <param name="seedDataContainer">Az az assembly, amely az seed adatokat tartalmazza (alapértelmezetten a hívó metódus assembly-je)</param>
+		/// <param name="seedDataContainer">The assembly that contains the seed data (by default the assembly of the calling method)</param>
 		public static void Seed<TEntity>(this EntityTypeBuilder<TEntity> builder, Assembly seedDataContainer = null)
 				where TEntity : class, new()
 		{

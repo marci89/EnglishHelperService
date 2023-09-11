@@ -1,28 +1,37 @@
 ﻿
-using EnglishHelperService.Persistence.Entities;
+using EnglishHelperService.ServiceContracts;
+using Entity = EnglishHelperService.Persistence.Entities;
 
 namespace EnglishHelperService.Business
 {
+	/// <summary>
+	/// User object mapping
+	/// </summary>
 	public class UserFactory
 	{
 		private readonly PasswordSecurityHandler _passwordSecurityHandler;
+		private readonly UserValidator _validator;
 		private readonly ITokenService _tokenService;
 
-		public UserFactory(PasswordSecurityHandler passwordSecurityHandler, ITokenService tokenService)
+		public UserFactory(PasswordSecurityHandler passwordSecurityHandler, UserValidator validator, ITokenService tokenService)
 		{
 			_passwordSecurityHandler = passwordSecurityHandler;
 			_tokenService = tokenService;
+			_validator = validator;
 		}
 
-		public ServiceContracts.User Create(User user)
+		/// <summary>
+		/// Map client user from domain user
+		/// </summary>
+		public User Create(Entity.User user)
 		{
 			if (user is null)
 				return null;
 
-			return new ServiceContracts.User
+			return new User
 			{
 				Id = user.Id,
-				Role = Create(user.Role),
+				Role = user.Role.ToString(),
 				Username = user.Username,
 				Email = user.Email,
 				Created = user.Created,
@@ -30,14 +39,17 @@ namespace EnglishHelperService.Business
 			};
 		}
 
-		public User Create(ServiceContracts.CreateUserRequest request)
+		/// <summary>
+		/// Map domain user from client user (registration)
+		/// </summary>
+		public Entity.User Create(CreateUserRequest request)
 		{
 			if (request is null)
 				return null;
 
-			return new User
+			return new Entity.User
 			{
-				Role = RoleType.Member,
+				Role = Entity.RoleType.Member,
 				Username = request.Username,
 				Email = request.Email,
 				Password = _passwordSecurityHandler.HashPassword(request.Password),
@@ -46,39 +58,30 @@ namespace EnglishHelperService.Business
 			};
 		}
 
-		public ServiceContracts.LoginUser Create(ServiceContracts.LoginUserRequest request, User user)
+		/// <summary>
+		/// Map login user object from domain user and login datas
+		/// </summary>
+		public LoginUser Create(LoginUserRequest request, Entity.User user)
 		{
 			if (request is null || user is null)
 				return null;
 
-			if (!_passwordSecurityHandler.VerifyPassword(new ServiceContracts.PasswordSecurityRequest
-			{
-				Password = request.Password,
-				HashedPassword = user.Password
-			}))
+			var passwordMatchValidation = _validator.IsValidPasswordMatch(user.Id, request.Password);
+			if (passwordMatchValidation.HasError)
 				return null;
 
-			return new ServiceContracts.LoginUser
+			return new LoginUser
 			{
 				Id = user.Id,
 				Username = user.Username,
-				Role = Create(user.Role),
+				Role = user.Role.ToString(),
 				Token = _tokenService.CreateToken(user)
 			};
 		}
 
-		public string Create(RoleType roleType)
+		public string CreatePasswordHash(string password)
 		{
-			switch (roleType)
-			{
-				case RoleType.Admin:
-					return ServiceContracts.RoleType.Admin.ToString();
-				case RoleType.Member:
-					return ServiceContracts.RoleType.Member.ToString();
-				default:
-					throw new ArgumentException("Invalid role type.");
-			}
+			return _passwordSecurityHandler.HashPassword(password);
 		}
-
 	}
 }

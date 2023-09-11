@@ -1,5 +1,8 @@
 ﻿namespace EnglishHelperService.ServiceContracts
 {
+	/// <summary>
+	/// Error messages for client
+	/// </summary>
 	public enum ErrorMessage
 	{
 		InvalidRequest,

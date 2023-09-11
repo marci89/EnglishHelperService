@@ -1,6 +1,7 @@
 ﻿using EnglishHelperService.API.Extensions;
 using EnglishHelperService.Business;
 using EnglishHelperService.ServiceContracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
 
@@ -8,9 +9,7 @@ namespace EnglishHelperService.API.Controllers
 {
 
 	[Description("Account management")]
-	[Route("[controller]")]
-	[ApiController]
-	public class AccountController : ControllerBase
+	public class AccountController : BaseApiController
 	{
 		private readonly IUserService _userService;
 
@@ -19,6 +18,10 @@ namespace EnglishHelperService.API.Controllers
 			_userService = userService;
 		}
 
+		/// <summary>
+		/// User create (registration)
+		/// </summary>
+		[AllowAnonymous]
 		[HttpPost("register")]
 		public async Task<IActionResult> Register([FromBody] CreateUserRequest request)
 		{
@@ -30,7 +33,10 @@ namespace EnglishHelperService.API.Controllers
 			return CreatedAtAction("Register", new { id = response.Result.Id }, response.Result);
 		}
 
-
+		/// <summary>
+		/// Login user and auth with jwt token
+		/// </summary>
+		[AllowAnonymous]
 		[HttpPost("login")]
 		public async Task<IActionResult> Login([FromBody] LoginUserRequest request)
 		{
@@ -42,10 +48,13 @@ namespace EnglishHelperService.API.Controllers
 			return Ok(response.Result);
 		}
 
+		/// <summary>
+		/// Change logined user email
+		/// </summary>
 		[HttpPut("changeEmail")]
 		public async Task<IActionResult> ChangeEmail([FromBody] ChangeEmailRequest request)
 		{
-			request.Id = User.GetUserId();
+			request.Id = GetLoginedUserId();
 
 			var response = await _userService.ChangeEmail(request);
 			if (response.HasError)
@@ -55,10 +64,13 @@ namespace EnglishHelperService.API.Controllers
 			return NoContent();
 		}
 
+		/// <summary>
+		/// Change logined user password
+		/// </summary>
 		[HttpPut("changePassword")]
 		public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
 		{
-			request.Id = User.GetUserId();
+			request.Id = GetLoginedUserId();
 
 			var response = await _userService.ChangePassword(request);
 			if (response.HasError)
@@ -67,7 +79,5 @@ namespace EnglishHelperService.API.Controllers
 			}
 			return NoContent();
 		}
-
-
 	}
 }

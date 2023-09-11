@@ -31,7 +31,6 @@ namespace EnglishHelperService.Business
 				StatusCode = StatusCode.NotFound,
 				ErrorMessage = ErrorMessage.NotFound
 			});
-
 		}
 
 		/// <summary>

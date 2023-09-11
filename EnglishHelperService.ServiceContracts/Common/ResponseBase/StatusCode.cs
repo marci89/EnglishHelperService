@@ -1,5 +1,8 @@
 ﻿namespace EnglishHelperService.ServiceContracts
 {
+	/// <summary>
+	/// Status codes
+	/// </summary>
 	public enum StatusCode
 	{
 		Ok = 200,

@@ -1,5 +1,8 @@
 ﻿namespace EnglishHelperService.ServiceContracts
 {
+	/// <summary>
+	/// Login user request
+	/// </summary>
 	public class LoginUserRequest
 	{
 		/// <summary>

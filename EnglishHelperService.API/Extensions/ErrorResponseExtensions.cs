@@ -1,5 +1,6 @@
 ﻿using EnglishHelperService.ServiceContracts;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace EnglishHelperService.API.Extensions
 {
@@ -10,6 +11,11 @@ namespace EnglishHelperService.API.Extensions
 		/// </summary>
 		public static IActionResult CreateErrorResponse(this ControllerBase controller, ResponseBase response)
 		{
+			if (response is null)
+			{
+				return controller.BadRequest("Invalid response object");
+			}
+
 			switch (response.StatusCode)
 			{
 				case StatusCode.BadRequest:
@@ -19,7 +25,7 @@ namespace EnglishHelperService.API.Extensions
 				case StatusCode.NotFound:
 					return controller.NotFound(response.ErrorMessage.ToString());
 				case StatusCode.InternalServerError:
-					return controller.StatusCode(500, response.ErrorMessage.ToString());
+					return controller.StatusCode((int)HttpStatusCode.InternalServerError, response.ErrorMessage.ToString());
 				default:
 					return controller.BadRequest(response.ErrorMessage.ToString());
 			}

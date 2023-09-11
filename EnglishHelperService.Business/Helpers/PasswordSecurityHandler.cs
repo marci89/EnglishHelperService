@@ -2,6 +2,9 @@
 
 namespace EnglishHelperService.Business
 {
+	/// <summary>
+	/// BCrypt hash generator and validator
+	/// </summary>
 	public class PasswordSecurityHandler
 	{
 		public string HashPassword(string password)

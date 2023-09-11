@@ -170,7 +170,7 @@ namespace EnglishHelperService.Business
 					await _unitOfWork.UserRepository.UpdateAsync(entityUser);
 					await _unitOfWork.SaveAsync();
 
-					return new UpdateUserResponse();
+					return new ResponseBase();
 				}
 
 				return validationResult;
@@ -231,7 +231,7 @@ namespace EnglishHelperService.Business
 						return await _validator.CreateNotFoundResponse<ResponseBase>();
 					}
 
-					entityUser.Password = _passwordSecurityHandler.HashPassword(request.NewPassword);
+					entityUser.Password = _userFactory.CreatePasswordHash(request.NewPassword);
 
 					await _unitOfWork.UserRepository.UpdateAsync(entityUser);
 					await _unitOfWork.SaveAsync();

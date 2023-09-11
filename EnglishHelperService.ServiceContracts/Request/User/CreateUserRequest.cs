@@ -1,5 +1,8 @@
 ﻿namespace EnglishHelperService.ServiceContracts
 {
+	/// <summary>
+	/// Create user request
+	/// </summary>
 	public class CreateUserRequest
 	{
 		public string Username { get; set; }

@@ -1,5 +1,8 @@
 ﻿namespace EnglishHelperService.ServiceContracts
 {
+	/// <summary>
+	/// User email change request
+	/// </summary>
 	public class ChangeEmailRequest
 	{
 		public long Id { get; set; }

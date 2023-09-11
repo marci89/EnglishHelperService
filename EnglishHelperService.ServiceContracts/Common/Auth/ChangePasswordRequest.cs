@@ -1,5 +1,8 @@
 ﻿namespace EnglishHelperService.ServiceContracts
 {
+	/// <summary>
+	/// User password change request
+	/// </summary>
 	public class ChangePasswordRequest
 	{
 		public long Id { get; set; }
