@@ -121,6 +121,7 @@ namespace EnglishHelperService.Business
 			}
 			catch (Exception ex)
 			{
+				_logger.LogError("An error occurred while listing users: {ErrorMessage}", ex.Message);
 				return await _validator.CreateServerErrorResponse<ListUserResponse>();
 			}
 		}
@@ -150,7 +151,7 @@ namespace EnglishHelperService.Business
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError("An error occurred while listing users: {ErrorMessage}", ex.Message);
+				_logger.LogError("An error occurred while create user: {ErrorMessage}", ex.Message);
 				return await _validator.CreateCreationErrorResponse<CreateUserResponse>();
 			}
 

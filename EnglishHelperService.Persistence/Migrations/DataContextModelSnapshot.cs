@@ -33,7 +33,7 @@ namespace EnglishHelperService.Persistence.Migrations
                     b.Property<DateTime>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2023, 9, 3, 11, 8, 15, 418, DateTimeKind.Utc).AddTicks(3478));
+                        .HasDefaultValue(new DateTime(2023, 9, 13, 22, 56, 44, 542, DateTimeKind.Local).AddTicks(8200));
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -43,7 +43,7 @@ namespace EnglishHelperService.Persistence.Migrations
                     b.Property<DateTime>("LastActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2023, 9, 3, 11, 8, 15, 418, DateTimeKind.Utc).AddTicks(3592));
+                        .HasDefaultValue(new DateTime(2023, 9, 13, 22, 56, 44, 542, DateTimeKind.Local).AddTicks(8420));
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -95,9 +95,7 @@ namespace EnglishHelperService.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Created")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2023, 9, 3, 11, 8, 15, 418, DateTimeKind.Utc).AddTicks(6745));
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("EnglishText")
                         .IsRequired()

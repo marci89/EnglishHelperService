@@ -48,11 +48,11 @@ namespace EnglishHelperService.Persistence
 				   .IsUnique(true);
 
 			builder.Property(u => u.Created)
-				   .HasDefaultValue(DateTime.UtcNow)
+				   .HasDefaultValue(DateTime.Now)
 				   .IsRequired();
 
 			builder.Property(u => u.LastActive)
-				   .HasDefaultValue(DateTime.UtcNow)
+				   .HasDefaultValue(DateTime.Now)
 				   .IsRequired();
 
 			builder.Seed();

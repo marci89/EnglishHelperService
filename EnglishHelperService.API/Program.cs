@@ -33,12 +33,16 @@ if (app.Environment.IsDevelopment())
 
 #region If database is not exists or there is a new migration to update, this will handle it.
 
-using var scope = app.Services.CreateScope();
-var db = scope.ServiceProvider.GetRequiredService<DataContext>();
-if (db.Database.GetPendingMigrations().Any())
+if (databaseSettings.AutoMigrationEnabled)
 {
-	db.Database.Migrate();
+	using var scope = app.Services.CreateScope();
+	var db = scope.ServiceProvider.GetRequiredService<DataContext>();
+	if (db.Database.GetPendingMigrations().Any())
+	{
+		db.Database.Migrate();
+	}
 }
+
 
 #endregion
 

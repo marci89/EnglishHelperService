@@ -40,7 +40,6 @@ namespace EnglishHelperService.Persistence
 				   .IsRequired();
 
 			builder.Property(u => u.Created)
-				   .HasDefaultValue(DateTime.UtcNow)
 				   .IsRequired();
 
 			builder.Property(u => u.LastUse)
