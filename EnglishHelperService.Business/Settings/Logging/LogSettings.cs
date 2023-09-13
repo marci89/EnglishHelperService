@@ -10,7 +10,7 @@ namespace EnglishHelperService.Business.Settings
 	{
 		public LogSettings(IConfiguration configuration)
 		{
-			LogFilesPath = configuration.GetSection("LogSettings:LogFilesPath").Value;
+			LogFilesPath = configuration.GetSection("LogSettings").GetValue<string>("LogFilesPath");
 		}
 
 		/// <summary>

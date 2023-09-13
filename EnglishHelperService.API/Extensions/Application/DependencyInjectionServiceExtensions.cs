@@ -66,6 +66,7 @@ namespace EnglishHelperService.API.Extensions
 
 			//appsettings
 			services.AddSingleton<ILogSettings, LogSettings>();
+			services.AddSingleton<IDatabaseSettings, DatabaseSettings>();
 		}
 	}
 }

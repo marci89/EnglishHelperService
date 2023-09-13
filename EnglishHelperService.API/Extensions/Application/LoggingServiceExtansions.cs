@@ -9,10 +9,10 @@ namespace EnglishHelperService.API.Extensions
 		/// <summary>
 		/// Handle logging registration
 		/// </summary>
-		public static IServiceCollection AddLoggingService(this IServiceCollection services, ILogSettings logSettings)
+		public static IServiceCollection AddLoggingService(this IServiceCollection services, ILogSettings settings)
 		{
 			//Get file path
-			var logFilePath = logSettings.LogFilesPath;
+			var logFilePath = settings.LogFilesPath;
 
 			// Configure Serilog
 			Log.Logger = new LoggerConfiguration()

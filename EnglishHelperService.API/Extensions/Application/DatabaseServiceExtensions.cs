@@ -1,4 +1,5 @@
-﻿using EnglishHelperService.Persistence;
+﻿using EnglishHelperService.Business.Settings;
+using EnglishHelperService.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace EnglishHelperService.API.Extensions
@@ -8,13 +9,40 @@ namespace EnglishHelperService.API.Extensions
 		/// <summary>
 		/// Handle database registration
 		/// </summary>
-		public static IServiceCollection AddDatabaseServices(this IServiceCollection services, IConfiguration config)
+		public static IServiceCollection AddDatabaseServices(this IServiceCollection services, IDatabaseSettings settings)
 		{
-			services.AddDbContext<DataContext>(options =>
+			switch (settings.Provider)
 			{
-				options.UseSqlServer(config.GetConnectionString("DefaultConnection"));
-			});
-			return services;
+				//MSSQL
+				case DatabaseProvider.MSSQL:
+					services.AddDbContext<DataContext>(options =>
+					{
+						options.UseSqlServer(settings.ConnectionString);
+					});
+
+					return services;
+
+				//PostgreSQL
+				case DatabaseProvider.PostgreSQL:
+					services.AddDbContext<DataContext>(options =>
+					{
+						options.UseNpgsql(settings.ConnectionString);
+					});
+					return services;
+
+				//SQLite
+				case DatabaseProvider.SQLite:
+					services.AddDbContext<DataContext>(options =>
+					{
+						options.UseSqlite(settings.ConnectionString);
+					});
+
+					return services;
+
+				default:
+					throw new ArgumentException("Not supported database type.");
+
+			}
 		}
 	}
 }

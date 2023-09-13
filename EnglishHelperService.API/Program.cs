@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 //appSettings
 var logSettings = new LogSettings(builder.Configuration);
+var databaseSettings = new DatabaseSettings(builder.Configuration);
 
 
 
@@ -15,7 +16,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerServices();
 builder.Services.AddIdentityServices(builder.Configuration);
-builder.Services.AddDatabaseServices(builder.Configuration);
+builder.Services.AddDatabaseServices(databaseSettings);
 builder.Services.AddDependencyInjectionServices();
 builder.Services.AddLoggingService(logSettings);
 
