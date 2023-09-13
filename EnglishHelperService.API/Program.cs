@@ -1,9 +1,14 @@
 using EnglishHelperService.API.Extensions;
-using EnglishHelperService.API.Extensions.Application;
+using EnglishHelperService.Business.Settings;
 using EnglishHelperService.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//appSettings
+var logSettings = new LogSettings(builder.Configuration);
+
+
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -12,6 +17,7 @@ builder.Services.AddSwaggerServices();
 builder.Services.AddIdentityServices(builder.Configuration);
 builder.Services.AddDatabaseServices(builder.Configuration);
 builder.Services.AddDependencyInjectionServices();
+builder.Services.AddLoggingService(logSettings);
 
 builder.Services.AddCors();
 

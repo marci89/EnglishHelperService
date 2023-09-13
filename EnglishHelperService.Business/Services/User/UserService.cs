@@ -1,6 +1,7 @@
 ﻿using EnglishHelperService.Persistence.Repositories;
 using EnglishHelperService.ServiceContracts;
 using LinqKit;
+using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;
 
 namespace EnglishHelperService.Business
@@ -13,19 +14,19 @@ namespace EnglishHelperService.Business
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly UserFactory _userFactory;
 		private readonly UserValidator _validator;
-		private readonly PasswordSecurityHandler _passwordSecurityHandler;
+		private readonly ILogger<UserService> _logger;
 
 		public UserService(
 			IUnitOfWork unitOfWork,
 			UserFactory userFactory,
 			UserValidator validator,
-			PasswordSecurityHandler passwordSecurityHandler
+			ILogger<UserService> logger
 			)
 		{
 			_unitOfWork = unitOfWork;
 			_userFactory = userFactory;
 			_validator = validator;
-			_passwordSecurityHandler = passwordSecurityHandler;
+			_logger = logger;
 		}
 
 		/// <summary>
@@ -44,6 +45,8 @@ namespace EnglishHelperService.Business
 					var user = _userFactory.Create(request, entityUser);
 					if (user is null)
 					{
+						_logger.LogError("Login failed for user with Identifier: {Identifier}", request.Identifier);
+
 						return _validator.CreateErrorResponse<LoginUserResponse>(
 						ErrorMessage.InvalidPasswordOrUsernameOrEmail,
 						StatusCode.Unauthorized
@@ -61,6 +64,7 @@ namespace EnglishHelperService.Business
 			}
 			catch (Exception ex)
 			{
+				_logger.LogError("An error occurred during the login process: {ErrorMessage}", ex.Message);
 				return await _validator.CreateServerErrorResponse<LoginUserResponse>();
 			}
 		}
@@ -76,6 +80,7 @@ namespace EnglishHelperService.Business
 				var user = _userFactory.Create(entityUser);
 				if (user is null)
 				{
+					_logger.LogWarning("User not found for ID: {UserId}", id);
 					return await _validator.CreateNotFoundResponse<ReadUserByIdResponse>();
 				}
 
@@ -87,6 +92,7 @@ namespace EnglishHelperService.Business
 			}
 			catch (Exception ex)
 			{
+				_logger.LogError("An error occurred while reading user by ID {UserId}: {ErrorMessage}", id, ex.Message);
 				return await _validator.CreateServerErrorResponse<ReadUserByIdResponse>();
 			}
 		}
@@ -144,6 +150,7 @@ namespace EnglishHelperService.Business
 			}
 			catch (Exception ex)
 			{
+				_logger.LogError("An error occurred while listing users: {ErrorMessage}", ex.Message);
 				return await _validator.CreateCreationErrorResponse<CreateUserResponse>();
 			}
 
@@ -162,6 +169,7 @@ namespace EnglishHelperService.Business
 					var entityUser = await _unitOfWork.UserRepository.ReadAsync(u => u.Id == request.Id);
 					if (entityUser is null)
 					{
+						_logger.LogWarning("User not found for update with ID: {UserId}", request.Id);
 						return await _validator.CreateNotFoundResponse<ResponseBase>();
 					}
 
@@ -177,6 +185,7 @@ namespace EnglishHelperService.Business
 			}
 			catch (Exception ex)
 			{
+				_logger.LogError("An error occurred while updating user with ID {UserId}: {ErrorMessage}", request.Id, ex.Message);
 				return await _validator.CreateUpdateErrorResponse<ResponseBase>();
 			}
 
@@ -195,6 +204,7 @@ namespace EnglishHelperService.Business
 					var entityUser = await _unitOfWork.UserRepository.ReadAsync(u => u.Id == request.Id);
 					if (entityUser is null)
 					{
+						_logger.LogWarning("User not found for email change with ID: {UserId}", request.Id);
 						return await _validator.CreateNotFoundResponse<ResponseBase>();
 					}
 
@@ -210,6 +220,7 @@ namespace EnglishHelperService.Business
 			}
 			catch (Exception ex)
 			{
+				_logger.LogError("An error occurred while changing email for user with ID {UserId}: {ErrorMessage}", request.Id, ex.Message);
 				return await _validator.CreateUpdateErrorResponse<ResponseBase>();
 			}
 
@@ -228,6 +239,7 @@ namespace EnglishHelperService.Business
 					var entityUser = await _unitOfWork.UserRepository.ReadAsync(u => u.Id == request.Id);
 					if (entityUser is null)
 					{
+						_logger.LogWarning("User not found for password change with ID: {UserId}", request.Id);
 						return await _validator.CreateNotFoundResponse<ResponseBase>();
 					}
 
@@ -243,6 +255,7 @@ namespace EnglishHelperService.Business
 			}
 			catch (Exception ex)
 			{
+				_logger.LogError("An error occurred while changing password for user with ID {UserId}: {ErrorMessage}", request.Id, ex.Message);
 				return await _validator.CreateUpdateErrorResponse<ResponseBase>();
 			}
 
@@ -258,6 +271,7 @@ namespace EnglishHelperService.Business
 				var entityUser = await _unitOfWork.UserRepository.ReadAsync(u => u.Id == id);
 				if (entityUser is null)
 				{
+					_logger.LogWarning("User not found for delete with ID: {UserId}", id);
 					return await _validator.CreateNotFoundResponse<ResponseBase>();
 				}
 
@@ -268,6 +282,7 @@ namespace EnglishHelperService.Business
 			}
 			catch (Exception ex)
 			{
+				_logger.LogError("An error occurred while deleting user with ID {UserId}: {ErrorMessage}", id, ex.Message);
 				return await _validator.CreateDeleteErrorResponse<ResponseBase>();
 			}
 		}

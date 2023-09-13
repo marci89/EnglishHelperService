@@ -1,8 +1,9 @@
 ﻿using EnglishHelperService.API.Helpers;
 using EnglishHelperService.Business;
+using EnglishHelperService.Business.Settings;
 using EnglishHelperService.Persistence.Repositories;
 
-namespace EnglishHelperService.API.Extensions.Application
+namespace EnglishHelperService.API.Extensions
 {
 	public static class DependencyInjectionServiceExtensions
 	{
@@ -62,6 +63,9 @@ namespace EnglishHelperService.API.Extensions.Application
 		{
 			services.AddScoped<PasswordSecurityHandler>();
 			services.AddScoped<LogUserActivity>();
+
+			//appsettings
+			services.AddSingleton<ILogSettings, LogSettings>();
 		}
 	}
 }
