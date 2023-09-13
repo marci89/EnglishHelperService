@@ -1,4 +1,5 @@
-﻿using EnglishHelperService.Business;
+﻿using EnglishHelperService.API.Helpers;
+using EnglishHelperService.Business;
 using EnglishHelperService.Persistence.Repositories;
 
 namespace EnglishHelperService.API.Extensions.Application
@@ -14,7 +15,7 @@ namespace EnglishHelperService.API.Extensions.Application
 			RegisterServices(services);
 			RegisterFactories(services);
 			RegisterValidators(services);
-			RegisterHandlers(services);
+			RegisterHelpers(services);
 
 			return services;
 		}
@@ -57,9 +58,10 @@ namespace EnglishHelperService.API.Extensions.Application
 		/// <summary>
 		/// Register handlers
 		/// </summary>
-		private static void RegisterHandlers(this IServiceCollection services)
+		private static void RegisterHelpers(this IServiceCollection services)
 		{
 			services.AddScoped<PasswordSecurityHandler>();
+			services.AddScoped<LogUserActivity>();
 		}
 	}
 }
