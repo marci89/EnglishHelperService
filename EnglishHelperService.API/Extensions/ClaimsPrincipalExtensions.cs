@@ -2,22 +2,29 @@
 
 namespace EnglishHelperService.API.Extensions
 {
-	public static class ClaimsPrincipalExtensions
-	{
-		/// <summary>
-		/// Get user id from ClaimTypes
-		/// </summary>
-		public static int GetUserId(this ClaimsPrincipal user)
-		{
-			return int.Parse(user.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-		}
+    public static class ClaimsPrincipalExtensions
+    {
+        /// <summary>
+        /// Get user id from ClaimTypes
+        /// </summary>
+        public static long GetUserId(this ClaimsPrincipal user)
+        {
+            var nameIdentifierClaim = user?.FindFirst(ClaimTypes.NameIdentifier);
 
-		/// <summary>
-		/// Get username from ClaimTypes
-		/// </summary>
-		public static string GetUsername(this ClaimsPrincipal user)
-		{
-			return user.FindFirst(ClaimTypes.Name)?.Value;
-		}
-	}
+            if (nameIdentifierClaim != null && long.TryParse(nameIdentifierClaim.Value, out long userId))
+            {
+                return userId;
+            }
+
+            return 0;
+        }
+
+        /// <summary>
+        /// Get username from ClaimTypes
+        /// </summary>
+        public static string GetUsername(this ClaimsPrincipal user)
+        {
+            return user?.FindFirst(ClaimTypes.Name)?.Value;
+        }
+    }
 }

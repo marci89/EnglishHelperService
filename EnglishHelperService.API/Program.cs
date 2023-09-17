@@ -27,20 +27,20 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-	app.UseSwagger();
-	app.UseSwaggerUI();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 #region If database is not exists or there is a new migration to update, this will handle it.
 
 if (databaseSettings.AutoMigrationEnabled)
 {
-	using var scope = app.Services.CreateScope();
-	var db = scope.ServiceProvider.GetRequiredService<DataContext>();
-	if (db.Database.GetPendingMigrations().Any())
-	{
-		db.Database.Migrate();
-	}
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<DataContext>();
+    if (db.Database.GetPendingMigrations().Any())
+    {
+        db.Database.Migrate();
+    }
 }
 
 
