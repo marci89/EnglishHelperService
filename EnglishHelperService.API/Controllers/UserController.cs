@@ -10,22 +10,22 @@ using System.ComponentModel;
 namespace EnglishHelperService.API.Controllers
 {
     [Description("User management")]
-    public class UsersController : BaseApiController
+    public class UserController : BaseApiController
     {
-        private readonly IUserService _userService;
+        private readonly IUserService _service;
 
-        public UsersController(IUserService userService, ErrorLogger logger) : base(logger)
+        public UserController(IUserService service, ErrorLogger logger) : base(logger)
         {
-            _userService = userService;
+            _service = service;
         }
 
         /// <summary>
         /// Get user by id
         /// </summary>
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUserById(long id)
+        public async Task<IActionResult> GetById(long id)
         {
-            var response = await _userService.ReadUserById(id);
+            var response = await _service.ReadById(id);
             if (response.HasError)
             {
                 LogError("Id: " + id, response);
@@ -39,10 +39,10 @@ namespace EnglishHelperService.API.Controllers
         /// Only admin role can use it.
         /// </summary>
         [Authorize(Roles = "Admin")]
-        [HttpGet]
-        public async Task<IActionResult> ListUser([FromQuery] ListUserWithFilterRequest request)
+        [HttpGet("List")]
+        public async Task<IActionResult> List([FromQuery] ListUserWithFilterRequest request)
         {
-            var response = await _userService.ListUser(request);
+            var response = await _service.List(request);
             if (response.HasError)
             {
                 LogError(JsonConvert.SerializeObject(request), response);
@@ -55,9 +55,9 @@ namespace EnglishHelperService.API.Controllers
         /// Update user
         /// </summary>
         [HttpPut()]
-        public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest request)
+        public async Task<IActionResult> Update([FromBody] UpdateUserRequest request)
         {
-            var response = await _userService.Update(request);
+            var response = await _service.Update(request);
             if (response.HasError)
             {
                 LogError(JsonConvert.SerializeObject(request), response);
@@ -70,9 +70,9 @@ namespace EnglishHelperService.API.Controllers
         /// Delete user
         /// </summary>
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(long id)
+        public async Task<IActionResult> Delete(long id)
         {
-            var response = await _userService.Delete(id);
+            var response = await _service.Delete(id);
             if (response.HasError)
             {
                 LogError("Id: " + id, response);

@@ -27,6 +27,7 @@ namespace EnglishHelperService.API.Extensions
         private static void RegisterRepositories(this IServiceCollection services)
         {
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IWordRepository, WordRepository>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
@@ -37,6 +38,7 @@ namespace EnglishHelperService.API.Extensions
         private static void RegisterServices(this IServiceCollection services)
         {
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IWordService, WordService>();
             services.AddScoped<ITokenService, TokenService>();
         }
 
@@ -46,6 +48,7 @@ namespace EnglishHelperService.API.Extensions
         private static void RegisterFactories(this IServiceCollection services)
         {
             services.AddScoped<UserFactory>();
+            services.AddScoped<WordFactory>();
         }
 
         /// <summary>
@@ -54,6 +57,7 @@ namespace EnglishHelperService.API.Extensions
         private static void RegisterValidators(this IServiceCollection services)
         {
             services.AddScoped<UserValidator>();
+            services.AddScoped<WordValidator>();
         }
 
         /// <summary>

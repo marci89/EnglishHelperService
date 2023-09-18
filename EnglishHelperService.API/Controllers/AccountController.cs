@@ -13,11 +13,11 @@ namespace EnglishHelperService.API.Controllers
     [Description("Account management")]
     public class AccountController : BaseApiController
     {
-        private readonly IUserService _userService;
+        private readonly IUserService _service;
 
-        public AccountController(IUserService userService, ErrorLogger logger) : base(logger)
+        public AccountController(IUserService service, ErrorLogger logger) : base(logger)
         {
-            _userService = userService;
+            _service = service;
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace EnglishHelperService.API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] CreateUserRequest request)
         {
-            var response = await _userService.Create(request);
+            var response = await _service.Create(request);
             if (response.HasError)
             {
                 LogError(JsonConvert.SerializeObject(request), response);
@@ -43,7 +43,7 @@ namespace EnglishHelperService.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginUserRequest request)
         {
-            var response = await _userService.Login(request);
+            var response = await _service.Login(request);
             if (response.HasError)
             {
                 LogError(JsonConvert.SerializeObject(request), response);
@@ -60,7 +60,7 @@ namespace EnglishHelperService.API.Controllers
         {
             request.Id = GetLoginedUserId();
 
-            var response = await _userService.ChangeEmail(request);
+            var response = await _service.ChangeEmail(request);
             if (response.HasError)
             {
                 LogError(JsonConvert.SerializeObject(request), response);
@@ -77,7 +77,7 @@ namespace EnglishHelperService.API.Controllers
         {
             request.Id = GetLoginedUserId();
 
-            var response = await _userService.ChangePassword(request);
+            var response = await _service.ChangePassword(request);
             if (response.HasError)
             {
                 LogError(JsonConvert.SerializeObject(request), response);

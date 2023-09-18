@@ -1,7 +1,7 @@
-﻿namespace EnglishHelperService.Persistence.Entities
+﻿namespace EnglishHelperService.ServiceContracts
 {
     /// <summary>
-    /// Word entity
+    /// Word object for client
     /// </summary>
     public class Word
     {
@@ -13,6 +13,5 @@
         public int IncorrectCount { get; set; }
         public DateTime Created { get; set; }
         public DateTime? LastUse { get; set; }
-        public virtual User User { get; set; }
     }
 }
