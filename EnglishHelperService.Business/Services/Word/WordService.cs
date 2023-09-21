@@ -125,7 +125,11 @@ namespace EnglishHelperService.Business
                     await _unitOfWork.WordRepository.UpdateAsync(entity);
                     await _unitOfWork.SaveAsync();
 
-                    return new UpdateWordResponse();
+                    return new UpdateWordResponse
+                    {
+                        StatusCode = StatusCode.Ok,
+                        Result = _factory.Create(entity)
+                    };
                 }
 
                 return validationResult;

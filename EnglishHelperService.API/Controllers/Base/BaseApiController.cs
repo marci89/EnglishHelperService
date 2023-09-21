@@ -8,7 +8,6 @@ namespace EnglishHelperService.API.Controllers
 {
     [Authorize]
     [ApiController]
-    [ServiceFilter(typeof(LogUserActivity))]
     [Route("[controller]")]
     public class BaseApiController : ControllerBase
     {

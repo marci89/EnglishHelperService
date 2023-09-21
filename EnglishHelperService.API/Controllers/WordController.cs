@@ -10,6 +10,7 @@ namespace EnglishHelperService.API.Controllers
 {
 
     [Description("Word management")]
+    [ServiceFilter(typeof(LogUserActivity))]
     public class WordController : BaseApiController
     {
         private readonly IWordService _service;
@@ -38,8 +39,10 @@ namespace EnglishHelperService.API.Controllers
         /// Get User's words by user id.
         /// </summary>
         [HttpGet("List")]
-        public async Task<IActionResult> List([FromQuery] long userId)
+        public async Task<IActionResult> List()
         {
+            var userId = GetLoginedUserId();
+
             var response = await _service.List(userId);
             if (response.HasError)
             {
@@ -55,6 +58,8 @@ namespace EnglishHelperService.API.Controllers
         [HttpPost()]
         public async Task<IActionResult> Create([FromBody] CreateWordRequest request)
         {
+            request.UserId = GetLoginedUserId();
+
             var response = await _service.Create(request);
             if (response.HasError)
             {
@@ -70,6 +75,8 @@ namespace EnglishHelperService.API.Controllers
         [HttpPut()]
         public async Task<IActionResult> Update([FromBody] UpdateWordRequest request)
         {
+            request.UserId = GetLoginedUserId();
+
             var response = await _service.Update(request);
             if (response.HasError)
             {

@@ -30,6 +30,12 @@ namespace EnglishHelperService.Business
             if (String.IsNullOrWhiteSpace(request.HungarianText))
                 return CreateErrorResponse<CreateWordResponse>(ErrorMessage.HungarianTextRequired);
 
+            if (_unitOfWork.WordRepository.Count(u => u.EnglishText == request.EnglishText && u.UserId == request.UserId) > 0)
+                return CreateErrorResponse<CreateWordResponse>(ErrorMessage.EnglishWordExists);
+
+            if (_unitOfWork.WordRepository.Count(u => u.HungarianText == request.HungarianText && u.UserId == request.UserId) > 0)
+                return CreateErrorResponse<CreateWordResponse>(ErrorMessage.HungarianWordExists);
+
             return new CreateWordResponse
             {
                 StatusCode = StatusCode.Created,
@@ -49,6 +55,23 @@ namespace EnglishHelperService.Business
 
             if (String.IsNullOrWhiteSpace(request.HungarianText))
                 return CreateErrorResponse<UpdateWordResponse>(ErrorMessage.HungarianTextRequired);
+
+
+            var currentWord = _unitOfWork.WordRepository.Query(x => x.Id == request.Id).FirstOrDefault();
+
+            //Check the current word, too because I want to able to change it's different props. 
+            if (currentWord != null && currentWord.EnglishText != request.EnglishText)
+            {
+                if (_unitOfWork.WordRepository.Count(x => x.EnglishText == request.EnglishText && x.UserId == request.UserId) > 0)
+                    return CreateErrorResponse<UpdateWordResponse>(ErrorMessage.EnglishWordExists);
+            }
+
+            //Check the current word, too because I want to able to change its different props. 
+            if (currentWord != null && currentWord.HungarianText != request.HungarianText)
+            {
+                if (_unitOfWork.WordRepository.Count(u => u.HungarianText == request.HungarianText && u.UserId == request.UserId) > 0)
+                    return CreateErrorResponse<UpdateWordResponse>(ErrorMessage.HungarianWordExists);
+            }
 
             return new UpdateWordResponse
             {

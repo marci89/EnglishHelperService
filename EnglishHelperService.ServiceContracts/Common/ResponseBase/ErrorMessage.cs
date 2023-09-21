@@ -26,5 +26,7 @@
 
         EnglishTextRequired,
         HungarianTextRequired,
+        EnglishWordExists,
+        HungarianWordExists
     }
 }
