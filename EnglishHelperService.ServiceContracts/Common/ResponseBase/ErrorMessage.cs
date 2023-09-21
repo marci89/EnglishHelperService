@@ -11,6 +11,7 @@
         DeleteFailed,
         EditFailed,
         CreateFailed,
+        NoElementToModify,
 
         InvalidPasswordOrUsernameOrEmail,
         UsernameOrEmailRequired,

@@ -100,5 +100,39 @@ namespace EnglishHelperService.API.Controllers
             }
             return NoContent();
         }
+
+        /// <summary>
+        /// Delete All
+        /// </summary>
+        [HttpDelete("DeleteAll")]
+        public async Task<IActionResult> Delete()
+        {
+            var id = GetLoginedUserId();
+
+            var response = await _service.DeleteAll(id);
+            if (response.HasError)
+            {
+                LogError("Id: " + id, response);
+                return this.CreateErrorResponse(response);
+            }
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Reset all word's CorrectCount and IncorrectCount property to 0
+        /// </summary>
+        [HttpPut("ResetResults")]
+        public async Task<IActionResult> ResetResults()
+        {
+            var id = GetLoginedUserId();
+
+            var response = await _service.ResetResults(id);
+            if (response.HasError)
+            {
+                LogError("Id: " + id, response);
+                return this.CreateErrorResponse(response);
+            }
+            return Ok(response.Result);
+        }
     }
 }

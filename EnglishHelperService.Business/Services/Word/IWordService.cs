@@ -9,5 +9,7 @@ namespace EnglishHelperService.Business
         Task<CreateWordResponse> Create(CreateWordRequest request);
         Task<UpdateWordResponse> Update(UpdateWordRequest request);
         Task<ResponseBase> Delete(long id);
+        Task<ResponseBase> DeleteAll(long userId);
+        Task<ListWordResponse> ResetResults(long userId);
     }
 }

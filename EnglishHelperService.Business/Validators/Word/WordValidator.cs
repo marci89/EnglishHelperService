@@ -1,5 +1,6 @@
 ﻿using EnglishHelperService.Persistence.Repositories;
 using EnglishHelperService.ServiceContracts;
+using Entity = EnglishHelperService.Persistence.Entities;
 
 namespace EnglishHelperService.Business
 {
@@ -74,6 +75,20 @@ namespace EnglishHelperService.Business
             }
 
             return new UpdateWordResponse
+            {
+                StatusCode = StatusCode.Ok,
+            };
+        }
+
+        /// <summary>
+        /// Execute word list null check validating for word list
+        /// </summary>
+        public ResponseBase IsValidWordList(List<Entity.Word> request)
+        {
+            if (request is null || !request.Any())
+                return CreateErrorResponse<ResponseBase>(ErrorMessage.NoElementToModify);
+
+            return new ResponseBase
             {
                 StatusCode = StatusCode.Created,
             };

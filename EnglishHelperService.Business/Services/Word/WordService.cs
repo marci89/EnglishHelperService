@@ -151,7 +151,7 @@ namespace EnglishHelperService.Business
                 var entity = await _unitOfWork.WordRepository.ReadAsync(u => u.Id == id);
                 if (entity is null)
                 {
-                    return await _validator.CreateNotFoundResponse<ResponseBase>();
+                    return new ResponseBase();
                 }
 
                 await _unitOfWork.WordRepository.DeleteAsync(entity);
@@ -163,6 +163,73 @@ namespace EnglishHelperService.Business
             {
                 return await _validator.CreateDeleteErrorResponse<ResponseBase>(ex.Message);
             }
+        }
+
+        /// <summary>
+        /// Delete all word by userId
+        /// </summary>
+        public async Task<ResponseBase> DeleteAll(long userId)
+        {
+            try
+            {
+                var entities = await _unitOfWork.WordRepository.Query(x => x.UserId == userId).ToListAsync();
+
+                var validationResult = _validator.IsValidWordList(entities);
+                if (validationResult.HasError)
+                {
+                    return validationResult;
+                }
+
+                await _unitOfWork.WordRepository.DeleteManyAsync(entities);
+                await _unitOfWork.SaveAsync();
+
+                return new ResponseBase();
+            }
+            catch (Exception ex)
+            {
+                return await _validator.CreateDeleteErrorResponse<ResponseBase>(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Reset all word's CorrectCount and IncorrectCount property to 0
+        /// </summary>
+        public async Task<ListWordResponse> ResetResults(long userId)
+        {
+            try
+            {
+                var entities = await _unitOfWork.WordRepository.Query(x => x.UserId == userId).ToListAsync();
+
+                var validationResult = _validator.IsValidWordList(entities);
+                if (validationResult.HasError)
+                {
+                    return new ListWordResponse
+                    {
+                        ErrorMessage = validationResult.ErrorMessage
+                    };
+                }
+
+                foreach (var entity in entities)
+                {
+                    entity.CorrectCount = 0;
+                    entity.IncorrectCount = 0;
+                }
+
+                await _unitOfWork.WordRepository.UpdateManyAsync(entities);
+                await _unitOfWork.SaveAsync();
+
+                return await Task.FromResult(new ListWordResponse
+                {
+                    StatusCode = StatusCode.Ok,
+                    Result = entities.Select(x => _factory.Create(x)).ToList()
+                });
+
+            }
+            catch (Exception ex)
+            {
+                return await _validator.CreateUpdateErrorResponse<ListWordResponse>(ex.Message);
+            }
+
         }
     }
 }
