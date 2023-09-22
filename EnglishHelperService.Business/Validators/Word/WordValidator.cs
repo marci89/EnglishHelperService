@@ -81,7 +81,7 @@ namespace EnglishHelperService.Business
         }
 
         /// <summary>
-        /// Execute word list null check validating for word list
+        /// Execute word list null check validating
         /// </summary>
         public ResponseBase IsValidWordList(List<Entity.Word> request)
         {

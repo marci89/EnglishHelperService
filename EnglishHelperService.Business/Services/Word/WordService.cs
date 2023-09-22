@@ -1,6 +1,7 @@
 ﻿using EnglishHelperService.Persistence.Repositories;
 using EnglishHelperService.ServiceContracts;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 
 namespace EnglishHelperService.Business
 {
@@ -151,7 +152,7 @@ namespace EnglishHelperService.Business
                 var entity = await _unitOfWork.WordRepository.ReadAsync(u => u.Id == id);
                 if (entity is null)
                 {
-                    return new ResponseBase();
+                    return await _validator.CreateNotFoundResponse<ResponseBase>();
                 }
 
                 await _unitOfWork.WordRepository.DeleteAsync(entity);
@@ -230,6 +231,37 @@ namespace EnglishHelperService.Business
                 return await _validator.CreateUpdateErrorResponse<ListWordResponse>(ex.Message);
             }
 
+        }
+
+        /// <summary>
+        /// Export word list to txt file
+        /// </summary>
+        public async Task<ExportWordListToTextFileResponse> ExportWordListToTextFile(long userId)
+        {
+            try
+            {
+                var entities = await _unitOfWork.WordRepository.Query(x => x.UserId == userId).ToListAsync();
+                StringBuilder builder = new StringBuilder();
+
+                foreach (var entity in entities)
+                {
+                    builder.Append($"{entity.EnglishText},{entity.HungarianText};");
+                }
+
+                byte[] byteArray = Encoding.UTF8.GetBytes(builder.ToString());
+                MemoryStream stream = new MemoryStream(byteArray);
+
+
+                return await Task.FromResult(new ExportWordListToTextFileResponse
+                {
+                    StatusCode = StatusCode.Ok,
+                    Result = stream
+                });
+            }
+            catch (Exception ex)
+            {
+                return await _validator.CreateServerErrorResponse<ExportWordListToTextFileResponse>(ex.Message);
+            }
         }
     }
 }

@@ -11,5 +11,6 @@ namespace EnglishHelperService.Business
         Task<ResponseBase> Delete(long id);
         Task<ResponseBase> DeleteAll(long userId);
         Task<ListWordResponse> ResetResults(long userId);
+        Task<ExportWordListToTextFileResponse> ExportWordListToTextFile(long userId);
     }
 }

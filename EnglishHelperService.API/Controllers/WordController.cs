@@ -134,5 +134,26 @@ namespace EnglishHelperService.API.Controllers
             }
             return Ok(response.Result);
         }
+
+        /// <summary>
+        /// Export word list to txt file response
+        /// </summary>
+        [HttpPost("ExportWordListToTextFile")]
+        public async Task<IActionResult> ExportTextFile()
+        {
+            var userId = GetLoginedUserId();
+
+            var response = await _service.ExportWordListToTextFile(userId);
+            if (response.HasError)
+            {
+                LogError("userId: " + userId, response);
+                return this.CreateErrorResponse(response);
+            }
+
+            // Set the response content type and headers
+            Response.Headers.Add("Content-Disposition", "attachment; filename=exported-word-list.txt");
+            return File(response.Result, "text/plain");
+        }
+
     }
 }
