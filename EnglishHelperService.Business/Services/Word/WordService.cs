@@ -263,5 +263,53 @@ namespace EnglishHelperService.Business
                 return await _validator.CreateServerErrorResponse<ExportWordListToTextFileResponse>(ex.Message);
             }
         }
+
+        /// <summary>
+        /// Import word list from txt file
+        /// </summary>
+        public async Task<ResponseBase> ImportWordListFromTextFile(ImportWordListFromTextFileRequest request)
+        {
+            try
+            {
+                var words = request.Content.Split(';');
+
+                foreach (var word in words)
+                {
+                    if (string.IsNullOrWhiteSpace(word)) continue;
+                    var texts = word.Split(',');
+
+                    if (texts.Length != 2)
+                        return new ResponseBase
+                        {
+                            ErrorMessage = ErrorMessage.InvalidFileData
+                        };
+
+
+                    var entity = _factory.Create(new CreateWordFromImportedFileRequest
+                    {
+                        EnglishText = texts[0],
+                        HungarianText = texts[1],
+                        UserId = request.UserId
+                    });
+
+                    if (entity != null)
+                    {
+                        var validationResult = _validator.IsValidWordTextsExistsCheck(entity.EnglishText, entity.HungarianText, request.UserId);
+                        if (!validationResult.HasError)
+                        {
+                            await _unitOfWork.WordRepository.CreateAsync(entity);
+                        }
+                    }
+                }
+
+                await _unitOfWork.SaveAsync();
+                return new ResponseBase();
+            }
+            catch (Exception ex)
+            {
+                return await _validator.CreateServerErrorResponse<ResponseBase>(ex.Message);
+            }
+
+        }
     }
 }

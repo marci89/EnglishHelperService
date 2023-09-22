@@ -53,5 +53,32 @@ namespace EnglishHelperService.API.Controllers
                 Response = response
             });
         }
+
+        /// <summary>
+        /// Validate uploaded files
+        /// </summary>
+        protected ResponseBase IsValidUploadedFiles(List<string> allowedExtensions)
+        {
+            var response = new ResponseBase();
+
+            //Get files from request
+            var files = Request.Form.Files;
+
+            //Check null and count
+            if (files == null || files.Count == 0)
+                response.ErrorMessage = ErrorMessage.NoFilesUploaded;
+
+            //Check file size
+            var file = files[0];
+            if (file.Length == 0)
+                response.ErrorMessage = ErrorMessage.UploadedFileEmpty;
+
+            //Check file extension validity
+            var fileExtension = Path.GetExtension(file.FileName).ToLower();
+            if (!allowedExtensions.Contains(fileExtension))
+                response.ErrorMessage = ErrorMessage.InvalidFileFormat;
+
+            return response;
+        }
     }
 }

@@ -136,7 +136,7 @@ namespace EnglishHelperService.API.Controllers
         }
 
         /// <summary>
-        /// Export word list to txt file response
+        /// Export word list to txt file
         /// </summary>
         [HttpPost("ExportWordListToTextFile")]
         public async Task<IActionResult> ExportTextFile()
@@ -153,6 +153,57 @@ namespace EnglishHelperService.API.Controllers
             // Set the response content type and headers
             Response.Headers.Add("Content-Disposition", "attachment; filename=exported-word-list.txt");
             return File(response.Result, "text/plain");
+        }
+
+        /// <summary>
+        /// Import word list from txt file
+        /// </summary>
+        [HttpPost("ImportWordListFromTextFile")]
+        public async Task<IActionResult> ImportTextFile()
+        {
+            var userId = GetLoginedUserId();
+
+            try
+            {
+                var validationResult = IsValidUploadedFiles(new List<string> { ".txt" });
+                if (validationResult.HasError)
+                {
+                    LogError("userId: " + userId, validationResult);
+                    return this.CreateErrorResponse(validationResult);
+                }
+
+                var file = Request.Form.Files[0];
+
+                using (var streamReader = new StreamReader(file.OpenReadStream()))
+                {
+                    //Get file content
+                    var fileContent = await streamReader.ReadToEndAsync();
+
+                    var response = await _service.ImportWordListFromTextFile(new ImportWordListFromTextFileRequest
+                    {
+                        UserId = userId,
+                        Content = fileContent
+                    });
+
+                    if (response.HasError)
+                    {
+                        LogError("userId: " + userId, response);
+                        return this.CreateErrorResponse(response);
+                    }
+                    return NoContent();
+                }
+            }
+            catch (Exception ex)
+            {
+                var response = new ResponseBase
+                {
+                    ErrorMessage = ErrorMessage.UploadedFileFailed,
+                    ExceptionErrorMessage = ex.Message
+                };
+
+                LogError("userId: " + userId, response);
+                return StatusCode(500, response.ErrorMessage);
+            }
         }
 
     }

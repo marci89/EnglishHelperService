@@ -56,5 +56,26 @@ namespace EnglishHelperService.Business
                 Created = DateTime.UtcNow
             };
         }
+
+        /// <summary>
+        /// Map domain word from imported file
+        /// </summary>
+        public Entity.Word Create(CreateWordFromImportedFileRequest request)
+        {
+            if (request is null
+                || string.IsNullOrWhiteSpace(request.EnglishText)
+                || string.IsNullOrWhiteSpace(request.HungarianText))
+                return null;
+
+            return new Entity.Word
+            {
+                UserId = request.UserId,
+                EnglishText = request.EnglishText,
+                HungarianText = request.HungarianText,
+                CorrectCount = 0,
+                IncorrectCount = 0,
+                Created = DateTime.UtcNow
+            };
+        }
     }
 }

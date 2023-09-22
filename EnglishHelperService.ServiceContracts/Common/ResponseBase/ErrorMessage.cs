@@ -12,6 +12,13 @@
         EditFailed,
         CreateFailed,
         NoElementToModify,
+        NoFilesUploaded,
+        UploadedFileEmpty,
+        InvalidFileFormat,
+        UploadedFileFailed,
+        InvalidFileData,
+
+
 
         InvalidPasswordOrUsernameOrEmail,
         UsernameOrEmailRequired,

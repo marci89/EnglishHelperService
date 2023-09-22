@@ -31,11 +31,17 @@ namespace EnglishHelperService.Business
             if (String.IsNullOrWhiteSpace(request.HungarianText))
                 return CreateErrorResponse<CreateWordResponse>(ErrorMessage.HungarianTextRequired);
 
-            if (_unitOfWork.WordRepository.Count(u => u.EnglishText == request.EnglishText && u.UserId == request.UserId) > 0)
-                return CreateErrorResponse<CreateWordResponse>(ErrorMessage.EnglishWordExists);
+            var englishTextExistsValidation = IsValidEnglishTextExistsCheck(request.EnglishText, request.UserId);
+            if (englishTextExistsValidation.HasError && englishTextExistsValidation.ErrorMessage.HasValue)
+            {
+                return CreateErrorResponse<CreateWordResponse>(englishTextExistsValidation.ErrorMessage.Value);
+            }
 
-            if (_unitOfWork.WordRepository.Count(u => u.HungarianText == request.HungarianText && u.UserId == request.UserId) > 0)
-                return CreateErrorResponse<CreateWordResponse>(ErrorMessage.HungarianWordExists);
+            var hungarianTextExistsValidation = IsValidHungarianTextExistsCheck(request.HungarianText, request.UserId);
+            if (hungarianTextExistsValidation.HasError && hungarianTextExistsValidation.ErrorMessage.HasValue)
+            {
+                return CreateErrorResponse<CreateWordResponse>(hungarianTextExistsValidation.ErrorMessage.Value);
+            }
 
             return new CreateWordResponse
             {
@@ -63,15 +69,21 @@ namespace EnglishHelperService.Business
             //Check the current word, too because I want to able to change it's different props. 
             if (currentWord != null && currentWord.EnglishText != request.EnglishText)
             {
-                if (_unitOfWork.WordRepository.Count(x => x.EnglishText == request.EnglishText && x.UserId == request.UserId) > 0)
-                    return CreateErrorResponse<UpdateWordResponse>(ErrorMessage.EnglishWordExists);
+                var englishTextExistsValidation = IsValidEnglishTextExistsCheck(request.EnglishText, request.UserId);
+                if (englishTextExistsValidation.HasError && englishTextExistsValidation.ErrorMessage.HasValue)
+                {
+                    return CreateErrorResponse<UpdateWordResponse>(englishTextExistsValidation.ErrorMessage.Value);
+                }
             }
 
             //Check the current word, too because I want to able to change its different props. 
             if (currentWord != null && currentWord.HungarianText != request.HungarianText)
             {
-                if (_unitOfWork.WordRepository.Count(u => u.HungarianText == request.HungarianText && u.UserId == request.UserId) > 0)
-                    return CreateErrorResponse<UpdateWordResponse>(ErrorMessage.HungarianWordExists);
+                var hungarianTextExistsValidation = IsValidHungarianTextExistsCheck(request.HungarianText, request.UserId);
+                if (hungarianTextExistsValidation.HasError && hungarianTextExistsValidation.ErrorMessage.HasValue)
+                {
+                    return CreateErrorResponse<UpdateWordResponse>(hungarianTextExistsValidation.ErrorMessage.Value);
+                }
             }
 
             return new UpdateWordResponse
@@ -90,8 +102,59 @@ namespace EnglishHelperService.Business
 
             return new ResponseBase
             {
-                StatusCode = StatusCode.Created,
+                StatusCode = StatusCode.Ok,
             };
         }
+
+        /// <summary>
+        /// Execute Word's texts exists checking
+        /// </summary>
+        public ResponseBase IsValidWordTextsExistsCheck(string englishText, string hungarianText, long userId)
+        {
+            var englishTextExistsValidation = IsValidEnglishTextExistsCheck(englishText, userId);
+            if (englishTextExistsValidation.HasError && englishTextExistsValidation.ErrorMessage.HasValue)
+            {
+                return CreateErrorResponse<ResponseBase>(englishTextExistsValidation.ErrorMessage.Value);
+            }
+
+            var hungarianTextExistsValidation = IsValidHungarianTextExistsCheck(hungarianText, userId);
+            if (hungarianTextExistsValidation.HasError && hungarianTextExistsValidation.ErrorMessage.HasValue)
+            {
+                return CreateErrorResponse<ResponseBase>(hungarianTextExistsValidation.ErrorMessage.Value);
+            }
+
+            return new ResponseBase
+            {
+                StatusCode = StatusCode.Ok,
+            };
+        }
+
+
+
+        #region Private methods
+
+        /// <summary>
+        /// Execute english text exists check validating
+        /// </summary>
+        private ResponseBase IsValidEnglishTextExistsCheck(string englishText, long userId)
+        {
+            if (_unitOfWork.WordRepository.Count(u => u.EnglishText == englishText && u.UserId == userId) > 0)
+                return CreateErrorResponse<ResponseBase>(ErrorMessage.EnglishWordExists);
+
+            return new ResponseBase { StatusCode = StatusCode.Ok };
+        }
+
+        /// <summary>
+        /// Execute hungarian text exists check validating
+        /// </summary>
+        private ResponseBase IsValidHungarianTextExistsCheck(string hungarianText, long userId)
+        {
+            if (_unitOfWork.WordRepository.Count(u => u.HungarianText == hungarianText && u.UserId == userId) > 0)
+                return CreateErrorResponse<ResponseBase>(ErrorMessage.HungarianWordExists);
+
+            return new ResponseBase { StatusCode = StatusCode.Ok };
+        }
+
+        #endregion
     }
 }
