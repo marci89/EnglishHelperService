@@ -206,5 +206,25 @@ namespace EnglishHelperService.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Export word list to Excel file
+        /// </summary>
+        [HttpPost("ExportWordListToExcelFile")]
+        public async Task<IActionResult> ExportExcelFile()
+        {
+            var userId = GetLoginedUserId();
+
+            var response = await _service.ExportWordListToExcelFile(userId);
+            if (response.HasError)
+            {
+                LogError("userId: " + userId, response);
+                return this.CreateErrorResponse(response);
+            }
+
+            // Set the response content type and headers for Excel
+            Response.Headers.Add("Content-Disposition", "attachment; filename=exported-word-list.xlsx");
+            return File(response.Result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        }
+
     }
 }

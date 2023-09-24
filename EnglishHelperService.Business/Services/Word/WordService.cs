@@ -1,4 +1,5 @@
-﻿using EnglishHelperService.Persistence.Repositories;
+﻿using ClosedXML.Excel;
+using EnglishHelperService.Persistence.Repositories;
 using EnglishHelperService.ServiceContracts;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
@@ -233,10 +234,12 @@ namespace EnglishHelperService.Business
 
         }
 
+        #region export and import methods
+
         /// <summary>
         /// Export word list to txt file
         /// </summary>
-        public async Task<ExportWordListToTextFileResponse> ExportWordListToTextFile(long userId)
+        public async Task<ExportWordListToFileResponse> ExportWordListToTextFile(long userId)
         {
             try
             {
@@ -252,7 +255,7 @@ namespace EnglishHelperService.Business
                 MemoryStream stream = new MemoryStream(byteArray);
 
 
-                return await Task.FromResult(new ExportWordListToTextFileResponse
+                return await Task.FromResult(new ExportWordListToFileResponse
                 {
                     StatusCode = StatusCode.Ok,
                     Result = stream
@@ -260,7 +263,7 @@ namespace EnglishHelperService.Business
             }
             catch (Exception ex)
             {
-                return await _validator.CreateServerErrorResponse<ExportWordListToTextFileResponse>(ex.Message);
+                return await _validator.CreateServerErrorResponse<ExportWordListToFileResponse>(ex.Message);
             }
         }
 
@@ -311,5 +314,64 @@ namespace EnglishHelperService.Business
             }
 
         }
+
+        /// <summary>
+        /// Export word list to excel file
+        /// </summary>
+        public async Task<ExportWordListToFileResponse> ExportWordListToExcelFile(long userId)
+        {
+            try
+            {
+                var entities = await _unitOfWork.WordRepository.Query(x => x.UserId == userId).ToListAsync();
+
+                // Create a new MemoryStream without using a using block
+                var stream = new MemoryStream();
+
+                using (var workbook = new XLWorkbook())
+                {
+                    var worksheet = workbook.Worksheets.Add("WordList");
+
+                    // Add headers
+                    worksheet.Cell(1, 1).Value = "English Text";
+                    worksheet.Cell(1, 2).Value = "Hungarian Text";
+
+                    // Set header style
+                    worksheet.Row(1).Style.Font.Bold = true;
+                    worksheet.Row(1).Style.Fill.BackgroundColor = XLColor.Gray;
+                    worksheet.Row(1).Style.Font.FontColor = XLColor.White;
+
+                    // Add data
+                    int row = 2;
+                    foreach (var entity in entities)
+                    {
+                        worksheet.Cell(row, 1).Value = entity.EnglishText;
+                        worksheet.Cell(row, 2).Value = entity.HungarianText;
+                        row++;
+                    }
+
+                    // Auto-fit columns
+                    worksheet.Columns().AdjustToContents();
+
+                    // Convert the workbook to a MemoryStream
+                    workbook.SaveAs(stream);
+                }
+
+                // Reset the MemoryStream's position to the beginning before returning it
+                stream.Position = 0;
+
+                return await Task.FromResult(new ExportWordListToFileResponse
+                {
+                    StatusCode = StatusCode.Ok,
+                    Result = stream
+                });
+
+            }
+            catch (Exception ex)
+            {
+                return await _validator.CreateServerErrorResponse<ExportWordListToFileResponse>(ex.Message);
+            }
+        }
+
+        #endregion
     }
 }

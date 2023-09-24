@@ -1,9 +1,9 @@
 ﻿namespace EnglishHelperService.ServiceContracts
 {
     /// <summary>
-    /// Export word list to txt file response
+    /// Export word list to txt, excel file response
     /// </summary>
-    public class ExportWordListToTextFileResponse : ResponseBase
+    public class ExportWordListToFileResponse : ResponseBase
     {
         public MemoryStream Result { get; set; }
     }
