@@ -14,5 +14,7 @@ namespace EnglishHelperService.Business
         Task<ExportWordListToFileResponse> ExportWordListToTextFile(long userId);
         Task<ResponseBase> ImportWordListFromTextFile(ImportWordListFromTextFileRequest request);
         Task<ExportWordListToFileResponse> ExportWordListToExcelFile(long userId);
-    }
+		Task<ResponseBase> ImportWordListFromExcelFile(ImportWordListFromExcelFileRequest request);
+		
+	}
 }

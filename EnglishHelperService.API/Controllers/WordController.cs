@@ -1,4 +1,6 @@
-﻿using EnglishHelperService.API.Extensions;
+﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Office2016.Excel;
+using EnglishHelperService.API.Extensions;
 using EnglishHelperService.API.Helpers;
 using EnglishHelperService.Business;
 using EnglishHelperService.ServiceContracts;
@@ -226,5 +228,51 @@ namespace EnglishHelperService.API.Controllers
             return File(response.Result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         }
 
-    }
+		/// <summary>
+		/// Import word list from Excel file
+		/// </summary>
+		[HttpPost("ImportWordListFromExcelFile")]
+		public async Task<IActionResult> ImportExcelFile()
+		{
+			var userId = GetLoginedUserId();
+
+			try
+			{
+				var validationResult = IsValidUploadedFiles(new List<string> { ".xlsx", ".xls" });
+				if (validationResult.HasError)
+				{
+					LogError("userId: " + userId, validationResult);
+					return this.CreateErrorResponse(validationResult);
+				}
+				var file = Request.Form.Files[0];
+
+                //using excel file
+                using (var workbook = new XLWorkbook(file.OpenReadStream()))
+                {
+                    var response = await _service.ImportWordListFromExcelFile(new ImportWordListFromExcelFileRequest
+                    {
+                        UserId = userId,
+                        Workbook = workbook
+                    });
+					if (response.HasError)
+					{
+						LogError("userId: " + userId, response);
+						return this.CreateErrorResponse(response);
+					}
+				}
+				return NoContent();
+			}
+			catch (Exception ex)
+			{
+				var response = new ResponseBase
+				{
+					ErrorMessage = ErrorMessage.UploadedFileFailed,
+					ExceptionErrorMessage = ex.Message
+				};
+
+				LogError("userId: " + userId, response);
+				return StatusCode(500, response.ErrorMessage);
+			}
+		}
+	}
 }
