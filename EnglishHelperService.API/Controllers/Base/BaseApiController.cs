@@ -80,5 +80,17 @@ namespace EnglishHelperService.API.Controllers
 
             return response;
         }
+
+        /// <summary>
+        /// Get current language from Accept-Language header. The client set it where you need
+        /// </summary>
+        protected string GetCurrentLanguage()
+        {
+            // Get the 'Accept-Language' header from the request
+            var acceptLanguageHeader = Request.Headers["Accept-Language"].ToString();
+            if (string.IsNullOrWhiteSpace(acceptLanguageHeader))
+                return "en";
+            return acceptLanguageHeader;
+        }
     }
 }

@@ -32,6 +32,7 @@ namespace EnglishHelperService.API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] CreateUserRequest request)
         {
+            var currentLanguage = GetCurrentLanguage();
             var response = await _service.Create(request);
             if (response.HasError)
             {
@@ -45,7 +46,7 @@ namespace EnglishHelperService.API.Controllers
                     Username = request.Username,
                     // RecipientEmail = request.Email,
                     RecipientEmail = "kismarczirobi@gmail.com",
-                    Language = "hu",
+                    Language = currentLanguage,
                 });
             }
             return CreatedAtAction("Register", new { id = response.Result.Id }, response.Result);
