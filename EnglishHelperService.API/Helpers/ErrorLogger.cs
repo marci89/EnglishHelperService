@@ -28,6 +28,9 @@ namespace EnglishHelperService.API.Helpers
             _logger.LogError(logMessage);
         }
 
+
+        #region private methods
+
         // Helper method to extract error message from the response or provide a default
         private string GetErrorMessage(ResponseBase response)
         {
@@ -47,5 +50,7 @@ namespace EnglishHelperService.API.Helpers
             // If response is null or empty, return a default message
             return "Response is null or empty";
         }
+
+        #endregion
     }
 }

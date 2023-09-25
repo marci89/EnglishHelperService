@@ -7,6 +7,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Email\RegisterEmailTemplate_en.html" />
+    <None Remove="Resources\Email\RegisterEmailTemplate_hu.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\Email\RegisterEmailTemplate_en.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Email\RegisterEmailTemplate_hu.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="ClosedXML" Version="0.102.1" />
     <PackageReference Include="LinqKit.Core" Version="1.2.4" />

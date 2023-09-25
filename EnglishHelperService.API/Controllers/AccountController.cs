@@ -14,10 +14,15 @@ namespace EnglishHelperService.API.Controllers
     public class AccountController : BaseApiController
     {
         private readonly IUserService _service;
+        private readonly IRegisterEmailSender _registerEmailSender;
 
-        public AccountController(IUserService service, ErrorLogger logger) : base(logger)
+        public AccountController(
+            IUserService service,
+            IRegisterEmailSender registerEmailSender,
+            ErrorLogger logger) : base(logger)
         {
             _service = service;
+            _registerEmailSender = registerEmailSender;
         }
 
         /// <summary>
@@ -32,6 +37,16 @@ namespace EnglishHelperService.API.Controllers
             {
                 LogError(JsonConvert.SerializeObject(request), response);
                 return this.CreateErrorResponse(response);
+            }
+            else
+            {
+                await _registerEmailSender.ExecuteAsync(new RegisterEmailSenderRequest
+                {
+                    Username = request.Username,
+                    // RecipientEmail = request.Email,
+                    RecipientEmail = "kismarczirobi@gmail.com",
+                    Language = "hu",
+                });
             }
             return CreatedAtAction("Register", new { id = response.Result.Id }, response.Result);
         }

@@ -69,9 +69,14 @@ namespace EnglishHelperService.API.Extensions
             services.AddScoped<LogUserActivity>();
             services.AddScoped<ErrorLogger>();
 
+            //emails
+            services.AddScoped<IEmailSenderBase, EmailSenderBase>();
+            services.AddScoped<IRegisterEmailSender, RegisterEmailSender>();
+
             //appsettings
             services.AddSingleton<ILogSettings, LogSettings>();
             services.AddSingleton<IDatabaseSettings, DatabaseSettings>();
+            services.AddSingleton<IEmailSettings, EmailSettings>();
         }
     }
 }

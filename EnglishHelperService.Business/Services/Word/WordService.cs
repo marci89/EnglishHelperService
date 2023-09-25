@@ -297,8 +297,8 @@ namespace EnglishHelperService.Business
 
                     if (entity != null)
                     {
-						//check exits words
-						var validationResult = _validator.IsValidWordTextsExistsCheck(entity.EnglishText, entity.HungarianText, request.UserId);
+                        //check exits words
+                        var validationResult = _validator.IsValidWordTextsExistsCheck(entity.EnglishText, entity.HungarianText, request.UserId);
                         if (!validationResult.HasError)
                         {
                             await _unitOfWork.WordRepository.CreateAsync(entity);
@@ -373,50 +373,50 @@ namespace EnglishHelperService.Business
             }
         }
 
-		/// <summary>
-		/// Import word list from Excel file
-		/// </summary>
-		public async Task<ResponseBase> ImportWordListFromExcelFile(ImportWordListFromExcelFileRequest request)
-		{
-			try
-			{
-				// Assuming you have only one worksheet in the Excel file
-				var worksheet = request.Workbook.Worksheets.First();
+        /// <summary>
+        /// Import word list from Excel file
+        /// </summary>
+        public async Task<ResponseBase> ImportWordListFromExcelFile(ImportWordListFromExcelFileRequest request)
+        {
+            try
+            {
+                // Assuming you have only one worksheet in the Excel file
+                var worksheet = request.Workbook.Worksheets.First();
 
-				// Skip the header row
-				var rows = worksheet.RowsUsed().Skip(1);
+                // Skip the header row
+                var rows = worksheet.RowsUsed().Skip(1);
 
-				foreach (var row in rows)
-				{
-					var englishText = row.Cell(1).Value.ToString();
-					var hungarianText = row.Cell(2).Value.ToString();
-			
-					var entity = _factory.Create(new CreateWordFromImportedFileRequest
-					{
-						EnglishText = englishText,
-						HungarianText = hungarianText,
-						UserId = request.UserId
-					});
+                foreach (var row in rows)
+                {
+                    var englishText = row.Cell(1).Value.ToString();
+                    var hungarianText = row.Cell(2).Value.ToString();
 
-					if (entity != null)
-					{
-						//check exits words
-						var validationResult = _validator.IsValidWordTextsExistsCheck(entity.EnglishText, entity.HungarianText, request.UserId);
-						if (!validationResult.HasError)
-						{
-							await _unitOfWork.WordRepository.CreateAsync(entity);
-						}
-					}
-				}
-				await _unitOfWork.SaveAsync();
-				return new ResponseBase();
-			}
-			catch (Exception ex)
-			{
-				return await _validator.CreateServerErrorResponse<ResponseBase>(ex.Message);
-			}
-		}
+                    var entity = _factory.Create(new CreateWordFromImportedFileRequest
+                    {
+                        EnglishText = englishText,
+                        HungarianText = hungarianText,
+                        UserId = request.UserId
+                    });
 
-		#endregion
-	}
+                    if (entity != null)
+                    {
+                        //check exits words
+                        var validationResult = _validator.IsValidWordTextsExistsCheck(entity.EnglishText, entity.HungarianText, request.UserId);
+                        if (!validationResult.HasError)
+                        {
+                            await _unitOfWork.WordRepository.CreateAsync(entity);
+                        }
+                    }
+                }
+                await _unitOfWork.SaveAsync();
+                return new ResponseBase();
+            }
+            catch (Exception ex)
+            {
+                return await _validator.CreateServerErrorResponse<ResponseBase>(ex.Message);
+            }
+        }
+
+        #endregion
+    }
 }
