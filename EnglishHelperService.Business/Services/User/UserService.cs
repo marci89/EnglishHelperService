@@ -1,4 +1,5 @@
-﻿using EnglishHelperService.Persistence.Repositories;
+﻿
+using EnglishHelperService.Persistence.Repositories;
 using EnglishHelperService.ServiceContracts;
 using LinqKit;
 using System.Linq.Expressions;
@@ -229,6 +230,88 @@ namespace EnglishHelperService.Business
                     }
 
                     entity.Password = _factory.CreatePasswordHash(request.NewPassword);
+
+                    await _unitOfWork.UserRepository.UpdateAsync(entity);
+                    await _unitOfWork.SaveAsync();
+
+                    return new ResponseBase();
+                }
+
+                return validationResult;
+            }
+            catch (Exception ex)
+            {
+                return await _validator.CreateUpdateErrorResponse<ResponseBase>(ex.Message);
+            }
+
+        }
+
+        /// <summary>
+        /// Forgot password
+        /// </summary>
+        public async Task<ForgotPasswordResponse> ForgotPassword(ForgotPasswordRequest request)
+        {
+            try
+            {
+                var validationResult = _validator.IsValidForgotPasswordRequest(request);
+                if (!validationResult.HasError)
+                {
+                    // Find the user by username or email
+                    var entity = await _unitOfWork.UserRepository.ReadAsync(u => u.Username == request.Identifier
+                  || u.Email == request.Identifier);
+
+                    if (entity is null)
+                    {
+                        return _validator.CreateErrorResponse<ForgotPasswordResponse>(ErrorMessage.NoUsernameOrEmailExists);
+                    }
+
+                    // Generate a reset token (guid)
+                    var resetToken = Guid.NewGuid().ToString().Replace("-", "");
+
+                    // Store the reset token and its expiration in your database
+                    entity.ResetToken = resetToken;
+                    entity.ResetTokenExpiration = DateTime.UtcNow.AddHours(24);
+                    await _unitOfWork.UserRepository.UpdateAsync(entity);
+                    await _unitOfWork.SaveAsync();
+
+                    return new ForgotPasswordResponse
+                    {
+                        Result = new ResetPasswordData
+                        {
+                            Username = entity.Username,
+                            Token = resetToken
+                        },
+                        StatusCode = StatusCode.Ok
+                    };
+                }
+
+                return validationResult;
+            }
+            catch (Exception ex)
+            {
+                return await _validator.CreateServerErrorResponse<ForgotPasswordResponse>(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Reset password
+        /// </summary>
+        public async Task<ResponseBase> ResetPassword(ResetPasswordRequest request)
+        {
+            try
+            {
+                var validationResult = _validator.IsValidPassword(request.Password);
+                if (!validationResult.HasError)
+                {
+                    var entity = await _unitOfWork.UserRepository.ReadAsync(u => u.ResetToken == request.Token && u.ResetTokenExpiration > DateTime.UtcNow);
+                    if (entity is null)
+                    {
+                        return _validator.CreateErrorResponse<ResponseBase>(ErrorMessage.InvalidResetToken);
+                    }
+
+                    entity.Password = _factory.CreatePasswordHash(request.Password);
+                    entity.ResetToken = null;
+                    entity.ResetTokenExpiration = null;
 
                     await _unitOfWork.UserRepository.UpdateAsync(entity);
                     await _unitOfWork.SaveAsync();

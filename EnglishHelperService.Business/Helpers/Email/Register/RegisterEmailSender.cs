@@ -7,24 +7,36 @@ namespace EnglishHelperService.Business
 {
     public class RegisterEmailSender : EmailSenderBase, IRegisterEmailSender
     {
-        public RegisterEmailSender(IEmailSettings settings, ILogger<EmailSenderBase> logger) : base(settings, logger) { }
+        private readonly ILogger<EmailSenderBase> _logger;
+
+        public RegisterEmailSender(IEmailSettings settings, ILogger<EmailSenderBase> logger) : base(settings, logger)
+        {
+            _logger = logger;
+        }
 
         public async Task ExecuteAsync(RegisterEmailSenderRequest request)
         {
-            //Get the email template
-            var bodyTemplate = CreateBody(new CreateEmailBodyRequest
+            try
             {
-                EmailTemplateName = "RegisterEmailTemplate",
-                Language = request.Language,
-            });
+                //Get the email template
+                var bodyTemplate = CreateBody(new CreateEmailBodyRequest
+                {
+                    EmailTemplateName = "RegisterEmailTemplate",
+                    Language = request.Language,
+                });
 
-            //Replace variables
-            bodyTemplate = bodyTemplate.Replace("{Username}", request.Username);
+                //Replace variables
+                bodyTemplate = bodyTemplate.Replace("{Username}", request.Username);
 
-            request.Body = bodyTemplate;
-            request.Subject = CreateSubject(request.Language, request.Username);
+                request.Body = bodyTemplate;
+                request.Subject = CreateSubject(request.Language, request.Username);
 
-            await SendEmailAsync(request);
+                await SendEmailAsync(request);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Sending email error: {ex.Message}");
+            }
         }
 
         private string CreateSubject(string language, string username)

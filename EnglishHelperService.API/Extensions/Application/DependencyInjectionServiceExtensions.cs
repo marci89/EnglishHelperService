@@ -72,8 +72,10 @@ namespace EnglishHelperService.API.Extensions
             //emails
             services.AddScoped<IEmailSenderBase, EmailSenderBase>();
             services.AddScoped<IRegisterEmailSender, RegisterEmailSender>();
+            services.AddScoped<IResetPasswordEmailSender, ResetPasswordEmailSender>();
 
             //appsettings
+            services.AddSingleton<IApplicationSettings, ApplicationSettings>();
             services.AddSingleton<ILogSettings, LogSettings>();
             services.AddSingleton<IDatabaseSettings, DatabaseSettings>();
             services.AddSingleton<IEmailSettings, EmailSettings>();

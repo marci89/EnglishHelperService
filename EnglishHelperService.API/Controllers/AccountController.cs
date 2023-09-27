@@ -1,6 +1,7 @@
 ﻿using EnglishHelperService.API.Extensions;
 using EnglishHelperService.API.Helpers;
 using EnglishHelperService.Business;
+using EnglishHelperService.Business.Settings;
 using EnglishHelperService.ServiceContracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,15 +15,21 @@ namespace EnglishHelperService.API.Controllers
     public class AccountController : BaseApiController
     {
         private readonly IUserService _service;
+        private readonly IApplicationSettings _appSettings;
         private readonly IRegisterEmailSender _registerEmailSender;
+        private readonly IResetPasswordEmailSender _resetPasswordEmailSender;
 
         public AccountController(
             IUserService service,
+            IApplicationSettings appSettings,
             IRegisterEmailSender registerEmailSender,
+            IResetPasswordEmailSender resetPasswordEmailSender,
             ErrorLogger logger) : base(logger)
         {
             _service = service;
+            _appSettings = appSettings;
             _registerEmailSender = registerEmailSender;
+            _resetPasswordEmailSender = resetPasswordEmailSender;
         }
 
         /// <summary>
@@ -94,6 +101,63 @@ namespace EnglishHelperService.API.Controllers
             request.Id = GetLoginedUserId();
 
             var response = await _service.ChangePassword(request);
+            if (response.HasError)
+            {
+                LogError(JsonConvert.SerializeObject(request), response);
+                return this.CreateErrorResponse(response);
+            }
+            return NoContent();
+        }
+
+        /// <summary>
+        /// forgot password (Sending email for reset password)
+        /// </summary>
+        [AllowAnonymous]
+        [HttpPost("forgotPassword")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+        {
+            var currentLanguage = GetCurrentLanguage();
+
+            var response = await _service.ForgotPassword(request);
+            if (response.HasError)
+            {
+                LogError(JsonConvert.SerializeObject(request), response);
+                return this.CreateErrorResponse(response);
+            }
+            else
+            {
+                var emailRequest = new ResetPasswordEmailSenderRequest
+                {
+                    Username = response?.Result?.Username,
+                    ApplicationName = _appSettings.ApplicationName,
+                    ResetPasswordLink = _appSettings.ClientDomain + "reset-password?token=" + response?.Result?.Token,
+                    // RecipientEmail = request.Email,
+                    RecipientEmail = "kismarczirobi@gmail.com",
+                    Language = currentLanguage,
+                };
+
+                var emailResponse = await _resetPasswordEmailSender.ExecuteAsync(emailRequest);
+
+                if (emailResponse.HasError)
+                {
+                    emailRequest.Body = "";
+
+                    LogError(JsonConvert.SerializeObject(emailRequest), emailResponse);
+                    return this.CreateErrorResponse(emailResponse);
+                }
+            }
+            return NoContent();
+        }
+
+        /// <summary>
+        /// reset password
+        /// </summary>
+        [AllowAnonymous]
+        [HttpPut("resetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        {
+
+            var response = await _service.ResetPassword(request);
             if (response.HasError)
             {
                 LogError(JsonConvert.SerializeObject(request), response);

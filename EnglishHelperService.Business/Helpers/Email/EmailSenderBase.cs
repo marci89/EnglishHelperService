@@ -52,7 +52,8 @@ namespace EnglishHelperService.Business
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError($"Sending email error: {ex.Message}");
+                        _logger.LogError($"Email connection error: {ex.Message}");
+                        throw;
                     }
                 }
             }

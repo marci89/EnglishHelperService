@@ -17,10 +17,12 @@
         InvalidFileFormat,
         UploadedFileFailed,
         InvalidFileData,
+        SendEmailFailed,
 
 
 
         InvalidPasswordOrUsernameOrEmail,
+        NoUsernameOrEmailExists,
         UsernameOrEmailRequired,
         UsernameRequired,
         UsernameMaxLength,
@@ -31,6 +33,7 @@
         EmailRequired,
         EmailExists,
         InvalidEmailFormat,
+        InvalidResetToken,
 
         EnglishTextRequired,
         HungarianTextRequired,

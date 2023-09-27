@@ -9,6 +9,8 @@
   <ItemGroup>
     <None Remove="Resources\Email\RegisterEmailTemplate_en.html" />
     <None Remove="Resources\Email\RegisterEmailTemplate_hu.html" />
+    <None Remove="Resources\Email\ResetPasswordEmailTemplate_en.html" />
+    <None Remove="Resources\Email\ResetPasswordEmailTemplate_hu.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -16,6 +18,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Email\RegisterEmailTemplate_hu.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Email\ResetPasswordEmailTemplate_en.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Email\ResetPasswordEmailTemplate_hu.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

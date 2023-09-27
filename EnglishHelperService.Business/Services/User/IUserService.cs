@@ -11,6 +11,8 @@ namespace EnglishHelperService.Business
         Task<ResponseBase> Update(UpdateUserRequest request);
         Task<ResponseBase> ChangeEmail(ChangeEmailRequest request);
         Task<ResponseBase> ChangePassword(ChangePasswordRequest request);
+        Task<ForgotPasswordResponse> ForgotPassword(ForgotPasswordRequest request);
+        Task<ResponseBase> ResetPassword(ResetPasswordRequest request);
         Task<ResponseBase> Delete(long id);
     }
 }

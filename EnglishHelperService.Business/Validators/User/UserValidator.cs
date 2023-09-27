@@ -56,7 +56,7 @@ namespace EnglishHelperService.Business
 
             return new ResponseBase
             {
-                StatusCode = StatusCode.Created,
+                StatusCode = StatusCode.Ok,
             };
         }
 
@@ -141,7 +141,7 @@ namespace EnglishHelperService.Business
 
             return new ResponseBase
             {
-                StatusCode = StatusCode.Created,
+                StatusCode = StatusCode.Ok,
             };
         }
 
@@ -167,7 +167,43 @@ namespace EnglishHelperService.Business
 
             return new ResponseBase
             {
-                StatusCode = StatusCode.Created,
+                StatusCode = StatusCode.Ok,
+            };
+        }
+
+        /// <summary>
+        /// Execute forgot password request validating
+        /// </summary>
+        public ForgotPasswordResponse IsValidForgotPasswordRequest(ForgotPasswordRequest request)
+        {
+
+            if (request is null)
+                return CreateErrorResponse<ForgotPasswordResponse>(ErrorMessage.InvalidRequest);
+
+            if (String.IsNullOrWhiteSpace(request.Identifier))
+                return CreateErrorResponse<ForgotPasswordResponse>(ErrorMessage.UsernameOrEmailRequired);
+
+            return new ForgotPasswordResponse
+            {
+                StatusCode = StatusCode.Ok,
+            };
+        }
+
+        /// <summary>
+        /// Execute password validating
+        /// </summary>
+        public ResponseBase IsValidPassword(string password)
+        {
+            if (String.IsNullOrWhiteSpace(password))
+                return CreateErrorResponse<ResponseBase>(ErrorMessage.PasswordRequired);
+
+            if (password.Length < 4)
+                return CreateErrorResponse<ResponseBase>(ErrorMessage.InvalidPasswordFormat);
+
+
+            return new ResponseBase
+            {
+                StatusCode = StatusCode.Ok,
             };
         }
 
@@ -190,27 +226,10 @@ namespace EnglishHelperService.Business
 
             return new ResponseBase
             {
-                StatusCode = StatusCode.Created,
+                StatusCode = StatusCode.Ok,
             };
         }
 
-        /// <summary>
-        /// Execute password validating
-        /// </summary>
-        private ResponseBase IsValidPassword(string password)
-        {
-            if (String.IsNullOrWhiteSpace(password))
-                return CreateErrorResponse<ResponseBase>(ErrorMessage.PasswordRequired);
-
-            if (password.Length < 4)
-                return CreateErrorResponse<ResponseBase>(ErrorMessage.InvalidPasswordFormat);
-
-
-            return new ResponseBase
-            {
-                StatusCode = StatusCode.Created,
-            };
-        }
 
         /// <summary>
         /// Execute email validating
@@ -229,7 +248,7 @@ namespace EnglishHelperService.Business
 
             return new ResponseBase
             {
-                StatusCode = StatusCode.Created,
+                StatusCode = StatusCode.Ok,
             };
         }
 
