@@ -59,7 +59,7 @@ namespace EnglishHelperService.Business
         {
             try
             {
-                var entities = await _unitOfWork.WordRepository.Query(x => x.UserId == userId).ToListAsync();
+                var entities = await _unitOfWork.WordRepository.Query(x => x.UserId == userId).OrderByDescending(x => x.Created).ToListAsync();
 
                 return await Task.FromResult(new ListWordResponse
                 {

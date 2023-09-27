@@ -51,8 +51,7 @@ namespace EnglishHelperService.API.Controllers
                 await _registerEmailSender.ExecuteAsync(new RegisterEmailSenderRequest
                 {
                     Username = request.Username,
-                    // RecipientEmail = request.Email,
-                    RecipientEmail = "kismarczirobi@gmail.com",
+                    RecipientEmail = request.Email,
                     Language = currentLanguage,
                 });
             }
@@ -131,8 +130,7 @@ namespace EnglishHelperService.API.Controllers
                     Username = response?.Result?.Username,
                     ApplicationName = _appSettings.ApplicationName,
                     ResetPasswordLink = _appSettings.ClientDomain + "reset-password?token=" + response?.Result?.Token,
-                    // RecipientEmail = request.Email,
-                    RecipientEmail = "kismarczirobi@gmail.com",
+                    RecipientEmail = response?.Result?.Email,
                     Language = currentLanguage,
                 };
 

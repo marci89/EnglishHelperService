@@ -74,6 +74,7 @@ namespace EnglishHelperService.Business
             {
                 Id = user.Id,
                 Username = user.Username,
+                Email = user.Email,
                 Role = user.Role.ToString(),
                 Token = _tokenService.CreateToken(user)
             };

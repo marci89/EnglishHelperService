@@ -279,7 +279,8 @@ namespace EnglishHelperService.Business
                         Result = new ResetPasswordData
                         {
                             Username = entity.Username,
-                            Token = resetToken
+                            Token = resetToken,
+                            Email = entity.Email
                         },
                         StatusCode = StatusCode.Ok
                     };

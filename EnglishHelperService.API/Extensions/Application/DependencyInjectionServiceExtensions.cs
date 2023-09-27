@@ -76,6 +76,7 @@ namespace EnglishHelperService.API.Extensions
 
             //appsettings
             services.AddSingleton<IApplicationSettings, ApplicationSettings>();
+            services.AddSingleton<ISecuritySettings, SecuritySettings>();
             services.AddSingleton<ILogSettings, LogSettings>();
             services.AddSingleton<IDatabaseSettings, DatabaseSettings>();
             services.AddSingleton<IEmailSettings, EmailSettings>();
