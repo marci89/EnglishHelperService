@@ -336,6 +336,11 @@ namespace EnglishHelperService.Business
         {
             try
             {
+                _unitOfWork.BeginTransaction();
+
+                var words = _unitOfWork.WordRepository.Query(x => x.UserId == id);
+                await _unitOfWork.WordRepository.DeleteManyAsync(words);
+
                 var entity = await _unitOfWork.UserRepository.ReadAsync(u => u.Id == id);
                 if (entity is null)
                 {
@@ -343,12 +348,15 @@ namespace EnglishHelperService.Business
                 }
 
                 await _unitOfWork.UserRepository.DeleteAsync(entity);
+
+                await _unitOfWork.CommitAsync();
                 await _unitOfWork.SaveAsync();
 
                 return new ResponseBase();
             }
             catch (Exception ex)
             {
+                _unitOfWork.Rollback();
                 return await _validator.CreateDeleteErrorResponse<ResponseBase>(ex.Message);
             }
         }
