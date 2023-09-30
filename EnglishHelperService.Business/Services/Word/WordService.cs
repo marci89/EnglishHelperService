@@ -74,6 +74,34 @@ namespace EnglishHelperService.Business
         }
 
         /// <summary>
+        /// List words with filter and user id
+        /// </summary>
+        public async Task<ListWordResponse> ListWithFilter(ListWordWithFilterRequest request)
+        {
+            try
+            {
+                var entities = await _unitOfWork.WordRepository.Query(x => x.UserId == request.UserId).ToListAsync();
+                var words = entities.Select(x => _factory.Create(x)).ToList();
+                if (!words.Any())
+                {
+                    return await _validator.CreateNotFoundResponse<ListWordResponse>();
+                }
+
+                words = OrderWords(request, words);
+
+                return await Task.FromResult(new ListWordResponse
+                {
+                    StatusCode = StatusCode.Ok,
+                    Result = words
+                });
+            }
+            catch (Exception ex)
+            {
+                return await _validator.CreateServerErrorResponse<ListWordResponse>(ex.Message);
+            }
+        }
+
+        /// <summary>
         /// Create word
         /// </summary>
         public async Task<CreateWordResponse> Create(CreateWordRequest request)
@@ -100,7 +128,6 @@ namespace EnglishHelperService.Business
             {
                 return await _validator.CreateCreationErrorResponse<CreateWordResponse>(ex.Message);
             }
-
         }
 
         /// <summary>
@@ -140,8 +167,40 @@ namespace EnglishHelperService.Business
             {
                 return await _validator.CreateUpdateErrorResponse<UpdateWordResponse>(ex.Message);
             }
-
         }
+
+        /// <summary>
+        /// Update used word when learning
+        /// </summary>
+        public async Task<UpdateWordResponse> UpdateUsedWord(UpdateUsedWordRequest request)
+        {
+            try
+            {
+                var entity = await _unitOfWork.WordRepository.ReadAsync(u => u.Id == request.Id);
+                if (entity is null)
+                {
+                    return await _validator.CreateNotFoundResponse<UpdateWordResponse>();
+                }
+
+                entity.CorrectCount += request.IsCorrect ? 1 : 0;
+                entity.IncorrectCount += request.IsCorrect ? 0 : 1;
+                entity.LastUse = DateTime.UtcNow;
+
+                await _unitOfWork.WordRepository.UpdateAsync(entity);
+                await _unitOfWork.SaveAsync();
+
+                return new UpdateWordResponse
+                {
+                    StatusCode = StatusCode.Ok,
+                    Result = _factory.Create(entity)
+                };
+            }
+            catch (Exception ex)
+            {
+                return await _validator.CreateUpdateErrorResponse<UpdateWordResponse>(ex.Message);
+            }
+        }
+
 
         /// <summary>
         /// Delete word by id
@@ -231,7 +290,6 @@ namespace EnglishHelperService.Business
             {
                 return await _validator.CreateUpdateErrorResponse<ListWordResponse>(ex.Message);
             }
-
         }
 
         #region export and import methods
@@ -313,7 +371,6 @@ namespace EnglishHelperService.Business
             {
                 return await _validator.CreateServerErrorResponse<ResponseBase>(ex.Message);
             }
-
         }
 
         /// <summary>
@@ -365,7 +422,6 @@ namespace EnglishHelperService.Business
                     StatusCode = StatusCode.Ok,
                     Result = stream
                 });
-
             }
             catch (Exception ex)
             {
@@ -414,6 +470,32 @@ namespace EnglishHelperService.Business
             catch (Exception ex)
             {
                 return await _validator.CreateServerErrorResponse<ResponseBase>(ex.Message);
+            }
+        }
+
+        #endregion
+
+        #region Private methods
+
+        /// <summary>
+        /// Ordering word list
+        /// </summary>
+        public List<Word> OrderWords(ListWordWithFilterRequest request, List<Word> words)
+        {
+            switch (request.OrderType)
+            {
+                case WordOrderingType.Any:
+                    return words.Take(request.WordNumber).ToList();
+                case WordOrderingType.Newest:
+                    return words.OrderByDescending(x => x.Created).Take(request.WordNumber).ToList();
+                case WordOrderingType.Oldest:
+                    return words.OrderBy(x => x.Created).Take(request.WordNumber).ToList();
+                case WordOrderingType.Best:
+                    return words.OrderByDescending(x => x.Balance).Take(request.WordNumber).ToList();
+                case WordOrderingType.Worst:
+                    return words.OrderBy(x => x.Balance).Take(request.WordNumber).ToList();
+                default:
+                    return words.Take(request.WordNumber).ToList();
             }
         }
 

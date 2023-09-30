@@ -1,5 +1,4 @@
 ﻿using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Office2016.Excel;
 using EnglishHelperService.API.Extensions;
 using EnglishHelperService.API.Helpers;
 using EnglishHelperService.Business;
@@ -55,6 +54,24 @@ namespace EnglishHelperService.API.Controllers
         }
 
         /// <summary>
+        /// Get User's words by user id and filtering.
+        /// </summary>
+        [HttpGet("ListWithFilter")]
+        public async Task<IActionResult> ListWithFilter([FromQuery] ListWordWithFilterRequest request)
+        {
+            var userId = GetLoginedUserId();
+            request.UserId = userId;
+
+            var response = await _service.ListWithFilter(request);
+            if (response.HasError)
+            {
+                LogError("userId: " + userId, response);
+                return this.CreateErrorResponse(response);
+            }
+            return Ok(response.Result);
+        }
+
+        /// <summary>
         /// Create word
         /// </summary>
         [HttpPost()]
@@ -80,6 +97,21 @@ namespace EnglishHelperService.API.Controllers
             request.UserId = GetLoginedUserId();
 
             var response = await _service.Update(request);
+            if (response.HasError)
+            {
+                LogError(JsonConvert.SerializeObject(request), response);
+                return this.CreateErrorResponse(response);
+            }
+            return Ok(response.Result);
+        }
+
+        /// <summary>
+        /// Update used word when learning
+        /// </summary>
+        [HttpPut("UpdateUsedWord")]
+        public async Task<IActionResult> UpdateUsedWord([FromBody] UpdateUsedWordRequest request)
+        {
+            var response = await _service.UpdateUsedWord(request);
             if (response.HasError)
             {
                 LogError(JsonConvert.SerializeObject(request), response);
@@ -228,23 +260,23 @@ namespace EnglishHelperService.API.Controllers
             return File(response.Result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         }
 
-		/// <summary>
-		/// Import word list from Excel file
-		/// </summary>
-		[HttpPost("ImportWordListFromExcelFile")]
-		public async Task<IActionResult> ImportExcelFile()
-		{
-			var userId = GetLoginedUserId();
+        /// <summary>
+        /// Import word list from Excel file
+        /// </summary>
+        [HttpPost("ImportWordListFromExcelFile")]
+        public async Task<IActionResult> ImportExcelFile()
+        {
+            var userId = GetLoginedUserId();
 
-			try
-			{
-				var validationResult = IsValidUploadedFiles(new List<string> { ".xlsx", ".xls" });
-				if (validationResult.HasError)
-				{
-					LogError("userId: " + userId, validationResult);
-					return this.CreateErrorResponse(validationResult);
-				}
-				var file = Request.Form.Files[0];
+            try
+            {
+                var validationResult = IsValidUploadedFiles(new List<string> { ".xlsx", ".xls" });
+                if (validationResult.HasError)
+                {
+                    LogError("userId: " + userId, validationResult);
+                    return this.CreateErrorResponse(validationResult);
+                }
+                var file = Request.Form.Files[0];
 
                 //using excel file
                 using (var workbook = new XLWorkbook(file.OpenReadStream()))
@@ -254,25 +286,25 @@ namespace EnglishHelperService.API.Controllers
                         UserId = userId,
                         Workbook = workbook
                     });
-					if (response.HasError)
-					{
-						LogError("userId: " + userId, response);
-						return this.CreateErrorResponse(response);
-					}
-				}
-				return NoContent();
-			}
-			catch (Exception ex)
-			{
-				var response = new ResponseBase
-				{
-					ErrorMessage = ErrorMessage.UploadedFileFailed,
-					ExceptionErrorMessage = ex.Message
-				};
+                    if (response.HasError)
+                    {
+                        LogError("userId: " + userId, response);
+                        return this.CreateErrorResponse(response);
+                    }
+                }
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                var response = new ResponseBase
+                {
+                    ErrorMessage = ErrorMessage.UploadedFileFailed,
+                    ExceptionErrorMessage = ex.Message
+                };
 
-				LogError("userId: " + userId, response);
-				return StatusCode(500, response.ErrorMessage);
-			}
-		}
-	}
+                LogError("userId: " + userId, response);
+                return StatusCode(500, response.ErrorMessage);
+            }
+        }
+    }
 }

@@ -13,5 +13,16 @@
         public int IncorrectCount { get; set; }
         public DateTime Created { get; set; }
         public DateTime? LastUse { get; set; }
+
+        /// <summary>
+        /// Correct and incorrect values balance
+        /// </summary>
+        public int Balance
+        {
+            get
+            {
+                return this.CorrectCount - this.IncorrectCount;
+            }
+        }
     }
 }
