@@ -82,12 +82,11 @@ namespace EnglishHelperService.Business
             {
                 var entities = await _unitOfWork.WordRepository.Query(x => x.UserId == request.UserId).ToListAsync();
                 var words = entities.Select(x => _factory.Create(x)).ToList();
+                words = OrderWords(request, words);
                 if (!words.Any())
                 {
                     return await _validator.CreateNotFoundResponse<ListWordResponse>();
                 }
-
-                words = OrderWords(request, words);
 
                 return await Task.FromResult(new ListWordResponse
                 {
@@ -482,7 +481,10 @@ namespace EnglishHelperService.Business
         /// </summary>
         public List<Word> OrderWords(ListWordWithFilterRequest request, List<Word> words)
         {
-            switch (request.OrderType)
+			if (!words.Any())
+                return new List<Word>();
+	
+			switch (request.OrderType)
             {
                 case WordOrderingType.Any:
                     return words.Take(request.WordNumber).ToList();
