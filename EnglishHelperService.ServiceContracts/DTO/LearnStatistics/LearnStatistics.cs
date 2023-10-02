@@ -1,26 +1,18 @@
 ﻿namespace EnglishHelperService.ServiceContracts
 {
     /// <summary>
-    /// Word object for client
+    /// Learn statistics object for client
     /// </summary>
-    public class Word
+    public class LearnStatistics
     {
         /// <summary>
-        /// Word identifier
+        /// Identifier
         /// </summary>
         public long Id { get; set; }
         /// <summary>
-        /// Word's user id
+        /// User id for statistics
         /// </summary>
         public long UserId { get; set; }
-        /// <summary>
-        /// English text
-        /// </summary>
-        public string EnglishText { get; set; }
-        /// <summary>
-        /// Hungarian text
-        /// </summary>
-        public string HungarianText { get; set; }
         /// <summary>
         /// Good counts
         /// </summary>
@@ -30,22 +22,26 @@
         /// </summary>
         public int IncorrectCount { get; set; }
         /// <summary>
+        /// Result percent
+        /// </summary>
+        public int Result { get; set; }
+        /// <summary>
+        /// Learn mode type
+        /// </summary>
+        public LearnModeType LearnMode { get; set; }
+        /// <summary>
         /// Word created date
         /// </summary
         public DateTime Created { get; set; }
-        /// <summary>
-        /// Word last use date
-        /// </summary>
-        public DateTime? LastUse { get; set; }
 
         /// <summary>
-        /// Correct and incorrect values balance
+        /// Correct and incorrect values totality
         /// </summary>
-        public int Balance
+        public int AllCount
         {
             get
             {
-                return this.CorrectCount - this.IncorrectCount;
+                return this.CorrectCount + this.IncorrectCount;
             }
         }
     }

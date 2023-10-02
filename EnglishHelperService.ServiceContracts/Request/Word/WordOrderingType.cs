@@ -1,5 +1,8 @@
 ﻿namespace EnglishHelperService.ServiceContracts
 {
+    /// <summary>
+    /// Word ordering enum type
+    /// </summary>
     public enum WordOrderingType
     {
         /// <summary>

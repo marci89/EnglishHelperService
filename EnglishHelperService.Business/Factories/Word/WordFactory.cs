@@ -10,13 +10,6 @@ namespace EnglishHelperService.Business
     /// </summary>
     public class WordFactory
     {
-        private readonly WordValidator _validator;
-
-        public WordFactory(WordValidator validator)
-        {
-            _validator = validator;
-        }
-
         /// <summary>
         /// Map client word from domain word
         /// </summary>

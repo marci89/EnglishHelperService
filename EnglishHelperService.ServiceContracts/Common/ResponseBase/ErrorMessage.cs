@@ -19,8 +19,6 @@
         InvalidFileData,
         SendEmailFailed,
 
-
-
         InvalidPasswordOrUsernameOrEmail,
         NoUsernameOrEmailExists,
         UsernameOrEmailRequired,

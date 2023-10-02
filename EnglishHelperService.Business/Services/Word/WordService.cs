@@ -481,10 +481,10 @@ namespace EnglishHelperService.Business
         /// </summary>
         public List<Word> OrderWords(ListWordWithFilterRequest request, List<Word> words)
         {
-			if (!words.Any())
+            if (!words.Any())
                 return new List<Word>();
-	
-			switch (request.OrderType)
+
+            switch (request.OrderType)
             {
                 case WordOrderingType.Any:
                     return words.Take(request.WordNumber).ToList();

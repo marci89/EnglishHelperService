@@ -10,6 +10,7 @@ namespace EnglishHelperService.Persistence
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Word> Words { get; set; }
+        public DbSet<LearnStatistics> LearnStatistics { get; set; }
 
         public DataContext(DbContextOptions options) : base(options) { }
         protected override void OnModelCreating(ModelBuilder modelBuilder)

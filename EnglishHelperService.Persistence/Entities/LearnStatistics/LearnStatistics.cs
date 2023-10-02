@@ -1,55 +1,43 @@
 ﻿namespace EnglishHelperService.Persistence.Entities
 {
     /// <summary>
-    /// Word entity
+    /// Learn statistics entity
     /// </summary>
-    public class Word
+    public class LearnStatistics
     {
         /// <summary>
-        /// Word identifier
+        /// Identifier
         /// </summary>
         public long Id { get; set; }
-
         /// <summary>
-        /// Word's user id
+        /// User id for statistics
         /// </summary>
         public long UserId { get; set; }
-
-        /// <summary>
-        /// English text
-        /// </summary>
-        public string EnglishText { get; set; }
-
-        /// <summary>
-        /// Hungarian text
-        /// </summary>
-        public string HungarianText { get; set; }
-
         /// <summary>
         /// Good counts
         /// </summary>
         public int CorrectCount { get; set; }
-
         /// <summary>
         /// Bad counts
         /// </summary>
         public int IncorrectCount { get; set; }
-
         /// <summary>
-        /// Word created date
+        /// Result percent
         /// </summary>
+        public int Result { get; set; }
+        /// <summary>
+        /// Learn mode type
+        /// </summary>
+        public LearnModeType LearnMode { get; set; }
+        /// <summary>
+        /// Learn statistics created date
+        /// </summary
         public DateTime Created { get; set; }
-
-        /// <summary>
-        /// Word last use date
-        /// </summary>
-        public DateTime? LastUse { get; set; }
-
 
         #region Navigation propeties
 
         /// <summary>
-        /// Word's User
+        /// Learn statistics's User
         /// </summary>
         public virtual User User { get; set; }
 

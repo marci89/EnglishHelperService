@@ -51,10 +51,19 @@
         public DateTime? ResetTokenExpiration { get; set; }
 
 
+        #region Navigation propeties
+
         /// <summary>
         /// User's words
         /// </summary>
         public ICollection<Word> Words { get; set; }
+
+        /// <summary>
+        /// User's Learn statistics
+        /// </summary>
+        public ICollection<LearnStatistics> LearnStatistics { get; set; }
+
+        #endregion
 
     }
 }

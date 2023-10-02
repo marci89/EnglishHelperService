@@ -36,7 +36,6 @@ namespace EnglishHelperService.Persistence
             builder.HasIndex(u => u.Username)
                    .IsUnique(true);
 
-
             builder.Property(u => u.Password)
                    .IsRequired();
 
@@ -62,7 +61,6 @@ namespace EnglishHelperService.Persistence
                    .IsRequired(false);
 
             builder.Seed();
-
         }
     }
 }

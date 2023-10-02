@@ -9,5 +9,6 @@ namespace EnglishHelperService.Persistence.Repositories
     {
         IUserRepository UserRepository { get; }
         IWordRepository WordRepository { get; }
+        ILearnStatisticsRepository LearnStatisticsRepository { get; }
     }
 }
