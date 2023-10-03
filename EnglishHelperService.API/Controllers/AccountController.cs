@@ -75,14 +75,14 @@ namespace EnglishHelperService.API.Controllers
         }
 
         /// <summary>
-        /// Change logined user email
+        /// Change logined user email by logined user id
         /// </summary>
         [HttpPut("changeEmail")]
         public async Task<IActionResult> ChangeEmail([FromBody] ChangeEmailRequest request)
         {
-            request.Id = GetLoginedUserId();
+            var userId = GetLoginedUserId();
 
-            var response = await _service.ChangeEmail(request);
+            var response = await _service.ChangeEmail(request, userId);
             if (response.HasError)
             {
                 LogError(JsonConvert.SerializeObject(request), response);
@@ -97,9 +97,9 @@ namespace EnglishHelperService.API.Controllers
         [HttpPut("changePassword")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
         {
-            request.Id = GetLoginedUserId();
+            var userId = GetLoginedUserId();
 
-            var response = await _service.ChangePassword(request);
+            var response = await _service.ChangePassword(request, userId);
             if (response.HasError)
             {
                 LogError(JsonConvert.SerializeObject(request), response);

@@ -9,8 +9,8 @@ namespace EnglishHelperService.Business
         Task<ListUserResponse> List(ListUserWithFilterRequest request);
         Task<CreateUserResponse> Create(CreateUserRequest request);
         Task<ResponseBase> Update(UpdateUserRequest request);
-        Task<ResponseBase> ChangeEmail(ChangeEmailRequest request);
-        Task<ResponseBase> ChangePassword(ChangePasswordRequest request);
+        Task<ResponseBase> ChangeEmail(ChangeEmailRequest request, long userId);
+        Task<ResponseBase> ChangePassword(ChangePasswordRequest request, long userId);
         Task<ForgotPasswordResponse> ForgotPassword(ForgotPasswordRequest request);
         Task<ResponseBase> ResetPassword(ResetPasswordRequest request);
         Task<ResponseBase> Delete(long id);

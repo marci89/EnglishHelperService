@@ -20,7 +20,7 @@ namespace EnglishHelperService.API.Controllers
         }
 
         /// <summary>
-        /// Get User's learn statistics by user id.
+        /// Get User's learn statistics by logined user id.
         /// </summary>
         [HttpGet("List")]
         public async Task<IActionResult> List()
@@ -37,14 +37,14 @@ namespace EnglishHelperService.API.Controllers
         }
 
         /// <summary>
-        /// Create learn statistics
+        /// Create learn statistics by logined user id
         /// </summary>
         [HttpPost()]
         public async Task<IActionResult> Create([FromBody] CreateLearnStatisticsRequest request)
         {
-            request.UserId = GetLoginedUserId();
+            var userId = GetLoginedUserId();
 
-            var response = await _service.Create(request);
+            var response = await _service.Create(request, userId);
             if (response.HasError)
             {
                 LogError(JsonConvert.SerializeObject(request), response);
@@ -69,17 +69,17 @@ namespace EnglishHelperService.API.Controllers
         }
 
         /// <summary>
-        /// Delete All
+        /// Delete All by logined user id
         /// </summary>
         [HttpDelete("DeleteAll")]
         public async Task<IActionResult> Delete()
         {
-            var id = GetLoginedUserId();
+            var userId = GetLoginedUserId();
 
-            var response = await _service.DeleteAll(id);
+            var response = await _service.DeleteAll(userId);
             if (response.HasError)
             {
-                LogError("Id: " + id, response);
+                LogError("UserId: " + userId, response);
                 return this.CreateErrorResponse(response);
             }
             return NoContent();

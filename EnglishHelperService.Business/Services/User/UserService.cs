@@ -181,16 +181,16 @@ namespace EnglishHelperService.Business
         }
 
         /// <summary>
-        /// Change email
+        /// Change email by logined user id
         /// </summary>
-        public async Task<ResponseBase> ChangeEmail(ChangeEmailRequest request)
+        public async Task<ResponseBase> ChangeEmail(ChangeEmailRequest request, long userId)
         {
             try
             {
-                var validationResult = _validator.IsValidChangeEmailRequest(request);
+                var validationResult = _validator.IsValidChangeEmailRequest(request, userId);
                 if (!validationResult.HasError)
                 {
-                    var entity = await _unitOfWork.UserRepository.ReadAsync(u => u.Id == request.Id);
+                    var entity = await _unitOfWork.UserRepository.ReadAsync(u => u.Id == userId);
                     if (entity is null)
                     {
                         return await _validator.CreateNotFoundResponse<ResponseBase>();
@@ -214,16 +214,16 @@ namespace EnglishHelperService.Business
         }
 
         /// <summary>
-        /// Change password
+        /// Change password by logined user id
         /// </summary>
-        public async Task<ResponseBase> ChangePassword(ChangePasswordRequest request)
+        public async Task<ResponseBase> ChangePassword(ChangePasswordRequest request, long userId)
         {
             try
             {
-                var validationResult = _validator.IsValidChangePasswordRequest(request);
+                var validationResult = _validator.IsValidChangePasswordRequest(request, userId);
                 if (!validationResult.HasError)
                 {
-                    var entity = await _unitOfWork.UserRepository.ReadAsync(u => u.Id == request.Id);
+                    var entity = await _unitOfWork.UserRepository.ReadAsync(u => u.Id == userId);
                     if (entity is null)
                     {
                         return await _validator.CreateNotFoundResponse<ResponseBase>();

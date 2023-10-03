@@ -41,7 +41,7 @@ namespace EnglishHelperService.API.Extensions
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IWordService, WordService>();
             services.AddScoped<ILearnStatisticsService, LearnStatisticsService>();
-            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IAuthTokenService, AuthTokenService>();
         }
 
         /// <summary>

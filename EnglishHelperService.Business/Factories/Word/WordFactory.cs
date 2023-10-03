@@ -34,14 +34,14 @@ namespace EnglishHelperService.Business
         /// <summary>
         /// Map domain word from client word
         /// </summary>
-        public Entity.Word Create(CreateWordRequest request)
+        public Entity.Word Create(CreateWordRequest request, long userId)
         {
             if (request is null)
                 return null;
 
             return new Entity.Word
             {
-                UserId = request.UserId,
+                UserId = userId,
                 EnglishText = request.EnglishText,
                 HungarianText = request.HungarianText,
                 CorrectCount = 0,

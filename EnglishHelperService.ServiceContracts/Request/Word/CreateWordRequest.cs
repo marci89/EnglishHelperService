@@ -1,14 +1,10 @@
 ﻿namespace EnglishHelperService.ServiceContracts
 {
     /// <summary>
-    /// Create word request
+    /// Create word request by logined user id
     /// </summary>
     public class CreateWordRequest
     {
-        /// <summary>
-        /// User id
-        /// </summary>
-        public long UserId { get; set; }
         /// <summary>
         /// English text
         /// </summary>

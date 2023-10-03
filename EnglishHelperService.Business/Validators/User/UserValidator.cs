@@ -116,7 +116,7 @@ namespace EnglishHelperService.Business
         /// <summary>
         /// Execute change email request validating
         /// </summary>
-        public ResponseBase IsValidChangeEmailRequest(ChangeEmailRequest request)
+        public ResponseBase IsValidChangeEmailRequest(ChangeEmailRequest request, long userId)
         {
             if (request is null)
                 return CreateErrorResponse<ResponseBase>(ErrorMessage.InvalidRequest);
@@ -127,7 +127,7 @@ namespace EnglishHelperService.Business
                 return CreateErrorResponse<ResponseBase>(passwordValidation.ErrorMessage.Value);
             }
 
-            var passwordMatchValidation = IsValidPasswordMatch(request.Id, request.Password);
+            var passwordMatchValidation = IsValidPasswordMatch(userId, request.Password);
             if (passwordMatchValidation.HasError && passwordMatchValidation.ErrorMessage.HasValue)
             {
                 return CreateErrorResponse<ResponseBase>(passwordMatchValidation.ErrorMessage.Value);
@@ -148,7 +148,7 @@ namespace EnglishHelperService.Business
         /// <summary>
         /// Execute change password request validating
         /// </summary>
-        public ResponseBase IsValidChangePasswordRequest(ChangePasswordRequest request)
+        public ResponseBase IsValidChangePasswordRequest(ChangePasswordRequest request, long userId)
         {
             if (request is null)
                 return CreateErrorResponse<ResponseBase>(ErrorMessage.InvalidRequest);
@@ -159,7 +159,7 @@ namespace EnglishHelperService.Business
                 return CreateErrorResponse<ResponseBase>(passwordValidation.ErrorMessage.Value);
             }
 
-            var passwordMatchValidation = IsValidPasswordMatch(request.Id, request.Password);
+            var passwordMatchValidation = IsValidPasswordMatch(userId, request.Password);
             if (passwordMatchValidation.HasError && passwordMatchValidation.ErrorMessage.HasValue)
             {
                 return CreateErrorResponse<ResponseBase>(passwordMatchValidation.ErrorMessage.Value);

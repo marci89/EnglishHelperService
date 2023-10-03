@@ -20,7 +20,7 @@ namespace EnglishHelperService.Business
         /// <summary>
         /// Execute word create request validating
         /// </summary>
-        public CreateWordResponse IsValidCreateRequest(CreateWordRequest request)
+        public CreateWordResponse IsValidCreateRequest(CreateWordRequest request, long userId)
         {
             if (request is null)
                 return CreateErrorResponse<CreateWordResponse>(ErrorMessage.InvalidRequest);
@@ -31,13 +31,13 @@ namespace EnglishHelperService.Business
             if (String.IsNullOrWhiteSpace(request.HungarianText))
                 return CreateErrorResponse<CreateWordResponse>(ErrorMessage.HungarianTextRequired);
 
-            var englishTextExistsValidation = IsValidEnglishTextExistsCheck(request.EnglishText, request.UserId);
+            var englishTextExistsValidation = IsValidEnglishTextExistsCheck(request.EnglishText, userId);
             if (englishTextExistsValidation.HasError && englishTextExistsValidation.ErrorMessage.HasValue)
             {
                 return CreateErrorResponse<CreateWordResponse>(englishTextExistsValidation.ErrorMessage.Value);
             }
 
-            var hungarianTextExistsValidation = IsValidHungarianTextExistsCheck(request.HungarianText, request.UserId);
+            var hungarianTextExistsValidation = IsValidHungarianTextExistsCheck(request.HungarianText, userId);
             if (hungarianTextExistsValidation.HasError && hungarianTextExistsValidation.ErrorMessage.HasValue)
             {
                 return CreateErrorResponse<CreateWordResponse>(hungarianTextExistsValidation.ErrorMessage.Value);
@@ -52,7 +52,7 @@ namespace EnglishHelperService.Business
         /// <summary>
         /// Execute word update request validating
         /// </summary>
-        public UpdateWordResponse IsValidUpdateRequest(UpdateWordRequest request)
+        public UpdateWordResponse IsValidUpdateRequest(UpdateWordRequest request, long userId)
         {
             if (request is null)
                 return CreateErrorResponse<UpdateWordResponse>(ErrorMessage.InvalidRequest);
@@ -69,7 +69,7 @@ namespace EnglishHelperService.Business
             //Check the current word, too because I want to able to change it's different props. 
             if (currentWord != null && currentWord.EnglishText != request.EnglishText)
             {
-                var englishTextExistsValidation = IsValidEnglishTextExistsCheck(request.EnglishText, request.UserId);
+                var englishTextExistsValidation = IsValidEnglishTextExistsCheck(request.EnglishText, userId);
                 if (englishTextExistsValidation.HasError && englishTextExistsValidation.ErrorMessage.HasValue)
                 {
                     return CreateErrorResponse<UpdateWordResponse>(englishTextExistsValidation.ErrorMessage.Value);
@@ -79,7 +79,7 @@ namespace EnglishHelperService.Business
             //Check the current word, too because I want to able to change its different props. 
             if (currentWord != null && currentWord.HungarianText != request.HungarianText)
             {
-                var hungarianTextExistsValidation = IsValidHungarianTextExistsCheck(request.HungarianText, request.UserId);
+                var hungarianTextExistsValidation = IsValidHungarianTextExistsCheck(request.HungarianText, userId);
                 if (hungarianTextExistsValidation.HasError && hungarianTextExistsValidation.ErrorMessage.HasValue)
                 {
                     return CreateErrorResponse<UpdateWordResponse>(hungarianTextExistsValidation.ErrorMessage.Value);

@@ -1,7 +1,7 @@
 ﻿namespace EnglishHelperService.ServiceContracts
 {
     /// <summary>
-    /// Update word request
+    /// Update word request by logined user
     /// </summary>
     public class UpdateWordRequest
     {
@@ -9,10 +9,6 @@
         /// Word identifier
         /// </summary>
         public long Id { get; set; }
-        /// <summary>
-        /// Word's user id
-        /// </summary>
-        public long UserId { get; set; }
         /// <summary>
         /// English text
         /// </summary>

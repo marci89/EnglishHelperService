@@ -74,13 +74,13 @@ namespace EnglishHelperService.Business
         }
 
         /// <summary>
-        /// List words with filter and user id
+        /// List words with filter and logined user id
         /// </summary>
-        public async Task<ListWordResponse> ListWithFilter(ListWordWithFilterRequest request)
+        public async Task<ListWordResponse> ListWithFilter(ListWordWithFilterRequest request, long userId)
         {
             try
             {
-                var entities = await _unitOfWork.WordRepository.Query(x => x.UserId == request.UserId).ToListAsync();
+                var entities = await _unitOfWork.WordRepository.Query(x => x.UserId == userId).ToListAsync();
                 var words = entities.Select(x => _factory.Create(x)).ToList();
                 words = OrderWords(request, words);
                 if (!words.Any())
@@ -101,16 +101,16 @@ namespace EnglishHelperService.Business
         }
 
         /// <summary>
-        /// Create word
+        /// Create word by logined user id
         /// </summary>
-        public async Task<CreateWordResponse> Create(CreateWordRequest request)
+        public async Task<CreateWordResponse> Create(CreateWordRequest request, long userId)
         {
             try
             {
-                var validationResult = _validator.IsValidCreateRequest(request);
+                var validationResult = _validator.IsValidCreateRequest(request, userId);
                 if (!validationResult.HasError)
                 {
-                    var entity = _factory.Create(request);
+                    var entity = _factory.Create(request, userId);
                     await _unitOfWork.WordRepository.CreateAsync(entity);
                     await _unitOfWork.SaveAsync();
 
@@ -132,11 +132,11 @@ namespace EnglishHelperService.Business
         /// <summary>
         /// Update word
         /// </summary>
-        public async Task<UpdateWordResponse> Update(UpdateWordRequest request)
+        public async Task<UpdateWordResponse> Update(UpdateWordRequest request, long userId)
         {
             try
             {
-                var validationResult = _validator.IsValidUpdateRequest(request);
+                var validationResult = _validator.IsValidUpdateRequest(request, userId);
                 if (!validationResult.HasError)
                 {
                     var entity = await _unitOfWork.WordRepository.ReadAsync(u => u.Id == request.Id);

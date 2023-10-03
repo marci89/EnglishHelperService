@@ -10,7 +10,7 @@ namespace EnglishHelperService.Business
     /// <summary>
     /// JWT token generaton service for auth
     /// </summary>
-    public class TokenService : ITokenService
+    public class AuthTokenService : IAuthTokenService
     {
         /// <summary>
         /// Key for token. It is got from appsettings file "TokenKey"
@@ -19,7 +19,7 @@ namespace EnglishHelperService.Business
 
         private readonly ISecuritySettings _settings;
 
-        public TokenService(ISecuritySettings settings)
+        public AuthTokenService(ISecuritySettings settings)
         {
             _settings = settings;
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.TokenKey));

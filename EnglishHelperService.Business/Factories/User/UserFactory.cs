@@ -11,9 +11,9 @@ namespace EnglishHelperService.Business
     {
         private readonly PasswordSecurityHandler _passwordSecurityHandler;
         private readonly UserValidator _validator;
-        private readonly ITokenService _tokenService;
+        private readonly IAuthTokenService _tokenService;
 
-        public UserFactory(PasswordSecurityHandler passwordSecurityHandler, UserValidator validator, ITokenService tokenService)
+        public UserFactory(PasswordSecurityHandler passwordSecurityHandler, UserValidator validator, IAuthTokenService tokenService)
         {
             _passwordSecurityHandler = passwordSecurityHandler;
             _tokenService = tokenService;

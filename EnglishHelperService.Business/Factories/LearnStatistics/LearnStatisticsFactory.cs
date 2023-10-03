@@ -32,14 +32,14 @@ namespace EnglishHelperService.Business
         /// <summary>
         /// Map domain LearnStatistics from client LearnStatistics
         /// </summary>
-        public Entity.LearnStatistics Create(CreateLearnStatisticsRequest request)
+        public Entity.LearnStatistics Create(CreateLearnStatisticsRequest request, long userId)
         {
             if (request is null)
                 return null;
 
             return new Entity.LearnStatistics
             {
-                UserId = request.UserId,
+                UserId = userId,
                 CorrectCount = request.CorrectCount,
                 IncorrectCount = request.IncorrectCount,
                 Result = request.Result,

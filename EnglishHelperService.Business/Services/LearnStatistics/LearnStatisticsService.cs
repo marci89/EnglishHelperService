@@ -49,16 +49,16 @@ namespace EnglishHelperService.Business
         }
 
         /// <summary>
-        /// Create learn statistics
+        /// Create learn statistics by logined user id
         /// </summary>
-        public async Task<CreateLearnStatisticsResponse> Create(CreateLearnStatisticsRequest request)
+        public async Task<CreateLearnStatisticsResponse> Create(CreateLearnStatisticsRequest request, long userId)
         {
             try
             {
                 var validationResult = _validator.IsValidCreateRequest(request);
                 if (!validationResult.HasError)
                 {
-                    var entity = _factory.Create(request);
+                    var entity = _factory.Create(request, userId);
                     await _unitOfWork.LearnStatisticsRepository.CreateAsync(entity);
                     await _unitOfWork.SaveAsync();
 

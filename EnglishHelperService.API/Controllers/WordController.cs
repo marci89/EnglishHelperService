@@ -37,7 +37,7 @@ namespace EnglishHelperService.API.Controllers
         }
 
         /// <summary>
-        /// Get User's words by user id.
+        /// Get User's words by logined user id.
         /// </summary>
         [HttpGet("List")]
         public async Task<IActionResult> List()
@@ -54,15 +54,14 @@ namespace EnglishHelperService.API.Controllers
         }
 
         /// <summary>
-        /// Get User's words by user id and filtering.
+        /// Get User's words by logined user id and filtering.
         /// </summary>
         [HttpGet("ListWithFilter")]
         public async Task<IActionResult> ListWithFilter([FromQuery] ListWordWithFilterRequest request)
         {
             var userId = GetLoginedUserId();
-            request.UserId = userId;
 
-            var response = await _service.ListWithFilter(request);
+            var response = await _service.ListWithFilter(request, userId);
             if (response.HasError)
             {
                 LogError("userId: " + userId, response);
@@ -77,9 +76,9 @@ namespace EnglishHelperService.API.Controllers
         [HttpPost()]
         public async Task<IActionResult> Create([FromBody] CreateWordRequest request)
         {
-            request.UserId = GetLoginedUserId();
+            var userId = GetLoginedUserId();
 
-            var response = await _service.Create(request);
+            var response = await _service.Create(request, userId);
             if (response.HasError)
             {
                 LogError(JsonConvert.SerializeObject(request), response);
@@ -94,9 +93,9 @@ namespace EnglishHelperService.API.Controllers
         [HttpPut()]
         public async Task<IActionResult> Update([FromBody] UpdateWordRequest request)
         {
-            request.UserId = GetLoginedUserId();
+            var userId = GetLoginedUserId();
 
-            var response = await _service.Update(request);
+            var response = await _service.Update(request, userId);
             if (response.HasError)
             {
                 LogError(JsonConvert.SerializeObject(request), response);
@@ -136,17 +135,17 @@ namespace EnglishHelperService.API.Controllers
         }
 
         /// <summary>
-        /// Delete All
+        /// Delete All by logined user id
         /// </summary>
         [HttpDelete("DeleteAll")]
         public async Task<IActionResult> Delete()
         {
-            var id = GetLoginedUserId();
+            var userId = GetLoginedUserId();
 
-            var response = await _service.DeleteAll(id);
+            var response = await _service.DeleteAll(userId);
             if (response.HasError)
             {
-                LogError("Id: " + id, response);
+                LogError("UserId: " + userId, response);
                 return this.CreateErrorResponse(response);
             }
             return NoContent();
@@ -158,12 +157,12 @@ namespace EnglishHelperService.API.Controllers
         [HttpPut("ResetResults")]
         public async Task<IActionResult> ResetResults()
         {
-            var id = GetLoginedUserId();
+            var userId = GetLoginedUserId();
 
-            var response = await _service.ResetResults(id);
+            var response = await _service.ResetResults(userId);
             if (response.HasError)
             {
-                LogError("Id: " + id, response);
+                LogError("UserId: " + userId, response);
                 return this.CreateErrorResponse(response);
             }
             return Ok(response.Result);

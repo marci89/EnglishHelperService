@@ -2,7 +2,7 @@
 
 namespace EnglishHelperService.Business
 {
-	public interface ITokenService
+	public interface IAuthTokenService
 	{
 		string CreateToken(User user);
 	}

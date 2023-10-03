@@ -1,14 +1,10 @@
 ﻿namespace EnglishHelperService.ServiceContracts
 {
     /// <summary>
-    /// Create learn statistics request
+    /// Create learn statistics request by logined user id
     /// </summary>
     public class CreateLearnStatisticsRequest
     {
-        /// <summary>
-        /// User id
-        /// </summary>
-        public long UserId { get; set; }
         /// <summary>
         /// Good counts
         /// </summary>

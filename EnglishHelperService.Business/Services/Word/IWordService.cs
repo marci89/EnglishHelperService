@@ -6,9 +6,9 @@ namespace EnglishHelperService.Business
     {
         Task<ReadWordByIdResponse> ReadById(long id);
         Task<ListWordResponse> List(long userId);
-        Task<ListWordResponse> ListWithFilter(ListWordWithFilterRequest request);
-        Task<CreateWordResponse> Create(CreateWordRequest request);
-        Task<UpdateWordResponse> Update(UpdateWordRequest request);
+        Task<ListWordResponse> ListWithFilter(ListWordWithFilterRequest request, long userId);
+        Task<CreateWordResponse> Create(CreateWordRequest request, long userId);
+        Task<UpdateWordResponse> Update(UpdateWordRequest request, long userId);
         Task<UpdateWordResponse> UpdateUsedWord(UpdateUsedWordRequest request);
         Task<ResponseBase> Delete(long id);
         Task<ResponseBase> DeleteAll(long userId);

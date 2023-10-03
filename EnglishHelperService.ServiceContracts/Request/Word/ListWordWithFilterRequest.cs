@@ -1,14 +1,10 @@
 ﻿namespace EnglishHelperService.ServiceContracts
 {
     /// <summary>
-    /// List word with filter
+    /// List word with filter by logined user id
     /// </summary>
     public class ListWordWithFilterRequest
     {
-        /// <summary>
-        /// User id
-        /// </summary>
-        public long UserId { get; set; }
         /// <summary>
         /// The words count
         /// </summary>
