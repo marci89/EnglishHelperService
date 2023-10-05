@@ -3,7 +3,7 @@
     /// <summary>
     /// Word ordering enum type
     /// </summary>
-    public enum WordOrderingType
+    public enum WordOrderType
     {
         /// <summary>
         /// it can be anything

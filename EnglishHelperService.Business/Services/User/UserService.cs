@@ -338,9 +338,15 @@ namespace EnglishHelperService.Business
             {
                 _unitOfWork.BeginTransaction();
 
+                //delete user's words
                 var words = _unitOfWork.WordRepository.Query(x => x.UserId == id);
                 await _unitOfWork.WordRepository.DeleteManyAsync(words);
 
+                //delete user's learnStatistics
+                var learnStatistics = _unitOfWork.LearnStatisticsRepository.Query(x => x.UserId == id);
+                await _unitOfWork.LearnStatisticsRepository.DeleteManyAsync(learnStatistics);
+
+                //delete user
                 var entity = await _unitOfWork.UserRepository.ReadAsync(u => u.Id == id);
                 if (entity is null)
                 {

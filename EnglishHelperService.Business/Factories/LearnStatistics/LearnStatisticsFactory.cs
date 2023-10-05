@@ -49,9 +49,42 @@ namespace EnglishHelperService.Business
         }
 
         /// <summary>
+        /// Create a LearnStatisticsChartResult object
+        /// </summary>
+        public LearnStatisticsChartResult Create(List<Entity.LearnStatistics> entites, int quantity)
+        {
+            if (entites is null)
+                return null;
+
+            List<string> label = Enumerable.Range(1, quantity).Select(i => i.ToString()).ToList();
+
+            return new LearnStatisticsChartResult
+            {
+                ChartLabel = label,
+                FlashcardChartData = Create(entites, quantity, Entity.LearnModeType.Flashcard),
+                TypingChartData = Create(entites, quantity, Entity.LearnModeType.Typing),
+                SelectionChartData = Create(entites, quantity, Entity.LearnModeType.Selection),
+                ListeningChartData = Create(entites, quantity, Entity.LearnModeType.Listening)
+            };
+        }
+
+
+        #region private methods
+
+        /// <summary>
+        /// Create a ChartData
+        /// </summary>
+        private List<string> Create(List<Entity.LearnStatistics> entites, int quantity, Entity.LearnModeType type)
+        {
+            var data = entites.Where(x => x.LearnMode == type).OrderByDescending(x => x.Created).Take(quantity).Select(x => x.Result.ToString()).ToList();
+            data.Reverse();
+            return data;
+        }
+
+        /// <summary>
         /// Map client LearnModeType from domain LearnModeType
         /// </summary>
-        public LearnModeType Create(Entity.LearnModeType type)
+        private LearnModeType Create(Entity.LearnModeType type)
         {
             switch (type)
             {
@@ -61,6 +94,8 @@ namespace EnglishHelperService.Business
                     return LearnModeType.Typing;
                 case Entity.LearnModeType.Selection:
                     return LearnModeType.Selection;
+                case Entity.LearnModeType.Listening:
+                    return LearnModeType.Listening;
                 default:
                     throw new ArgumentException("Invalid LearnMode type.");
             }
@@ -69,7 +104,7 @@ namespace EnglishHelperService.Business
         /// <summary>
         /// Map domain LearnModeType from client LearnModeType
         /// </summary>
-        public Entity.LearnModeType Create(LearnModeType type)
+        private Entity.LearnModeType Create(LearnModeType type)
         {
             switch (type)
             {
@@ -79,10 +114,14 @@ namespace EnglishHelperService.Business
                     return Entity.LearnModeType.Typing;
                 case LearnModeType.Selection:
                     return Entity.LearnModeType.Selection;
+                case LearnModeType.Listening:
+                    return Entity.LearnModeType.Listening;
                 default:
                     throw new ArgumentException("Invalid LearnMode type.");
             }
         }
+
+        #endregion
     }
 }
 

@@ -37,6 +37,23 @@ namespace EnglishHelperService.API.Controllers
         }
 
         /// <summary>
+        /// Get User's learn statistics by logined user id and filter for chart diagram.
+        /// </summary>
+        [HttpGet("ListForChart")]
+        public async Task<IActionResult> ListForChart([FromQuery] ListLearnStatisticsChartRequest request)
+        {
+            var userId = GetLoginedUserId();
+
+            var response = await _service.ListForChart(request, userId);
+            if (response.HasError)
+            {
+                LogError("userId: " + userId, response);
+                return this.CreateErrorResponse(response);
+            }
+            return Ok(response.Result);
+        }
+
+        /// <summary>
         /// Create learn statistics by logined user id
         /// </summary>
         [HttpPost()]

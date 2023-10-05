@@ -486,15 +486,15 @@ namespace EnglishHelperService.Business
 
             switch (request.OrderType)
             {
-                case WordOrderingType.Any:
+                case WordOrderType.Any:
                     return words.Take(request.WordNumber).ToList();
-                case WordOrderingType.Newest:
+                case WordOrderType.Newest:
                     return words.OrderByDescending(x => x.Created).Take(request.WordNumber).ToList();
-                case WordOrderingType.Oldest:
+                case WordOrderType.Oldest:
                     return words.OrderBy(x => x.Created).Take(request.WordNumber).ToList();
-                case WordOrderingType.Best:
+                case WordOrderType.Best:
                     return words.OrderByDescending(x => x.Balance).Take(request.WordNumber).ToList();
-                case WordOrderingType.Worst:
+                case WordOrderType.Worst:
                     return words.OrderBy(x => x.Balance).Take(request.WordNumber).ToList();
                 default:
                     return words.Take(request.WordNumber).ToList();

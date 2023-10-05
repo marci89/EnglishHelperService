@@ -49,6 +49,28 @@ namespace EnglishHelperService.Business
         }
 
         /// <summary>
+        /// List learn statistics for chart by user id and filter
+        /// </summary>
+        public async Task<ListLearnStatisticsChartResponse> ListForChart(ListLearnStatisticsChartRequest request, long userId)
+        {
+            try
+            {
+                var entities = await _unitOfWork.LearnStatisticsRepository.Query(x => x.UserId == userId).OrderBy(x => x.Created).ToListAsync();
+
+                return await Task.FromResult(new ListLearnStatisticsChartResponse
+                {
+                    StatusCode = StatusCode.Ok,
+                    Result = _factory.Create(entities, request.Quantity)
+                });
+            }
+            catch (Exception ex)
+            {
+                return await _validator.CreateServerErrorResponse<ListLearnStatisticsChartResponse>(ex.Message);
+            }
+        }
+
+
+        /// <summary>
         /// Create learn statistics by logined user id
         /// </summary>
         public async Task<CreateLearnStatisticsResponse> Create(CreateLearnStatisticsRequest request, long userId)

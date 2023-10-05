@@ -12,6 +12,6 @@
         /// <summary>
         /// Word ordering enum type
         /// </summary>
-        public WordOrderingType OrderType { get; set; }
+        public WordOrderType OrderType { get; set; }
     }
 }
