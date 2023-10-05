@@ -14,16 +14,19 @@ namespace EnglishHelperService.Business
         private readonly IUnitOfWork _unitOfWork;
         private readonly WordFactory _factory;
         private readonly WordValidator _validator;
+        private readonly ShuffleHandler _shuffleHandler;
 
         public WordService(
             IUnitOfWork unitOfWork,
             WordFactory factory,
-            WordValidator validator
+            WordValidator validator,
+            ShuffleHandler shuffleHandler
             )
         {
             _unitOfWork = unitOfWork;
             _factory = factory;
             _validator = validator;
+            _shuffleHandler = shuffleHandler;
         }
 
         /// <summary>
@@ -487,6 +490,7 @@ namespace EnglishHelperService.Business
             switch (request.OrderType)
             {
                 case WordOrderType.Any:
+                    _shuffleHandler.Shuffle(words);
                     return words.Take(request.WordNumber).ToList();
                 case WordOrderType.Newest:
                     return words.OrderByDescending(x => x.Created).Take(request.WordNumber).ToList();
@@ -497,6 +501,7 @@ namespace EnglishHelperService.Business
                 case WordOrderType.Worst:
                     return words.OrderBy(x => x.Balance).Take(request.WordNumber).ToList();
                 default:
+                    _shuffleHandler.Shuffle(words);
                     return words.Take(request.WordNumber).ToList();
             }
         }

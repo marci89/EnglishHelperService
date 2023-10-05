@@ -70,6 +70,7 @@ namespace EnglishHelperService.API.Extensions
         private static void RegisterHelpers(this IServiceCollection services)
         {
             services.AddScoped<PasswordSecurityHandler>();
+            services.AddScoped<ShuffleHandler>();
             services.AddScoped<LogUserActivity>();
             services.AddScoped<ErrorLogger>();
 
