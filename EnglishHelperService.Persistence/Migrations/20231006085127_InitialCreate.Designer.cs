@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EnglishHelperService.Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230927083301_resetToken")]
-    partial class resetToken
+    [Migration("20231006085127_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,6 +23,42 @@ namespace EnglishHelperService.Persistence.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("EnglishHelperService.Persistence.Entities.LearnStatistics", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
+
+                    b.Property<int>("CorrectCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IncorrectCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LearnMode")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(max)")
+                        .HasDefaultValue("Flashcard");
+
+                    b.Property<int>("Result")
+                        .HasColumnType("int");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("LearnStatistics", (string)null);
+                });
 
             modelBuilder.Entity("EnglishHelperService.Persistence.Entities.User", b =>
                 {
@@ -35,7 +71,7 @@ namespace EnglishHelperService.Persistence.Migrations
                     b.Property<DateTime>("Created")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2023, 9, 27, 10, 33, 0, 785, DateTimeKind.Local).AddTicks(1756));
+                        .HasDefaultValue(new DateTime(2023, 10, 6, 10, 51, 27, 153, DateTimeKind.Local).AddTicks(9303));
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -45,7 +81,7 @@ namespace EnglishHelperService.Persistence.Migrations
                     b.Property<DateTime>("LastActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2023, 9, 27, 10, 33, 0, 785, DateTimeKind.Local).AddTicks(1988));
+                        .HasDefaultValue(new DateTime(2023, 10, 6, 10, 51, 27, 153, DateTimeKind.Local).AddTicks(9532));
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -107,13 +143,13 @@ namespace EnglishHelperService.Persistence.Migrations
 
                     b.Property<string>("EnglishText")
                         .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("HungarianText")
                         .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<int>("IncorrectCount")
                         .HasColumnType("int");
@@ -131,6 +167,18 @@ namespace EnglishHelperService.Persistence.Migrations
                     b.ToTable("Word", (string)null);
                 });
 
+            modelBuilder.Entity("EnglishHelperService.Persistence.Entities.LearnStatistics", b =>
+                {
+                    b.HasOne("EnglishHelperService.Persistence.Entities.User", "User")
+                        .WithMany("LearnStatistics")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_LearnStatistics_UserID");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("EnglishHelperService.Persistence.Entities.Word", b =>
                 {
                     b.HasOne("EnglishHelperService.Persistence.Entities.User", "User")
@@ -145,6 +193,8 @@ namespace EnglishHelperService.Persistence.Migrations
 
             modelBuilder.Entity("EnglishHelperService.Persistence.Entities.User", b =>
                 {
+                    b.Navigation("LearnStatistics");
+
                     b.Navigation("Words");
                 });
 #pragma warning restore 612, 618
