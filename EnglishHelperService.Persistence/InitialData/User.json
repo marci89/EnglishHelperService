@@ -4,6 +4,8 @@
     "Username": "kismarczi-admin",
     "Email": "kismarczirobi@gmail.com",
     "Role": "Admin",
-    "Password": "$2a$11$RWyTguQbVXULKL/cNTEPXuzWEHiyt/37iti6hPOUFbgUQ/qir7YHS"
+    "Password": "$2a$11$RWyTguQbVXULKL/cNTEPXuzWEHiyt/37iti6hPOUFbgUQ/qir7YHS",
+    "Created": "2023-10-12T15:01:57.309Z",
+    "LastActive": "2023-10-12T15:01:57.309Z"
   }
 ]

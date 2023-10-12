@@ -47,12 +47,10 @@ namespace EnglishHelperService.Persistence
                    .IsUnique(true);
 
             builder.Property(u => u.Created)
-                   .HasDefaultValue(DateTime.Now)
-                   .IsRequired();
+                   .IsRequired(true);
 
             builder.Property(u => u.LastActive)
-                   .HasDefaultValue(DateTime.Now)
-                   .IsRequired();
+                   .IsRequired(true);
 
             builder.Property(u => u.ResetToken)
                    .IsRequired(false);
