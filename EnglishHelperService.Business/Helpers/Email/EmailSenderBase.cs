@@ -59,9 +59,6 @@ namespace EnglishHelperService.Business
             }
         }
 
-
-        #region private methods
-
         public string CreateBody(CreateEmailBodyRequest request)
         {
             string bodyTemplate = "";
@@ -82,8 +79,5 @@ namespace EnglishHelperService.Business
 
             return bodyTemplate;
         }
-
-        #endregion
-
     }
 }
