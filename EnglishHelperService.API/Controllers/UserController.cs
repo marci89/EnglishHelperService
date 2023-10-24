@@ -67,12 +67,12 @@ namespace EnglishHelperService.API.Controllers
         }
 
         /// <summary>
-        /// Delete user
+        /// Delete user by Id
         /// </summary>
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(long id)
         {
-            var response = await _service.Delete(id);
+            var response = await _service.DeleteById(id);
             if (response.HasError)
             {
                 LogError("Id: " + id, response);

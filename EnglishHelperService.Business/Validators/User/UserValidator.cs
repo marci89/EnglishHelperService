@@ -130,7 +130,7 @@ namespace EnglishHelperService.Business
             var passwordMatchValidation = IsValidPasswordMatch(userId, request.Password);
             if (passwordMatchValidation.HasError && passwordMatchValidation.ErrorMessage.HasValue)
             {
-                return CreateErrorResponse<ResponseBase>(passwordMatchValidation.ErrorMessage.Value);
+                return CreateErrorResponse<ResponseBase>(ErrorMessage.InvalidPasswordOrEmail);
             }
 
             var emailValidation = IsValidEmail(request.Email);
@@ -206,6 +206,28 @@ namespace EnglishHelperService.Business
                 StatusCode = StatusCode.Ok,
             };
         }
+
+        /// <summary>
+        /// Execute account delete request validating
+        /// </summary>
+        public ResponseBase IsValidDeleteAccountRequest(DeleteAccountRequest request)
+        {
+
+            if (request is null)
+                return CreateErrorResponse<ResponseBase>(ErrorMessage.InvalidRequest);
+
+            if (String.IsNullOrWhiteSpace(request.Identifier))
+                return CreateErrorResponse<ResponseBase>(ErrorMessage.UsernameOrEmailRequired);
+
+            if (String.IsNullOrWhiteSpace(request.Password))
+                return CreateErrorResponse<ResponseBase>(ErrorMessage.PasswordRequired);
+
+            return new ResponseBase
+            {
+                StatusCode = StatusCode.Ok,
+            };
+        }
+
 
 
         #region Private methods

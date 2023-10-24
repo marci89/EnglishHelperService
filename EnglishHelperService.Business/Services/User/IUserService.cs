@@ -13,6 +13,7 @@ namespace EnglishHelperService.Business
         Task<ResponseBase> ChangePassword(ChangePasswordRequest request, long userId);
         Task<ForgotPasswordResponse> ForgotPassword(ForgotPasswordRequest request);
         Task<ResponseBase> ResetPassword(ResetPasswordRequest request);
-        Task<ResponseBase> Delete(long id);
+        Task<ResponseBase> DeleteById(long id);
+        Task<ResponseBase> DeleteAccount(DeleteAccountRequest request, long userId);
     }
 }

@@ -28,6 +28,7 @@
         PasswordRequired,
         InvalidPasswordFormat,
         InvalidOldPassword,
+        InvalidPasswordOrEmail,
         EmailRequired,
         EmailExists,
         InvalidEmailFormat,
